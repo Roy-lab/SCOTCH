@@ -3,13 +3,13 @@
 ### Description 
 A pytorch implementation of the regularized non-negative matrix tri-factorization algorithm. Compatible with CUDA enabled GPU's. The code was developed in an enviroment with the following packages. This uses the cuda11.6 package.  
 
-python                    3.8.1
-pytorch                   1.12.0          py3.8\_cuda11.6\_cudnn8.3.2\_0
-torchaudio                0.12.0 
-torchvision               0.13.0
-cudatoolkit               11.6.0
-numpy                     1.22.3
-pandas                    1.4.3 
+*python 3.8.1 
+*pytorch 1.12.0 py3.8_cuda11.6_cudnn8.3.2_0
+*torchaudio  0.12.0 
+*torchvision 0.13.0
+*cudatoolkit 11.6.0
+*numpy 1.22.3
+*pandas 1.4.3 
 
 ### Methods/Outputs
 The goal of this function is to take a matrix X of dimension n x m and factor it into three matrices, U in n x k1, S in k1 x k2, and V in k2 x m, such that the difference between X and the product U x S x V is minimized. Formally this is resolved by minimizing the objective || X - U S V ||2^2. The program outputs the three product matrices. 
