@@ -167,6 +167,13 @@ class NMTF:
                 self.R = self.R + self.S[idx_i, idx_j] * torch.outer(self.U[:, idx_i], self.V[idx_j, :])
                 self.update_ith_jth_of_s(idx_i, idx_j)
                 self.R = self.R - self.S[idx_i, idx_j] * torch.outer(self.U[:, idx_i], self.V[idx_j, :])
+            if torch.sum(self.S[idx_i, :]) == 0:
+                self.S[idx_i, :] = 1e-5
+
+        for idx_j in range(self.k2):
+            if torch.sum(self.S[:, idx_j]) == 0:
+                self.S[:, idx_j] = 1e-5
+
         self.normalize_and_scale_u()
         self.normalize_and_scale_v()
         self.update_P()
