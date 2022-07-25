@@ -42,7 +42,7 @@ class NMTF:
         else:
             self.device = torch.device("cpu")
 
-    def load_data(self, datafile, delimiter='\t', header=None):
+    def load_data_from_text(self, datafile, delimiter='\t', header=None):
         df = pd.read_csv(datafile, sep=delimiter, header=header, dtype=np.float32)
         df = df.to_numpy()
         self.num_u = df.shape[0]
@@ -51,6 +51,21 @@ class NMTF:
         self.U = torch.rand(self.num_u, self.k1)
         self.V = torch.rand(self.k2, self.num_v)
         self.S = df.max() * torch.rand((self.k1, self.k2))
+        self.P = self.U @ self.S
+        self.Q = self.S @ self.V
+        self.R = self.X - self.P @ self.V
+        self.calculate_objective()
+
+        # Change loaded data status
+        self.has_data = True
+
+    def load_data_from_pt(self, datafile):
+        self.X = torch.load(datafile)
+        self.num_u = self.X.shape[0]
+        self.num_v = self.X.shape[1]
+        self.U = torch.rand(self.num_u, self.k1)
+        self.V = torch.rand(self.k2, self.num_v)
+        self.S = self.X.max() * torch.rand((self.k1, self.k2))
         self.P = self.U @ self.S
         self.Q = self.S @ self.V
         self.R = self.X - self.P @ self.V

@@ -1,5 +1,6 @@
 import argparse
 import NMTF as fact
+import os
 import cProfile
 
 
@@ -7,7 +8,11 @@ def main(args):
     mod = fact.NMTF(verbose=args.verbose, max_iter=args.max_iter,
                     seed=args.seed, term_tol=args.term_tol, l_u=args.lU,
                     l_v=args.lV, a_u=args.aU, a_v=args.aV, k1=args.k1, k2=args.k2, cpu=args.cpu)
-    mod.load_data(args.in_file)
+    file_parts = os.path.splitext(args.in_file)
+    if file_parts[1] == '.pt':
+        mod.load_data_from_pt(args.in_file)
+    else:
+        mod.load_data_from_text(args.in_file)
     mod.fit()
     mod.print_output(args.out_dir)
 
@@ -17,14 +22,20 @@ if __name__ == "__main__":
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--in_file',
-                        help='tab-delimited input matrix.',
+                        help='tab-delimited input matrix. Or pytorch .pt file',
                         required=True)
     parser.add_argument('--k1',
                         help='lower dimension of the row factors (U).',
-                        required=True)
+                        required=False,
+                        default = -999)
     parser.add_argument('--k2',
                         help='lower dimension of the column factors (V).',
-                        required=True)
+                        required=False,
+                        default = -999)
+    parser.add_argument('--test_multiple',
+                        help="file containing test k1 and k2 in two tab delimited columns.",
+                        required=False,
+                        default = '')
     parser.add_argument('--lU',
                         help='Ortho regularization of U term.',
                         required=False,
