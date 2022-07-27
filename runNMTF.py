@@ -7,7 +7,7 @@ import cProfile
 def main(args):
     mod = fact.NMTF(verbose=args.verbose, max_iter=args.max_iter,
                     seed=args.seed, term_tol=args.term_tol, l_u=args.lU,
-                    l_v=args.lV, a_u=args.aU, a_v=args.aV, k1=args.k1, k2=args.k2, cpu=args.cpu)
+                    l_v=args.lV, a_u=args.aU, a_v=args.aV, k1=args.k1, k2=args.k2, device=args.device)
     file_parts = os.path.splitext(args.in_file)
     if file_parts[1] == '.pt':
         mod.load_data_from_pt(args.in_file)
@@ -72,9 +72,9 @@ if __name__ == "__main__":
                         help="Path to output directory",
                         required=False,
                         default='.')
-    parser.add_argument('--cpu',
-                        help="if true default to CPU",
+    parser.add_argument('--device',
+                        help="Select Device. Default is cuda:0. Options are cuda:0/cuda:1/cpu",
                         required=False,
-                        action="store_true")
+                        default="cuda:0")
     args = parser.parse_args()
     main(args)
