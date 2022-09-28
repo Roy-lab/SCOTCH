@@ -86,6 +86,7 @@ class NMTF:
 
     def send_to_gpu(self):
         if torch.cuda.is_available():
+            self.X = self.X.to(self.device)
             self.U = self.U.to(self.device)
             self.V = self.V.to(self.device)
             self.S = self.S.to(self.device)
