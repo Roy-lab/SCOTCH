@@ -182,7 +182,7 @@ class NMTF:
 
     def calculate_objective(self):
         # Compute reconstruction error
-        error = torch.linalg.norm(self.R, ord='fro').item()
+        error = torch.linalg.norm(self.R, ord='fro').item() ** 2
 
         # Compute lU component
         if self.lU > 0:
