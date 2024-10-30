@@ -5,9 +5,18 @@ import cProfile
 
 
 def main(args):
-    mod = fact.NMTF(verbose=args.verbose, max_iter=args.max_iter,
-                    seed=args.seed, term_tol=args.term_tol, l_u=args.lU,
-                    l_v=args.lV, a_u=args.aU, a_v=args.aV, k1=args.k1, k2=args.k2, device=args.device)
+    if args.save_USV:
+        mod = fact.NMTF(verbose=args.verbose, max_iter=args.max_iter,
+                        seed=args.seed, term_tol=args.term_tol, l_u=args.lU,
+                        l_v=args.lV, a_u=args.aU, a_v=args.aV, k1=args.k1,
+                        k2=args.k2, save_clust=args.save_clust, track_objective=args.track_objective, kill_factors=args.kill_factors,
+                        out_path=args.out_dir, device=args.device)
+    else:
+        mod = fact.NMTF(verbose=args.verbose, max_iter=args.max_iter,
+                        seed=args.seed, term_tol=args.term_tol, l_u=args.lU,
+                        l_v=args.lV, a_u=args.aU, a_v=args.aV, k1=args.k1,
+                        k2=args.k2, save_clust=args.save_clust, track_objective=args.track_objective, kill_factors=args.kill_factors,
+                        device=args.device)
     file_parts = os.path.splitext(args.in_file)
     if file_parts[1] == '.pt':
         mod.load_data_from_pt(args.in_file)
@@ -72,6 +81,22 @@ if __name__ == "__main__":
                         help="Path to output directory",
                         required=False,
                         default='.')
+    parser.add_argument('--save_clust',
+                        help="Save cluster assignments for each interation to an assignment matrix",
+                        required=False,
+                        action="store_true")
+    parser.add_argument('--kill_factors',
+                        help="Save cluster assignments for each interation to an assignment matrix",
+                        required=False,
+                        action="store_true")
+    parser.add_argument('--track_objective',
+                        help="Save cluster assignments for each interation to an assignment matrix",
+                        required=False,
+                        action="store_true")
+    parser.add_argument('--save_USV',
+                        help="Save lower dimensional matrices at every iteration",
+                        required=False,
+                        action="store_true")
     parser.add_argument('--device',
                         help="Select Device. Default is cuda:0. Options are cuda:0/cuda:1/cpu",
                         required=False,
