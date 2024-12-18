@@ -1,10 +1,15 @@
 import argparse
+
+import DataLoader
 import NMTF as fact
 import os
 import cProfile
 
-
 def main(args):
+    """
+    :param args: Dictionary containing arguments for the method
+    :return: None
+    """
     if args.save_USV:
         mod = fact.NMTF(verbose=args.verbose, max_iter=args.max_iter,
                         seed=args.seed, term_tol=args.term_tol, l_u=args.lU,
@@ -17,11 +22,15 @@ def main(args):
                         l_v=args.lV, a_u=args.aU, a_v=args.aV, k1=args.k1,
                         k2=args.k2, save_clust=args.save_clust, track_objective=args.track_objective, kill_factors=args.kill_factors,
                         device=args.device)
+
+    dl = DataLoader.DataLoader(verbose=args.verbose)
     file_parts = os.path.splitext(args.in_file)
     if file_parts[1] == '.pt':
-        mod.load_data_from_pt(args.in_file)
+        X, x_shape = dl.from_pt(datafile=args.in_file)
     else:
-        mod.load_data_from_text(args.in_file)
+        X, x_shape = dl.from_text(datafile=args.in_file)
+    mod.assign_X_data(X)
+    mod.send_to_gpu()
     mod.fit()
     mod.print_output(args.out_dir)
 
