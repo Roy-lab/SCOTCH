@@ -85,7 +85,7 @@ if __name__ == "__main__":
     parser.add_argument('--term_tol',
                         help="Relative change in error before finish.",
                         required=False,
-                        default=1e-5)
+                        default=1e-25)
     parser.add_argument('--out_dir',
                         help="Path to output directory",
                         required=False,
@@ -110,5 +110,9 @@ if __name__ == "__main__":
                         help="Select Device. Default is cuda:0. Options are cuda:0/cuda:1/cpu",
                         required=False,
                         default="cuda:0")
+    parser.add_argument('--legacy',
+                        help="Use the legacy update. The new update improves selection of lU and lV.",
+                        required=False,
+                        action='store_true')
     args = parser.parse_args()
     main(args)
