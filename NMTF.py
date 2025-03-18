@@ -46,7 +46,7 @@ class NMTF:
     def __init__(self, verbose=True, max_iter=100, seed=1001, term_tol=1e-5,
                  l_u=0, l_v=0, a_u=0, a_v=0, k1=2, k2=2,
                  var_lambda=False, var_alpha=False, shape_param=10, mid_epoch_param=5,
-                 init_style="random", save_clust=False,
+                 init_style="random", save_clust=False, draw_intermediate_graph=False, save_intermediate=False,
                  track_objective=False, kill_factors=False, device="cpu", out_path=None, legacy=False):
 
         # Initialize Parameter space
@@ -74,8 +74,8 @@ class NMTF:
         self.kill_factors = kill_factors
         self.device = device
         self.track_objective = track_objective
-        self.save_intermediate = False
-        self.draw_intermediate_graph = False
+        self.save_intermediate = save_intermediate
+        self.draw_intermediate_graph = draw_intermediate_graph
         self.frames = [] if self.draw_intermediate_graph else None
 
         if out_path is not None:
@@ -643,10 +643,10 @@ class NMTF:
 
             if self.verbose:
                 next_time = time.time()
-                print("Iter: {0}\tIter Time: {1:.3f}\tTotal Time: {2:.3f}\tError: {3:.3e}\tRelative Delta "
-                      "Residual: {4:.3e}".
-                      format(self.citer, next_time - curr_time, next_time - start_time, self.error[:, self.citer].item(),
-                             self.relative_error[:, self.citer].item()))
+                print("Iter: {0}\tIter Time: {1:.3f}\tTotal Time: {2:.3f}\tObective: {3:.3e}\tRelative Delta Objective: {4:.3e}\tReconstruction Error: {5:.3e}".
+                      format(self.citer, next_time - curr_time, next_time - start_time,
+                             self.error[:, self.citer].item(), self.relative_error[:, self.citer].item(),
+                             self.reconstruction_error[:, self.citer].item()))
                 curr_time = next_time
 
             # If we want intermediate values in U S and V
@@ -778,6 +778,7 @@ class NMTF:
     def assign_cluster(self):
         self.U_assign = torch.argmax(self.U, dim=1)
         self.V_assign = torch.argmax(self.V, dim=0)
+
     def sigmoid_schedule(self, mid_iter=5, shape=10.0):
         """
         Generates a sigmoid scheduling function for the lambda U and Lambda V regularization parameter.
@@ -988,7 +989,7 @@ class NMTF:
 
     def visualizeClusters(self, cmap='viridis', interp='nearest'):
         fig = plt.figure(figsize=(8, 6))
-        grids = GridSpec.GridSpec(2, 2, wspace=0.1, width_ratios=(0.2, 0.8), height_ratios=(0.3, 0.7))
+        grids = GridSpec.GridSpec(2, 2, hspace=0.1,  wspace=0.1, width_ratios=(0.2, 0.8), height_ratios=(0.3, 0.7))
 
         ax1 = fig.add_subplot(grids[1, 0])
         ax1.imshow(self.U_assign.view(-1, 1).detach().numpy(), norm='linear', aspect="auto", cmap='Dark2', interpolation=interp)
@@ -1007,7 +1008,7 @@ class NMTF:
 
     def visualizeClustersSorted(self, cmap='viridis', interp='nearest'):
         fig = plt.figure(figsize=(8, 6))
-        grids = GridSpec.GridSpec(2, 2, wspace=0.1, width_ratios=(0.05, 0.95), height_ratios=(0.05, 0.95))
+        grids = GridSpec.GridSpec(2, 2, hspace=0.1, wspace=0.1, width_ratios=(0.05, 0.95), height_ratios=(0.05, 0.95))
 
         # Generate Sorting for U
         max_U, max_U_idx = self.U.max(dim=1)
@@ -1034,7 +1035,7 @@ class NMTF:
 
         # Visualize V matrix
         ax3 = fig.add_subplot(grids[0, 1])
-        ax3.imshow(self.V_assign[sorted_V_indices].view(1, -1).detach().numpy(), aspect="auto", cmap='gray',
+        ax3.imshow(barcode_V[sorted_V_indices].view(1, -1).detach().numpy(), aspect="auto", cmap='gray',
                    vmin=0, vmax=2, interpolation=interp)
         ax3.set_axis_off()
         # ax3.set_title("V Matrix")
