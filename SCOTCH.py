@@ -18,12 +18,12 @@ class SCOTCH(NMTF):
     def __init__(self, k1, k2, verbose=True, max_iter=100, seed=1001, term_tol=1e-5,
                  max_l_u=0, max_l_v=0, max_a_u=0, max_a_v=0, var_lambda=False,
                  var_alpha=False, shape_param=10, mid_epoch_param=5,
-                 init_style="nnsvd", save_clust=False,
+                 init_style="nnsvd", save_clust=False, draw_intermediate_graph=False, save_intermediate=False,
                  track_objective=False, kill_factors=False, device="cpu", out_path=None):
 
         super().__init__(verbose, max_iter, seed, term_tol, max_l_u, max_l_v, max_a_u, max_a_v, k1, k2, var_lambda,
-                         var_alpha, shape_param, mid_epoch_param, init_style, save_clust,
-                         track_objective, kill_factors, device, out_path)
+                         var_alpha, shape_param, mid_epoch_param, init_style, save_clust, draw_intermediate_graph,
+                         save_intermediate, track_objective, kill_factors, device, out_path)
 
         self.DataLoader = DataLoader(verbose)
 
@@ -131,6 +131,31 @@ class SCOTCH(NMTF):
         if not isinstance(adata, anndata.AnnData):
             raise TypeError("adata must be an AnnData object")
 
+        adata.obs['cell_clusters'] = pd.Categorical(self.U_assign.detach().numpy())
+        adata.var["gene_clusters"] = pd.Categorical(self.V_assign.t().detach().numpy())
+        adata.obsm['cell_embedding'] = self.U.detach().numpy()
+        adata.varm['gene_embedding'] = self.V.t().detach().numpy()
+        adata.uns['S_matrix'] = self.S.detach().numpy()
+        adata.obsm['P_embedding'] = self.P.detach().numpy()
+        adata.varm['Q_embedding'] = self.Q.t().detach().numpy()
+        return adata
+
+    def addScotchEmbeddingsToAnnData(self, adata):
+        if not isinstance(adata, anndata.AnnData):
+            raise TypeError("adata must be an AnnData object")
+
+        adata.obs['cell_clusters'] = pd.Categorical(self.U_assign.detach().numpy())
+        adata.var["gene_clusters"] = pd.Categorical(self.V_assign.t().detach().numpy())
+        adata.obsm['cell_embedding'] = self.U.detach().numpy()
+        adata.varm['gene_embedding'] = self.V.t().detach().numpy()
+        adata.uns['S_matrix'] = self.S.detach().numpy()
+        adata.obsm['P_embedding'] = self.P.detach().numpy()
+        adata.varm['Q_embedding'] = self.Q.t().detach().numpy()
+        return adata
+
+
+    def makeAdataFromScotch(self):
+        adata = anndata.AnnData(self.X.numpy())
         adata.obs['cell_clusters'] = pd.Categorical(self.U_assign.detach().numpy())
         adata.var["gene_clusters"] = pd.Categorical(self.V_assign.t().detach().numpy())
         adata.obsm['cell_embedding'] = self.U.detach().numpy()
