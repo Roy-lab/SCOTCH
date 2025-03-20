@@ -1,6 +1,5 @@
 import torch
-import numpy as np
-import pandas as pd
+
 
 
 def nnsvd_nmf_initialize(X, k, seed=None):
@@ -9,7 +8,7 @@ def nnsvd_nmf_initialize(X, k, seed=None):
         using PyTorch.
 
         Parameters:
-        A (torch.Tensor): The input non-negative matrix to factorize, shape (m, n).
+        X (torch.Tensor): The input non-negative matrix to factorize, shape (m, n).
         k (int): The rank for the factorization (number of components).
         seed (int, optional): Random seed for reproducibility.
 
@@ -27,7 +26,7 @@ def nnsvd_nmf_initialize(X, k, seed=None):
     a = torch.mean(X)
 
     # Perform SVD on A using torch's SVD function
-    ## R
+    # R
     U, S_svd, V = torch.svd_lowrank(X, q=k)
 
     # Initialize W and H matrices
@@ -77,7 +76,7 @@ def nnsvd_nmtf_initialize(X, k1, k2, seed=None):
     where the internal dimensions of W and H differ, using PyTorch.
 
     Parameters:
-    A (torch.Tensor): The input non-negative matrix to factorize, shape (m, n).
+    X (torch.Tensor): The input non-negative matrix to factorize, shape (m, n).
     k_W (int): The rank for the row factorization (number of components in W).
     k_H (int): The rank for the column factorization (number of components in H).
     seed (int, optional): Random seed for reproducibility.
