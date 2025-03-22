@@ -3,24 +3,57 @@ import argparse
 import DataLoader
 import NMTF as fact
 import os
-import cProfile
 
-def main(args):
+
+def runNMTF(args):
     """
-    :param args: Dictionary containing arguments for the method
-    :return: None
+    Runs Non-negative Matrix Tri-Factorization (NMTF) on an input dataset and saves the results.
+
+    This function initializes the NMTF model using the provided arguments, loads the input data
+    (either from a PyTorch `.pt` file or a tab-delimited text file), fits the model to the data,
+    and saves the output to the specified directory.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Parsed command line arguments with the following attributes:
+
+        - **in_file** (str): Path to the input file (tab-delimited matrix or .pt file).
+        - **k1** (int, optional): Dimension of the row factors. Default is -999.
+        - **k2** (int, optional): Dimension of the column factors. Default is -999.
+        - **lU** (float, optional): Orthogonal regularization for the U factor. Default is 0.
+        - **lV** (float, optional): Orthogonal regularization for the V factor. Default is 0.
+        - **aU** (float, optional): Sparsity (L1) regularization for the U factor. Default is 0.
+        - **aV** (float, optional): Sparsity (L1) regularization for the V factor. Default is 0.
+        - **verbose** (bool, optional): If True, print progress to the terminal. Default is False.
+        - **seed** (int, optional): Random seed for reproducibility. Default is 1010.
+        - **max_iter** (int, optional): Maximum number of iterations. Default is 100.
+        - **term_tol** (float, optional): Termination tolerance for relative error change. Default is 1e-25.
+        - **out_dir** (str, optional): Directory for saving output files. Default is '.'.
+        - **save_clust** (bool, optional): Save cluster assignments for each iteration. Default is False.
+        - **kill_factors** (bool, optional): Option to kill unused factors. Default is False.
+        - **track_objective** (bool, optional): Track objective function values during training. Default is False.
+        - **save_USV** (bool, optional): Save factorization components (U, S, V) at each iteration. Default is False.
+        - **device** (str, optional): Compute device for PyTorch ('cuda:0', 'cuda:1', 'cpu'). Default is 'cuda:0'.
+        - **legacy** (bool, optional): Use legacy update method for factorization. Default is False.
+
+    Returns
+    -------
+    None
     """
     if args.save_USV:
         mod = fact.NMTF(verbose=args.verbose, max_iter=args.max_iter,
-                        seed=args.seed, term_tol=args.term_tol, l_u=args.lU,
-                        l_v=args.lV, a_u=args.aU, a_v=args.aV, k1=args.k1,
-                        k2=args.k2, save_clust=args.save_clust, track_objective=args.track_objective, kill_factors=args.kill_factors,
+                        seed=args.seed, term_tol=args.term_tol, max_l_u=args.lU,
+                        max_l_v=args.lV, max_a_u=args.aU, max_a_v=args.aV, k1=args.k1,
+                        k2=args.k2, save_clust=args.save_clust, track_objective=args.track_objective,
+                        kill_factors=args.kill_factors,
                         out_path=args.out_dir, device=args.device)
     else:
         mod = fact.NMTF(verbose=args.verbose, max_iter=args.max_iter,
-                        seed=args.seed, term_tol=args.term_tol, l_u=args.lU,
-                        l_v=args.lV, a_u=args.aU, a_v=args.aV, k1=args.k1,
-                        k2=args.k2, save_clust=args.save_clust, track_objective=args.track_objective, kill_factors=args.kill_factors,
+                        seed=args.seed, term_tol=args.term_tol, max_l_u=args.lU,
+                        max_l_v=args.lV, max_a_u=args.aU, max_a_v=args.aV, k1=args.k1,
+                        k2=args.k2, save_clust=args.save_clust, track_objective=args.track_objective,
+                        kill_factors=args.kill_factors,
                         device=args.device)
 
     dl = DataLoader.DataLoader(verbose=args.verbose)
@@ -45,15 +78,15 @@ if __name__ == "__main__":
     parser.add_argument('--k1',
                         help='lower dimension of the row factors (U).',
                         required=False,
-                        default = -999)
+                        default=-999)
     parser.add_argument('--k2',
                         help='lower dimension of the column factors (V).',
                         required=False,
-                        default = -999)
+                        default=-999)
     parser.add_argument('--test_multiple',
                         help="file containing test k1 and k2 in two tab delimited columns.",
                         required=False,
-                        default = '')
+                        default='')
     parser.add_argument('--lU',
                         help='Ortho regularization of U term.',
                         required=False,
@@ -115,4 +148,4 @@ if __name__ == "__main__":
                         required=False,
                         action='store_true')
     args = parser.parse_args()
-    main(args)
+    runNMTF(args)

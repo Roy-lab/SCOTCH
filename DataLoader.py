@@ -12,10 +12,15 @@ class DataLoader:
     def from_text(self, datafile, delimiter='\t', header=None):
         """
         Matrix file that is plain text.
-        Args:
-            datafile: Path to the text file containing data.
-            delimiter: Delimiter used to separate values in the file. Default is '\t' (tab).
-            header: Row number(s) to use as the column names. Default is None.
+
+        :param datafile: Path to the text file containing data.
+        :type datafile: str
+
+        :param delimiter: Delimiter used to separate values in the file. Default is '\t' (tab).
+        :type delimiter: str, optional
+
+        :param header: Row number(s) to use as the column names. Default is None.
+        :type header: int or list of int, optional
         """
         start_time = time.time() if self.verbose else None
         if self.verbose:
@@ -28,9 +33,11 @@ class DataLoader:
 
     def from_pt(self, datafile):
         """
-        Args:
-            datafile: The path to the data file to be loaded using torch.load(). These should be .pt files containing
-            a torch.tensor that will you wish to factorize.
+        Load data from a PyTorch `.pt` file into SCOTCH.
+
+        :param datafile: The path to the data file to be loaded using `torch.load()`.
+                         It should be a `.pt` file containing a `torch.Tensor` to be factorized.
+        :type datafile: str
         """
         start_time = time.time() if self.verbose else None
         if self.verbose:
@@ -42,13 +49,13 @@ class DataLoader:
 
     def from_h5ad(self, datafile):
         """
-        Loads in an anndata X data to SCOTCH.
+        Loads an AnnData X data to SCOTCH.
 
-        Args:
-            datafile: A string specifying the path to the h5ad file that contains the data to be read.
+        :param datafile: Path to the h5ad file containing the data to be read.
+        :type datafile: str
 
-        Returns:
-            A tuple containing the AnnData object created from the h5ad file and its shape.
+        :returns: A tuple containing the AnnData object created from the h5ad file and its shape.
+        :rtype: tuple (anndata.AnnData, tuple)
         """
         start_time = time.time() if self.verbose else None
         if self.verbose:

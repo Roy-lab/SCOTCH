@@ -17,30 +17,69 @@ import scipy.cluster.hierarchy as sch
 
 class NMTF:
     """
-    Base class for NMTF model. Minimal support functionality. Returns matrices.
+    Base class for NMTF model. Provides minimal support functionality and returns factorized matrices.
 
+    :param k1: Number of components for U matrix. (Default: 2)
+    :type k1: int
+
+    :param k2: Number of components for V matrix. (Default: 2)
+    :type k2: int
+
+    :param verbose: If True, displays progress messages. (Default: True)
+    :type verbose: bool, optional
+
+    :param max_iter: Maximum number of iterations for optimization. (Default: 100)
+    :type max_iter: int, optional
+
+    :param seed: Seed for random number generation. (Default: 1001)
+    :type seed: int, optional
+
+    :param term_tol: Tolerance level for convergence, defined by relative change of error. (Default: 1e-5)
+    :type term_tol: float, optional
+
+    :param max_l_u: Maximum orthogonal regularization term for U matrix. (Default: 0)
+    :type max_l_u: float, optional
+
+    :param max_l_v: Maximum orthogonal regularization term for V matrix. (Default: 0)
+    :type max_l_v: float, optional
+
+    :param max_a_u: Maximum sparsity constraint for U matrix. (Default: 0)
+    :type max_a_u: float, optional
+
+    :param max_a_v: Maximum sparsity constraint for V matrix. (Default: 0)
+    :type max_a_v: float, optional
+
+    :param var_lambda: If True, lambda increases based on a sigmoid schedule. (Default: False)
+    :type var_lambda: bool, optional
+
+    :param var_alpha: If True, alpha increases based on a sigmoid schedule. (Default: False)
+    :type var_alpha: bool, optional
+
+    :param shape_param: Controls the steepness of the sigmoid schedule for both alpha and lambda. (Default: 10)
+    :type shape_param: float, optional
+
+    :param mid_epoch_param: Epoch at which the sigmoid scheduling function achieves a mean value. (Default: 5)
+    :type mid_epoch_param: int, optional
+
+    :param init_style: Initialization method for factors; either "nnsvd" (default) or "random".
+    :type init_style: str, optional
+
+    :param save_clust: If True, saves cluster assignments after every iteration. (Default: False)
+    :type save_clust: bool, optional
+
+    :param track_objective: If True, tracks the objective function. (Default: False)
+    :type track_objective: bool, optional
+
+    :param kill_factors: If True, halts updates if factor values go to zero. (Default: False)
+    :type kill_factors: bool, optional
+
+    :param device: Device for computation, either "cpu" or "cuda". (Default: "cpu")
+    :type device: str, optional
+
+    :param out_path: Path to save output files. (Default: '.')
+    :type out_path: str, optional
 
     :rtype: NMTF object
-    :param verbose: Sets whether to display progress messages
-    :param max_iter: Maximum number of iterations for optimization. Default: 100
-    :param seed: Seed for random number generation Default 1001
-    :param term_tol: Tolerance level for convergence. Defined by relative change of error. Default 1e-5
-    :param max_l_u: Max orthogonal regularization  term for U matrix. Default 0
-    :param max_l_v: Max orthogonal regularization  term for V matrix. Default 0
-    :param max_a_u: Max sparsity constraint for U matrix. Default 0.
-    :param max_a_v: Max sparsity constraint for V matrix. Default 0.
-    :param k1: Number of components for U matrix. Default 2.
-    :param k2: Number of components for V matrix. Default 2.
-    :param var_lambda: If set to True, allow for lambda to increase based on sigmoid schedule.
-    :param var_alpha: If set to True, allow for alpha to increase as a function on sigmoid schedule.
-    :param shape_param: shape factor that controls steepness of sigmoid schedule for both alpha and lambda. Default 10.
-    :param mid_epoch_param: The epoch at which the sigmoid scheduling function achieves a mean value, Default = 5,
-    :param init_style: Initialization method for factors. Set to either nnsvd (default) or random.
-    :param save_clust: Flag to save cluster assignments after every iteration.
-    :param track_objective: Flag to track objective function.
-    :param kill_factors: Flag to stop update if factor all factor values go to zero.
-    :param device: Device to run computation on (cpu/gpu)
-    :param out_path: Path to save output files
     """
 
     def __init__(self, verbose=True, max_iter=100, seed=1001, term_tol=1e-5,
@@ -114,9 +153,10 @@ class NMTF:
 
     def assign_X_data(self, X):
         """
-        Add Torch data object to SCOTCH. X must be torch tensor object or two dimensions and non-negative.
-        Args:
-            X: Torch data object to add to SCOTCH
+        Adds a Torch data object to SCOTCH. The input `X` must be a two-dimensional, non-negative Torch tensor.
+
+        :param X: Torch data object to add to SCOTCH. Must be a two-dimensional, non-negative Torch tensor.
+        :type X: torch.Tensor
         """
         if not isinstance(X, torch.Tensor):
             raise TypeError('X must be torch tensor object')
@@ -134,9 +174,9 @@ class NMTF:
 
     def _initialize_factors(self):
         """
-        Initialize the parameters U, V, S, P, Q, and R based on the specified initialization style.
+        Initializes the parameters U, V, S, P, Q, and R based on the specified initialization style.
 
-        :return: None
+        :returns: None
         """
         if self.init_style == "random":
             self.U = torch.rand(self.num_u, self.k1, device=self.device, dtype=torch.float64)
@@ -167,9 +207,9 @@ class NMTF:
 
     def send_to_gpu(self):
         """
-        Send full tensors to GPU if CUDA is available.
+        Sends all tensors to GPU if CUDA is available.
 
-        :return: None
+        :returns: None
         """
         if torch.cuda.is_available():
             self.X = self.X.to(self.device)
@@ -184,8 +224,9 @@ class NMTF:
 
     def send_to_cpu(self):
         """
-        Send full tensors to CPU if CUDA is available.
-        :return: None
+        Sends all tensors to the CPU if CUDA is available.
+
+        :returns: None
         """
         if torch.cuda.is_available():
             self.X = self.X.cpu()
@@ -203,10 +244,12 @@ class NMTF:
     # Update rules
     def _update_kth_block_u(self, k):
         """
-        Update the kth factor of the U matrix.
+        Updates the kth factor of the U matrix.
 
-        :param k: index of the block to update
-        :return: None
+        :param k: Index of the block to update.
+        :type k: int
+
+        :returns: None
         """
         q_norm = torch.linalg.norm(self.Q[k, :]) ** 2
         self.U[:, k] = torch.matmul(self.R, self.Q[k, :]) / q_norm
@@ -216,10 +259,12 @@ class NMTF:
 
     def _update_kth_block_u_unit(self, k):
         """
-        Update the kth factor of the U matrix. Normalizes this vector
+                Updates the kth factor of the U matrix and normalizes this vector.
 
-        :param k: kindex of the block to update
-        :return: None
+                :param k: Index of the block to update.
+                :type k: int
+
+                :returns: None
         """
         self.U[:, k] = torch.matmul(self.R, self.Q[k, :])
 
@@ -231,10 +276,12 @@ class NMTF:
 
     def _apply_orthog_u(self, k):
         """
-        Apply orthogonal regularization term to the kth factor of the U matrix
+        Applies the orthogonal regularization term to the kth factor of the U matrix.
 
-        :param k: index of the block to update
-        :return: None
+        :param k: Index of the block to update.
+        :type k: int
+
+        :returns: None
         """
         q_norm = torch.linalg.norm(self.Q[k, :]) ** 2
         # Orthogonality term
@@ -246,10 +293,13 @@ class NMTF:
 
     def _apply_orthog_u_unit(self, k):
         """
-        Apply orthogonal regularization term to the kth factor of the U matrix. Assumes unit norm. Uses lambda* def.
-        :param k:
-        :return: None
-        """
+               Applies the orthogonal regularization term to the kth factor of the U matrix. Assumes unit norm and uses lambda* for regularization.
+
+               :param k: Index of the block to update.
+               :type k: int
+
+               :returns: None
+               """
         if self.lU > 0:
             beta = torch.sum(self.U[:, [x for x in range(self.k1) if x not in [k]]], dim=1)
             beta = beta / torch.linalg.norm(beta)
@@ -261,11 +311,14 @@ class NMTF:
 
     def _apply_sparsity_u(self, k):
         """
-        Apply the sparsity regularization term to the kth factor of the U.
+        Applies the sparsity regularization term to the kth factor of the U matrix.
 
-        :param k: index of the kth factor.
-        :return: None
+        :param k: Index of the kth factor.
+        :type k: int
+
+        :returns: None
         """
+
         q_norm = torch.linalg.norm(self.Q[k, :]) ** 2
         # Sparsity term
         if self.aU > 0:
@@ -277,9 +330,12 @@ class NMTF:
 
     def _apply_sparsity_u_unit(self, k):
         """
-        Apply the sparsity regularization term to the kth factor of U. Assumes unit norm of U.
-        :param k: index of the kth factor
-        :return: None
+        Applies the sparsity regularization term to the kth factor of the U matrix. Assumes unit norm of U.
+
+        :param k: Index of the kth factor.
+        :type k: int
+
+        :returns: None
         """
 
         if self.aU > 0:
@@ -291,12 +347,15 @@ class NMTF:
 
     def _enforce_non_zero_u(self, k):
         """
-        :param k: index of a column in self.U to enforce non-zero values
-        :return: None
-
         Enforces non-zero values in column k of self.U. If the sum of the column is zero, it sets all values to 1/num_u.
         If citer is greater than 5 and kill_factors is True, the program exits with an error message.
+
+        :param k: Index of a column in self.U to enforce non-zero values.
+        :type k: int
+
+        :returns: None
         """
+
         # Enforce non-zero
         if torch.sum(self.U[:, k]) == 0 or torch.isnan(self.U[:, k]).any():
             self.U[:, k] = torch.ones(self.num_u)
@@ -307,10 +366,14 @@ class NMTF:
 
     def _update_kth_block_v(self, k):
         """
-        Updates the kth block of the V matrix
-        :param k: index of the row of V to update
-        return: None
+        Updates the kth block of the V matrix.
+
+        :param k: Index of the row of V to update.
+        :type k: int
+
+        :returns: None
         """
+
         p_norm = torch.linalg.norm(self.P[:, k]) ** 2
         self.V[k, :] = torch.matmul(self.P[:, k], self.R) / p_norm
 
@@ -320,10 +383,13 @@ class NMTF:
 
     def _update_kth_block_v_unit(self, k):
         """
-        Update the kth block of the V matrix. Normalizes the vector to unit length.
-        :param k:  index of the row of V to update
-        :return:  None
-        """
+                Updates the kth block of the V matrix and normalizes the vector to unit length.
+
+                :param k: Index of the row of V to update.
+                :type k: int
+
+                :returns: None
+                """
         self.V[k, :] = torch.matmul(self.P[:, k], self.R)
         # Apply Non-negativity
         self.V[k, self.V[k, :] < 0] = 0
@@ -333,11 +399,14 @@ class NMTF:
 
     def _apply_orthog_v(self, k):
         """
-        Apply orthogonal regularization update to the kth factor of v.
+        Applies the orthogonal regularization update to the kth factor of V.
 
-        :params k: index of the column to apply sparsity.
-        :return: None
+        :param k: Index of the column to apply regularization.
+        :type k: int
+
+        :returns: None
         """
+
         p_norm = torch.linalg.norm(self.P[:, k]) ** 2
         # Orthogonality term
         if self.lV > 0:
@@ -350,10 +419,14 @@ class NMTF:
 
     def _apply_orthog_v_unit(self, k):
         """
-        Apply orthogonal regularization update to the kth factor of V.  This is using the lambda* interpretation.
-        :param k:
-        :return:
+        Applies the orthogonal regularization update to the kth factor of V using the lambda* interpretation.
+
+        :param k: Index of the column to apply regularization.
+        :type k: int
+
+        :returns: None
         """
+
         if self.lV > 0:
             beta = torch.sum(self.V[[x for x in range(self.k2) if x not in [k]], :], dim=0)
             beta = beta / torch.linalg.norm(beta)
@@ -366,11 +439,14 @@ class NMTF:
 
     def _apply_sparsity_v(self, k):
         """
-        Apply sparsity regularization update to the kth factor of V.
+        Applies the sparsity regularization update to the kth factor of V.
 
-        :param k: index of the column to apply sparsity
-        :return: None
+        :param k: Index of the column to apply sparsity.
+        :type k: int
+
+        :returns: None
         """
+
         p_norm = torch.linalg.norm(self.P[:, k]) ** 2
         # Sparsity term
         if self.aV > 0:
@@ -382,10 +458,14 @@ class NMTF:
 
     def _apply_sparsity_v_unit(self, k):
         """
-        Applying sparsity update to the kth factor of V.  This is using the lambda* interpretation.
-        :param k: index of the column to apply sparsity
-        :return: None
+        Applies the sparsity update to the kth factor of V using the lambda* interpretation.
+
+        :param k: Index of the column to apply sparsity.
+        :type k: int
+
+        :returns: None
         """
+
         if self.aV > 0:
             self.V[k, :] = self.V[k, :] - self.aV * torch.ones(self.num_v, device=self.device)
 
@@ -398,11 +478,14 @@ class NMTF:
 
     def _enforce_non_zero_v(self, k):
         """
-        :param k: Index of the gene
-        :return: None
+        Enforces a non-zero value for the gene factor at index k. If the sum of values of the gene factor row is zero,
+        it assigns equal weights to each value.
 
-        Enforces non-zero value for the gene factor at index k. If the sum of values of the gene factor row is zero, it
-        assigns equal weights to each value.
+        :param k: Index of the gene.
+        :type k: int
+
+        :returns: None
+
         If the condition self.citer > 5 and self.kill_factors is True, the program exits with the message
         "Gene factor killed".
         """
@@ -416,11 +499,17 @@ class NMTF:
 
     def _update_ith_jth_of_s(self, i, j):
         """
-        Update each cell (i, j) of the S (sharing) matrix
-        :param i: row index of the S matrix to update.
-        :param j: column index of the S matrix to update.
-        :return: None
+        Updates each cell (i, j) of the S (sharing) matrix.
+
+        :param i: Row index of the S matrix to update.
+        :type i: int
+
+        :param j: Column index of the S matrix to update.
+        :type j: int
+
+        :returns: None
         """
+
         u_norm = torch.linalg.norm(self.U[:, i]) ** 2
         v_norm = torch.linalg.norm(self.V[j, :]) ** 2
         val = torch.matmul(torch.matmul(self.U[:, i], self.R), self.V[j, :]) / (u_norm * v_norm)
@@ -430,28 +519,32 @@ class NMTF:
     # Update the residuals
     def _update_P(self):
         """
-        Update the P matrix (U * S). The P matrix must be updated before refining V.
-        :return: None
+        Updates the P matrix (U * S). The P matrix must be updated before refining V.
+
+        :returns: None
         """
+
         self.P = self.U @ self.S
         return None
 
     def _update_Q(self):
         """
-        Update the Q matrix (S *V). The Q matrix must be updated before refining U.
-        :return: None
-        """
+                Updates the Q matrix (S * V). The Q matrix must be updated before refining U.
+
+                :returns: None
+                """
         self.Q = self.S @ self.V
         return None
 
     # Scaling functions
     def _normalize_and_scale_u(self):
         """
-        Normalize U matrix factors to 1. Scale factor shifted to S matrix (i, j) terms.
-        Required to run this before apply orthogonal regularization.
+        Normalizes U matrix factors to 1. The scale factor is shifted to the S matrix (i, j) terms.
+        This step is required before applying orthogonal regularization.
 
-        :return: None
+        :returns: None
         """
+
         for idx in range(self.k1):
             u_norm = torch.linalg.norm(self.U[:, idx])
             self.U[:, idx] = self.U[:, idx] / u_norm
@@ -461,10 +554,12 @@ class NMTF:
 
     def _normalize_and_scale_v(self):
         """
-        Normalize V matrix factors to 1. Scale factor shifted to S matrix (i, j) terms.
-        Required to run this before apply orthogonal regularization.
-        :return: None
+        Normalizes V matrix factors to 1. The scale factor is shifted to the S matrix (i, j) terms.
+        This step is required before applying orthogonal regularization.
+
+        :returns: None
         """
+
         for idx in range(self.k2):
             v_norm = torch.linalg.norm(self.V[idx, :])
             self.V[idx, :] = self.V[idx, :] / v_norm
@@ -473,11 +568,12 @@ class NMTF:
         return None
 
     # Update objectives
-    def calculate_objective(self):
+    def _calculate_objective(self):
         """
-        Computes the objective function value given current state. Adds in regularization parameter terms as needed
-        :return: None
-        """
+                Computes the objective function value based on the current state. Adds regularization parameter terms as necessary.
+
+                :returns: None
+                """
         # Compute reconstruction error
         error = torch.linalg.norm(self.R, ord='fro').item() ** 2
         self.reconstruction_error[:, self.citer] = error
@@ -514,46 +610,44 @@ class NMTF:
         # Compute error
         self.error[:, self.citer] = error + lU_reg + lV_reg + aU_reg + aV_reg
         if self.citer > 0:
-            cur_error = self.error[self.citer]
-            prev_error = self.error[self.citer - 1]
-            self.relative_error[self.citer] = ((prev_error - cur_error) / prev_error)
+            cur_error = self.error[:, self.citer]
+            prev_error = self.error[:, self.citer - 1]
+            self.relative_error[:, self.citer] = ((prev_error - cur_error) / prev_error)
         else:
-            self.relative_error[self.citer] = float('inf')
+            self.relative_error[:, self.citer] = float('inf')
         return None
 
-    def calculate_error_only(self):
+    def _calculate_error_only(self):
         """
-        Computes the objective function value given current state. Adds in regularization parameter terms as needed
+        Computes error term corresponding the frobenius norm term of the objective. This measures the inaccuracy of the
+        reconstruction of X, given the product U, S, V^T
+
         :return: None
         """
+
         # Compute reconstruction error
         error = torch.linalg.norm(self.R, ord='fro').item() ** 2
         self.reconstruction_error[:, self.citer] = error
         self.error[:, self.citer] = error
-        self.relative_error = (self.error[-2] - self.error[-1])
+        self.relative_error = (self.error[:, self.citer - 1] - self.error[:, self.citer]) / (self.error[:, self - 1])
         return None
 
     def _update_U(self):
         """
+                Update the U matrix.
 
-        Update the U matrix.
+                This method iterates through k1 number of columns and performs the following operations:
+                1. Updates the R matrix by adding the outer product of U[:, idx_i] and Q[idx_i, :]
+                2. Calls the '_update_kth_block_u' method to update the kth block of U
+                3. Updates the R matrix by subtracting the outer product of U[:, idx_i] and Q[idx_i, :]
 
-        This method iterates through k1 number of columns and
-        performs the following operations:
-        1. Updates the R matrix by adding the outer product
-        of U[:, idx_i] and Q[idx_i, :]
-        2. Calls the '_update_kth_block_u' method to update the kth block of U
-        3. Updates the R matrix by subtracting the outer product
-        of U[:, idx_i] and Q[idx_i, :]
+                After iterating through all columns, it performs the following operations on each column:
+                1. Applies orthogonal regularization if lU > 0 by calling '_apply_orthog_u'
+                2. Applies sparsity control if aU > 0 by calling '_apply_sparsity_u'
+                3. Enforces non-zero elements in the column by calling '_enforce_non_zero_u'
 
-        After iterating through all columns, it performs the following operations on each column:
-        1. Applies orthog reg  if lU > 0 by calling '_apply_orthog_u'
-        2. Applies sparsity control if aU > 0 by calling '_apply_sparsity_u'
-        3. Enforces non-zero elements in the column by calling '_enforce_non_zero_u'
-
-        Returns:
-            None
-        """
+                :return: None
+                """
         for idx_i in range(self.k1):
             self.R = self.R + torch.outer(self.U[:, idx_i], self.Q[idx_i, :])
             self._update_kth_block_u(idx_i)
@@ -569,17 +663,16 @@ class NMTF:
 
     def _update_U_unit(self):
         """
-        Updates U matrix by iterating over k1 range and performing several operations on it:
-        1. Updates R matrix by adding the outer product of the selected U column and Q row.
-        2. Calls _update_kth_block_u_unit method for further updates.
-        3. Calls _apply_orthog_u_unit method to apply orthogonal constraint.
-        4. Calls _apply_sparsity_u_unit method to enforce sparsity constraint.
-        5. Calls _enforce_non_zero_u method to ensure non-zero values in U matrix.
-        6. Finally, updates R matrix by subtracting the outer product of the selected U column and Q row.
+               Updates U matrix by iterating over k1 range and performing several operations on it:
+               1. Updates R matrix by adding the outer product of the selected U column and Q row.
+               2. Calls _update_kth_block_u_unit method for further updates.
+               3. Calls _apply_orthog_u_unit method to apply orthogonal constraint.
+               4. Calls _apply_sparsity_u_unit method to enforce sparsity constraint.
+               5. Calls _enforce_non_zero_u method to ensure non-zero values in U matrix.
+               6. Finally, updates R matrix by subtracting the outer product of the selected U column and Q row.
 
-        Returns:
-            None
-        """
+               :return: None
+               """
         for idx_i in range(self.k1):
             self.R = self.R + torch.outer(self.U[:, idx_i], self.Q[idx_i, :])
             self._update_kth_block_u_unit(idx_i)
@@ -591,20 +684,21 @@ class NMTF:
 
     def _update_V(self):
         """
-        Method to update the matrix R with new values using the matrix products of P and V matrices.
-        Calculates R by adding the outer product of each column of P with each row of V.
-        Then updates each block of V using the method _update_kth_block_v for each index.
-        Subtracts the outer product of each column of P with each row of V from R.
-        Applies orthogonal constraints to V if lV is greater than 0.
-        Applies sparsity constraints to V if aV is greater than 0.
-        Enforces non-zero values in V for each row.
+                Update the V matrix.
 
-        Parameters:
-            self: instance of the class containing the matrices to update.
+                This method iterates through k2 number of rows and performs the following operations:
+                1. Updates the R matrix by adding the outer product of P[:, idx_j] and V[idx_j, :]
+                2. Calls the '_update_kth_block_v' method to update the kth block of V
+                3. Updates the R matrix by subtracting the outer product of P[:, idx_j] and V[idx_j, :]
 
-        Returns:
-            None
-        """
+                After iterating through all rows, it performs the following operations on each row:
+                1. Applies orthog reg if lV > 0 by calling '_apply_orthog_v'
+                2. Applies sparsity control if aV > 0 by calling '_apply_sparsity_v'
+                3. Enforces non-zero elements in the row by calling '_enforce_non_zero_v'
+
+                Returns:
+                    None
+                """
         for idx_j in range(self.k2):
             self.R = self.R + torch.outer(self.P[:, idx_j], self.V[idx_j, :])
             self._update_kth_block_v(idx_j)
@@ -620,14 +714,17 @@ class NMTF:
 
     def _update_V_unit(self):
         """
-        Updates the block V matrix. This is using the unit norm update rules and regularization scheme
+                Updates the V matrix by iterating over k2 range and performing several operations on it:
+                1. Updates the R matrix by adding the outer product of P[:, idx_j] and V[idx_j, :].
+                2. Calls the '_update_kth_block_v_unit' method for further updates.
+                3. Calls the '_apply_orthog_v_unit' method to apply orthogonal constraint.
+                4. Calls the '_apply_sparsity_v_unit' method to enforce sparsity constraint.
+                5. Calls the '_enforce_non_zero_v' method to ensure non-zero values in V matrix.
+                6. Finally, updates the R matrix by subtracting the outer product of P[:, idx_j] and V[idx_j, :].
 
-        Parameters:
-        - None
-
-        Returns:
-        - None
-        """
+                Returns:
+                    None
+                """
         for idx_j in range(self.k2):
             self.R = self.R + torch.outer(self.P[:, idx_j], self.V[idx_j, :])
             self._update_kth_block_v_unit(idx_j)
@@ -641,7 +738,14 @@ class NMTF:
         """
         Updates the matrix R based on the values in matrix S and the matrices U and V.
 
+        This method performs the following operations:
+        1. Computes the updated value of matrix R by calculating the product of matrices U, S, and V.
+        2. Adjusts the matrix R according to the current state of S, U, and V.
+
+        Returns:
+            None
         """
+
         for idx_i in range(self.k1):
             for idx_j in range(self.k2):
                 self.R = self.R + self.S[idx_i, idx_j] * torch.outer(self.U[:, idx_i], self.V[idx_j, :])
@@ -657,8 +761,25 @@ class NMTF:
 
     def update(self):
         """
-        Define one update step for the U, V and S factors.
-        :return: None
+        Defines one update step for the U, V, and S factors.
+
+        This method updates the U, V, and S matrices in one iteration by performing the necessary operations for
+        each matrix, including applying regularization, sparsity constraints, and other updates to ensure the
+        factors are optimized. It also updates the residual matrix (R) as part of the optimization process.
+
+        Steps:
+            1. Updates the U matrix using the '_update_U' method.
+            2. Updates the P matrix.
+            3. If lU or aU is greater than 0, recalculates the residual matrix R.
+            4. Updates the V matrix using the '_update_V' method.
+            5. Updates the Q matrix.
+            6. Recalculates the residual matrix R if necessary.
+            7. Updates the S matrix.
+            8. Normalizes and scales U and V matrices.
+            9. Re-updates the P and Q matrices.
+
+        Returns:
+            None
         """
         self._update_U()
         self._update_P()
@@ -681,8 +802,22 @@ class NMTF:
 
     def update_unit(self):
         """
-        Define one update step for U, V and S, using the unit rules.
-        :return: None
+        Defines one update step for U, V, and S, using the unit rules.
+
+        This method updates the U, V, and S matrices in one iteration using the unit-based update rules. The update
+        steps ensure that regularization, sparsity constraints, and other necessary updates are applied in the manner
+        that follows the unit rule approach.
+
+        Steps:
+            1. Updates the U matrix using the '_update_U_unit' method.
+            2. Updates the P matrix.
+            3. Updates the V matrix using the '_update_V_unit' method.
+            4. Updates the Q matrix.
+            5. Updates the S matrix.
+            6. Re-updates the P and Q matrices.
+
+        Returns:
+            None
         """
 
         self._update_U_unit()
@@ -696,23 +831,33 @@ class NMTF:
         self._update_Q()
         return None
 
-    def determine_reg_state(self):
+    def _determine_reg_state(self):
         """
+            Determines the registration state based on the given parameters such as var_lambda, max_lU, sigmoid_schedule,
+            mid_epoch_param, shape_param, var_alpha, max_aU, max_aV. Updates the values of lU, lV, aU, aV accordingly.
 
-        Determines the registration state based on the given parameters such as var_lambda, max_lU, sigmoid_schedule,
-         mid_epoch_param, shape_param, var_alpha, max_aU, max_aV. Updates the values of lU, lV, aU, aV accordingly.
+            Steps:
+            1. Checks the value of `var_lambda` to determine if the regularization parameters lU and lV should be adjusted
+               using the sigmoid schedule function or if they should be set to the maximum values.
 
+            2. Checks the value of `var_alpha` to determine if the sparsity parameters aU and aV should be adjusted
+               using the sigmoid schedule function or if they should be set to the maximum values.
+
+            Uses instance variables: var_lambda, max_lU, sigmoid_schedule, mid_epoch_param, shape_param, var_alpha, max_aU, max_aV.
+
+            Returns:
+                None
         """
         if self.var_lambda:
-            self.lU = self.max_lU * self.sigmoid_schedule(self.mid_epoch_param, self.shape_param)
-            self.lV = self.max_lV * self.sigmoid_schedule(self.mid_epoch_param, self.shape_param)
+            self.lU = self.max_lU * self._sigmoid_schedule(self.mid_epoch_param, self.shape_param)
+            self.lV = self.max_lV * self._sigmoid_schedule(self.mid_epoch_param, self.shape_param)
         else:
             self.lU = self.max_lU
             self.lV = self.max_lV
 
         if self.var_alpha:
-            self.aU = self.max_aU * self.sigmoid_schedule(self.mid_epoch_param, self.shape_param)
-            self.aV = self.max_aV * self.sigmoid_schedule(self.mid_epoch_param, self.shape_param)
+            self.aU = self.max_aU * self._sigmoid_schedule(self.mid_epoch_param, self.shape_param)
+            self.aV = self.max_aV * self._sigmoid_schedule(self.mid_epoch_param, self.shape_param)
         else:
             self.aU = self.max_aU
             self.aV = self.max_aV
@@ -720,23 +865,32 @@ class NMTF:
 
     def fit(self):
         """
-        Fits the data using the optimization algorithm.
+                Fits the data using the optimization algorithm.
 
-        Executes the steps necessary to initialize factors, normalize and scale them, update S, and track the objective
-        setup. It then starts the NMTF algorithm.
+                This method executes the necessary steps to fit the model to the data using an optimization algorithm. It begins by
+                initializing factors, normalizing, and scaling them, and then updates the S matrix. The NMTF algorithm is then started
+                and iterated upon. It tracks the objective function setup and updates the model's factors at each iteration.
 
-        If `save_clust` is enabled, it tracks clusters setup. If `draw_intermediate_graph` is enabled, it visualizes
-         factors and saves frames.
+                Steps:
 
-        During each iteration until `maxIter`, it updates factors, calculates the objective, prints iteration details if
-         `verbose`, and saves intermediate values if `save_intermediate`.
+                1. Initializes the factors (U, V, and S).
+                2. Normalizes and scales the U and V factors.
+                3. Updates the S matrix.
+                4. Tracks the objective function setup.
+                5. Begins the NMTF optimization algorithm.
+                6. During each iteration:
+                    - Updates U, V, and S using the specified update method (legacy or unit-based).
+                    - Calculates the objective value.
+                    - Optionally prints detailed information about the iteration, including time, objective value, and reconstruction error.
+                    - Optionally saves intermediate values of U, S, and V.
+                    - Optionally tracks cluster convergence using the Jaccard Index for both U and V assignments.
+                    - Optionally visualizes and saves intermediate graphical representations of the factors.
+                7. Stops when the relative error falls below a specified tolerance (termTol).
 
-        If `save_clust` is enabled, it tracks the clustering convergence status. If `draw_intermediate_graph` is
-         enabled, it visualizes factors and saves frames.
-
-        If the relative error falls below `termTol`, the fitting process stops.
-
+                Returns:
+                    None
         """
+
         self.citer = 0
         start_time = time.time()
         curr_time = time.time()
@@ -748,7 +902,7 @@ class NMTF:
         self._normalize_and_scale_u()
         self._normalize_and_scale_v()
         self._updateS()
-        self.track_objective_setup()
+        self._track_objective_setup()
 
         U_jaccard = MulticlassJaccardIndex(num_classes=self.k1, average='weighted')
         V_jaccard = MulticlassJaccardIndex(num_classes=self.k2, average='weighted')
@@ -757,7 +911,7 @@ class NMTF:
             print("Beginning NMTF")
 
         if self.save_clust:
-            self.track_clusters_setup()
+            self._track_clusters_setup()
 
         if self.draw_intermediate_graph:
             self.frames = []
@@ -769,21 +923,20 @@ class NMTF:
 
         while self.citer != self.maxIter:
             self.citer += 1
-            self.determine_reg_state()
+            self._determine_reg_state()
             if self.legacy:
                 self.update()
             else:
                 self.update_unit()
 
-            self.calculate_objective()
+            self._calculate_objective()
 
             if self.verbose:
                 next_time = time.time()
                 print(
-                    "Iter: {0}\tIter Time: {1:.3f}\tTotal Time: {2:.3f}\tObjective: {3:.3e}\t" +
-                    "Relative Delta Objective: {4:.3e}\tReconstruction Error: {5:.3e}".
+                    "Iter: {0}\tIter Time: {1:.3f}\tTotal Time: {2:.3f}\tObjective: {3:.3e}\tRelative Delta Objective: {4:.3e}\tReconstruction Error: {5:.3e}".
                     format(self.citer, next_time - curr_time, next_time - start_time,
-                           self.error[self.citer].item(), self.relative_error[self.citer].item(),
+                           self.error[:, self.citer].item(), self.relative_error[:, self.citer].item(),
                            self.reconstruction_error[:, self.citer].item()))
                 curr_time = next_time
 
@@ -812,16 +965,21 @@ class NMTF:
 
             if self.termTol > self.relative_error[:, self.citer].item() >= 0:
                 break
+        return None
 
     def print_USV(self, file_pre):
         """
-        Write the lower dimensional matrices to file. U.txt, V.txt, and S.txt.
-        Files are tab delimited text files.
+               Write the lower-dimensional matrices (U, V, and S) to tab-delimited text files.
 
+               This method saves the U, V, and S matrices to text files with names based on the
+               provided prefix. The matrices are saved in tab-delimited format and will be named
+               `file_pre_U.txt`, `file_pre_V.txt`, and `file_pre_S.txt`.
 
-        Args:
-            file_pre:  Prefix to append to file names. U.txt, V.txt, and S.txt
+               Args:
+                   file_pre (str): Prefix to append to the file names.
 
+               Returns:
+                   None
         """
         if not isinstance(file_pre, str):
             raise TypeError('file_pre must be a string')
@@ -841,14 +999,32 @@ class NMTF:
         S_out = self.S.cpu()
         S_out = pd.DataFrame(S_out.numpy())
         S_out.to_csv(self.out_path + '/' + file_pre + "S.txt", sep="\t", header=False, index=False)
+        return None
 
     def print_output(self, out_path):
         """
-        Write output files. This includes the lower dimensional matrices U, S, V; the terms associated with the
-        objective function (the residual, the lambda regularization terms);
-        the Assignment of U an V at every iteration. The stepwise convergence of cluster assignments of U S and V.
+        Write output files related to the factorization and clustering results.
 
+        This method writes multiple output files, including the lower-dimensional matrices (U, S, V),
+        terms associated with the objective function (e.g., reconstruction error, lambda regularization terms),
+        and the assignment of U and V at every iteration. It also tracks the stepwise convergence of cluster assignments.
+
+        The output files include:
+            - `reconstruction_error.txt`: The reconstruction error over iterations.
+            - `lU_error.txt`: The lambda regularization error for U.
+            - `lV_error.txt`: The lambda regularization error for V.
+            - `relative_error.txt`: The relative error over iterations.
+            - `U_assign.txt`: The U assignments at each iteration (if `save_clust` is enabled).
+            - `V_assign.txt`: The V assignments at each iteration (if `save_clust` is enabled).
+            - `V_JI.txt`: The Jaccard Index for V assignments (if `save_clust` is enabled).
+            - `U_JI.txt`: The Jaccard Index for U assignments (if `save_clust` is enabled).
+
+        :param out_path: The path where the output files will be saved.
+        :type out_path: str
+
+        :return: None
         """
+
         self.print_USV(out_path)
 
         # if self.track_objective:
@@ -873,10 +1049,6 @@ class NMTF:
             V_test_out = pd.DataFrame(V_test_out.numpy())
             V_test_out.to_csv(out_path + "/V_assign.txt", sep='\t', header=False, index=False)
 
-            relative_error_out = self.relative_error.cpu()
-            relative_error_out = pd.DataFrame(relative_error_out.numpy())
-            relative_error_out.to_csv(out_path + "/relative_error.txt", sep='\t', header=False, index=False)
-
             V_JI_out = self.V_JI.cpu()
             V_JI_out = pd.DataFrame(V_JI_out.numpy())
             V_JI_out.to_csv(out_path + "/V_JI.txt", sep='\t', header=False, index=False)
@@ -885,19 +1057,35 @@ class NMTF:
             U_JI_out = pd.DataFrame(U_JI_out.numpy())
             U_JI_out.to_csv(out_path + "/U_JI.txt", sep='\t', header=False, index=False)
 
-    def track_objective_setup(self):
+        relative_error_out = self.relative_error.cpu()
+        relative_error_out = pd.DataFrame(relative_error_out.numpy())
+        relative_error_out.to_csv(out_path + "/relative_error.txt", sep='\t', header=False, index=False)
+
+    def _track_objective_setup(self):
         """
-        Save the objective values for error, U regularization and V regularization for each iteration of th algorithm
-        : return: None
+        Initialize and track the objective values for the algorithm's error terms across iterations.
+
+        This method sets up tensors to store the reconstruction error, U regularization error, V regularization error,
+        relative error, and overall error for each iteration of the algorithm. It then calls `calculate_objective`
+        to compute the initial objective values.
+
+        Attributes:
+            reconstruction_error (torch.Tensor): Stores the reconstruction error at each iteration.
+            lU_error (torch.Tensor): Stores the U regularization error at each iteration.
+            lV_error (torch.Tensor): Stores the V regularization error at each iteration.
+            relative_error (torch.Tensor): Stores the relative error at each iteration.
+            error (torch.Tensor): Stores the overall error at each iteration.
+
+        :return: None
         """
         self.reconstruction_error = torch.zeros(size=[1, self.maxIter + 1], dtype=torch.float32)
         self.lU_error = torch.zeros(size=[1, self.maxIter + 1], dtype=torch.float32)
         self.lV_error = torch.zeros(size=[1, self.maxIter + 1], dtype=torch.float32)
         self.relative_error = torch.zeros(size=[1, self.maxIter + 1], dtype=torch.float32)
         self.error = torch.zeros(size=[1, self.maxIter + 1], dtype=torch.float32)
-        self.calculate_objective()
+        self._calculate_objective()
 
-    def track_clusters_setup(self):
+    def _track_clusters_setup(self):
         """
         Initialize the necessary tensors for tracking clusters setup including U_assign, V_assign, U_JI, V_JI.
         Set the initial values for U_JI and V_JI as infinity.
@@ -911,10 +1099,21 @@ class NMTF:
 
     def save_cluster(self):
         """
-        Save cluster assignments and errors for each iteration of the algorithm.
+               Save cluster assignments and errors for each iteration of the algorithm.
 
-        :return: None
-        """
+               This method initializes tensors to store the cluster assignments for both U and V matrices
+               at each iteration of the algorithm. It also initializes tensors for the Jaccard Index (JI)
+               for both U and V and tracks the relative error over iterations.
+
+               Steps:
+               1. Initializes tensors for storing U cluster assignments (`U_assign`) and Jaccard Index (`U_JI`).
+               2. Initializes tensors for storing V cluster assignments (`V_assign`) and Jaccard Index (`V_JI`).
+               3. Initializes tensor to store the relative error over iterations (`relative_error`).
+
+
+           Returns:
+               None
+       """
         self.U_assign = torch.zeros(size=[self.num_u, self.maxIter + 1], dtype=torch.uint8)
         self.U_assign[:, 0] = torch.argmax(self.U, dim=1)
         self.U_JI = torch.zeros(size=[self.num_u, self.maxIter], dtype=torch.float32)
@@ -925,78 +1124,134 @@ class NMTF:
 
     def assign_cluster(self):
         """
-        Assign clusters based on the affinity matrix U and V.
+        Assign clusters based on the lower-dimensional embedding matrices U and V.
 
-        Parameters:
-            self: object
-                Instance of the class containing affinity matrices U and V.
+        This method assigns clusters by taking the `argmax` along the appropriate dimensions of the
+        lower-dimensional embedding matrices `U` and `V`. Specifically, it assigns clusters to each
+        data point based on the maximum value in the corresponding row of `U` (for the U assignments)
+        and the maximum value in the corresponding column of `V` (for the V assignments).
 
-        Returns:
-            None
+        The cluster assignments are stored in `U_assign` and `V_assign`.
+
+        :return: None
         """
         self.U_assign = torch.argmax(self.U, dim=1)
         self.V_assign = torch.argmax(self.V, dim=0)
 
-    def sigmoid_schedule(self, mid_iter=5, shape=10.0):
+    def _sigmoid_schedule(self, mid_iter=5, shape=10.0):
         """
-        Generates a sigmoid scheduling function for the lambda U and Lambda V regularization parameter.
-         LU and LV achieve half value ad mid_iter.
+        Generates a sigmoid scheduling function for the lambda U and lambda V regularization parameters.
 
-        :param mid_iter: The midpoint iteration where the schedule peaks.
+        This function creates a sigmoid schedule for the regularization parameters `LU` and `LV`, where the values
+        of these parameters achieve half of their maximum value at the `mid_iter` (the midpoint iteration). The
+        steepness of the curve is controlled by the `shape` parameter.
+
+        :param mid_iter: The midpoint iteration where the schedule reaches half of the maximum value.
+        :type mid_iter: int
+
         :param shape: The shape parameter that controls the steepness of the sigmoid curve.
+        :type shape: float
 
         :return: The value of the sigmoid schedule at the current iteration.
+        :rtype: float
         """
         return 1 / (1 + np.exp(-shape * (self.citer - mid_iter)))
 
-    def visualize_factors(self, cmap='viridis', interp='nearest'):
+    def visualize_factors(self, cmap='viridis', interp='nearest', max_u = 1, max_v = 1, max_x = 1):
         """
-        Draws NMTF factor visualization using matplotlib
-        Args:
-            cmap: The colormap to be used for visualization. Default is 'viridis'.
-            interp: The interpolation method to be used for image display. Default is 'nearest'.
+        This function generates a visual representation of the NMTF factors, allowing users to specify
+        the colormap and interpolation method used for image display.
 
+        :param cmap: The colormap to be used for visualization. Default is 'viridis'.
+        :type cmap: str, optional
+
+        :param interp: The interpolation method to be used for image display. Default is 'nearest'.
+        :type interp: str, optional
+
+        :param max_u: The maximum for color scale. Value between [0, 1] where 1 represents the max value in U.
+        Default is 1.
+        :type max_u: float, optional
+
+        :param max_v: The maximum for color scale. Value between [0, 1] where 1 represents the max value in V.
+        Default is 1.
+        :type max_v: float, optional
+
+        :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
+        Default is 1.
+        :type max_x: float, optional
+
+        :return: U, S, V  matrix heatmaps with X and product.
+        :rtype:matplotlib.figure.Figure
         """
         fig = plt.figure(figsize=(16, 6))
         grids = GridSpec.GridSpec(2, 3, wspace=0.1, width_ratios=(0.2, 0.4, 0.4), height_ratios=(0.3, 0.7))
 
+        U_viz = self.U.detach().numpy()
+        U_viz = (U_viz - U_viz.min()) / (U_viz.max() - U_viz.min())
         ax1 = fig.add_subplot(grids[1, 0])
-        ax1.imshow(self.U.detach().numpy(), norm='linear', aspect="auto", cmap=cmap, interpolation=interp)
+        ax1.imshow(U_viz, aspect="auto", cmap=cmap, interpolation=interp,
+                  vmin=0, vmax=max_u)
         ax1.set_axis_off()
         # ax1.set_title("U Matrix")
 
         # Visualize S matrix
         ax2 = fig.add_subplot(grids[0, 0])
-        ax2.imshow(self.S.t().detach().numpy(), norm='linear', aspect="auto", cmap=cmap, interpolation=interp)
+        ax2.imshow(self.S.t().detach().numpy(), aspect="auto", cmap=cmap, interpolation=interp)
         ax2.set_axis_off()
         # ax2.set_title("S Matrix")
 
         # Visualize V matrix
+        V_viz = self.V.detach().numpy()
+        V_viz = (V_viz - V_viz.min()) / (V_viz.max() - V_viz.min())
         ax3 = fig.add_subplot(grids[0, 1])
-        ax3.imshow(self.V.detach().numpy(), norm='linear', aspect="auto", cmap=cmap, interpolation=interp)
+        ax3.imshow(V_viz, aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_v)
         ax3.set_axis_off()
         # ax3.set_title("V Matrix")
 
         # Visualize X matrix
+        X_est_viz = (self.U @ self.S @ self.V).detach().numpy()
+        X_est_viz = (X_est_viz - X_est_viz.min())/(X_est_viz.max() - X_est_viz.min())
         ax4 = fig.add_subplot(grids[1, 1])
-        ax4.imshow((self.U @ self.S @ self.V).detach().numpy(), norm='linear', aspect="auto", cmap=cmap,
-                   interpolation=interp)
+        ax4.imshow(X_est_viz, aspect="auto", cmap=cmap,
+                   interpolation=interp, vmin=0, vmax=max_x)
         # ax4.set_title("X Matrix")
         ax4.set_axis_off()
 
+        X_viz = self.X.detach().numpy()
+        X_viz = (X_viz - X_viz.min()) / (X_viz.max() - X_viz.min())
         ax5 = fig.add_subplot(grids[1, 2])
-        ax5.imshow(self.X, norm='linear', aspect="auto", cmap=cmap, interpolation=interp)
+        ax5.imshow(X_viz, aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_x)
         ax5.set_axis_off()
         plt.close(fig)
         return fig
 
-    def visualize_factors_sorted(self, cmap='viridis', interp='nearest'):
+    def visualize_factors_sorted(self, cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1):
         """
-        Draws NMTF factor visualization. Rows of U and V are sorted based on component with maximum value
-        (e.g. cluster assignment)
-        Args:
-            cmap: The colormap to use for visualizing matrices. Default is 'viridis'.
-            interp: The interpolation method to use when displaying the matrices. Default is 'nearest'.
+            This function generates a visual representation of the NMTF factors, allowing users to specify
+            the colormap and interpolation method used for image display.
+
+            :param cmap: Colormap for the visualization. Default is 'viridis'.
+            :type cmap: str, optional
+
+            :param interp: Interpolation method for image display. Default is 'nearest'.
+            :type interp: str, optional
+
+            :param max_u: The maximum for color scale. Value between [0, 1] where 1 represents the max value in U.
+            Default is 1.
+            :type max_u: float, optional
+
+            :param max_v: The maximum for color scale. Value between [0, 1] where 1 represents the max value in V.
+            Default is 1.
+            :type max_v: float, optional
+
+            :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
+            Default is 1.
+            :type max_x: float, optional
+
+            :return: U, S, V  matrix heatmaps with X and product.
+            :rtype:matplotlib.figure.Figure
         """
         fig = plt.figure(figsize=(16, 6))
         grids = GridSpec.GridSpec(2, 3, wspace=0.1, width_ratios=(0.2, 0.4, 0.4), height_ratios=(0.3, 0.7))
@@ -1011,8 +1266,11 @@ class NMTF:
         sorting_criteria = torch.stack([max_V_idx, max_V], dim=1)
         sorted_V_indices = torch.argsort(sorting_criteria, dim=0, stable=True)[:, 0]
 
+        U_viz = self.U[sorted_U_indices, :].detach().numpy()
+        U_viz = (U_viz - U_viz.min()) / (U_viz.max() - U_viz.min())
         ax1 = fig.add_subplot(grids[1, 0])
-        ax1.imshow(self.U[sorted_U_indices, :].detach().numpy(), aspect="auto", cmap=cmap, interpolation=interp)
+        ax1.imshow(U_viz, aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_u) # set color scale
         ax1.set_axis_off()
         # ax1.set_title("U Matrix")
 
@@ -1023,8 +1281,11 @@ class NMTF:
         # ax2.set_title("S Matrix")
 
         # Visualize V matrix
+        V_viz = self.V[:, sorted_V_indices].detach().numpy()
+        V_viz = (V_viz - V_viz.min())/(V_viz.max() - V_viz.min())
         ax3 = fig.add_subplot(grids[0, 1])
-        ax3.imshow(self.V[:, sorted_V_indices].detach().numpy(), aspect="auto", cmap=cmap, interpolation=interp)
+        ax3.imshow(V_viz, aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_v) # set color scale
         ax3.set_axis_off()
         # ax3.set_title("V Matrix")
 
@@ -1032,27 +1293,39 @@ class NMTF:
         X_est = self.U @ self.S @ self.V
         X_est = X_est[sorted_U_indices, :]
         X_est = X_est[:, sorted_V_indices]
+        X_est = (X_est - X_est.min()) / (X_est.max() - X_est.min())
         ax4 = fig.add_subplot(grids[1, 1])
-        ax4.imshow(X_est.detach().numpy(), aspect="auto", cmap=cmap,
-                   interpolation=interp)
+        ax4.imshow(X_est, aspect="auto", cmap=cmap,
+                   interpolation=interp, vmin=0, vmax=max_x) # set color scale
         ax4.set_axis_off()
 
         # ax4.set_title("X Matrix")
-        X_temp = self.X
+        X_temp = self.X.clone()
         X_temp = X_temp[sorted_U_indices, :]
         X_temp = X_temp[:, sorted_V_indices]
+        X_temp = (X_temp - X_temp.min()) / (X_temp.max() - X_temp.min())
         ax5 = fig.add_subplot(grids[1, 2])
-        ax5.imshow(X_temp, aspect="auto", cmap=cmap, interpolation=interp)
+        ax5.imshow(X_temp, aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_x) # set color scale
         ax5.set_axis_off()
         plt.close(fig)
         return fig
 
-    def writeGIF(self, filename="NMTF_fit.gif", fps=5):
+    def write_gif(self, filename="NMTF_fit.gif", fps=5):
         """
-        Save frames of NMTF fit to GIF figure.
-        Args:
-            filename: file name to save GIF. Default "NMTF_fit.gif"
-            fps: desired FPS. Default 5
+        Save frames of NMTF fit to a GIF figure.
+
+        This method generates and saves a GIF showing the intermediate steps of the NMTF fitting process.
+        It is important that the `draw_interm ediate_graph` parameter is set to `True` during the fit to
+        capture these frames.
+
+        :param filename: The file name to save the GIF. Default is "NMTF_fit.gif".
+        :type filename: str, optional
+
+        :param fps: The desired frames per second for the GIF. Default is 5.
+        :type fps: int, optional
+
+        :return: None
         """
 
         if not isinstance(filename, str):
@@ -1071,19 +1344,25 @@ class NMTF:
         print("writing gif to {0}".format(outfile))
         imageio.mimsave(outfile, self.frames, fps=fps, loop=0)
 
-    def reclusterV(self, linkage_type="average", dist_metric='euclidean'):
+    def recluster_V(self, linkage_type="average", dist_metric='euclidean'):
         """
-        Clusters V using hierarchical clustering with linkage_type and distance metric. Then reapplies SCOTCH using
-        cluster representation. This is used to remove overly redundant factors of S.
+        Clusters the V matrix using hierarchical clustering, with the specified linkage type and distance metric.
+        Afterward, it reapplies SCOTCH based on the cluster representations to remove overly redundant factors from S.
 
+        This process involves performing hierarchical clustering on the V matrix to group similar factors and
+        reduce redundancy. SCOTCH is then reapplied to the clustered data to improve the factorization.
 
+        :param linkage_type: The type of linkage method to use for hierarchical clustering.
+            Must be one of the following: 'single', 'complete', 'average', or 'ward'.
+            Default is 'average'.
+        :type linkage_type: str
 
-        Args:
-            linkage_type: str, the type of linkage method for hierarchical clustering. Must be a supported linkage
-            method 'single', 'complete', 'average', 'ward'. (default is 'average')
-            dist_metric: str or int, the distance metric for calculating pairwise distances. Must be one of
-            cosine, euclidean, city_block, chebyshev, or an integer for a p metric. (default is 'euclidean')
+        :param dist_metric: The distance metric used for calculating pairwise distances in clustering.
+            It can be one of the following: 'cosine', 'euclidean', 'city_block', 'chebyshev',
+            or an integer for a p-metric. Default is 'euclidean'.
+        :type dist_metric: str or int
 
+        :return: None
         """
         # Use a pseudo-Q representation to recluster.
         # This is to make sure we don't have any additive representations in V
@@ -1125,12 +1404,12 @@ class NMTF:
         self.citer = 0
         self._normalize_and_scale_v()
         self._updateS()
-        self.track_objective_setup()
+        self._track_objective_setup()
         U_jaccard = MulticlassJaccardIndex(num_classes=self.k1, average='weighted')
         V_jaccard = MulticlassJaccardIndex(num_classes=self.k2, average='weighted')
 
         if self.save_clust:
-            self.track_clusters_setup()
+            self._track_clusters_setup()
 
         if self.draw_intermediate_graph:
             self.frames = []
@@ -1142,20 +1421,20 @@ class NMTF:
 
         while self.citer != self.maxIter:
             self.citer += 1
-            self.determine_reg_state()
+            self._determine_reg_state()
             if self.legacy:
                 self.update()
             else:
                 self.update_unit()
-            self.calculate_objective()
+            self._calculate_objective()
 
             if self.verbose:
                 next_time = time.time()
-                print("Iter: {0}\tIter Time: {1:.3f}\tTotal Time: {2:.3f}\tError: {3:.3e}\tRelative Delta "
-                      "Residual: {4:.3e}".
-                      format(self.citer, next_time - curr_time, next_time - start_time,
-                             self.error[self.citer].item(),
-                             self.relative_error[self.citer].item()))
+                print(
+                    "Iter: {0}\tIter Time: {1:.3f}\tTotal Time: {2:.3f}\tObjective: {3:.3e}\tRelative Delta Objective: {4:.3e}\tReconstruction Error: {5:.3e}".
+                    format(self.citer, next_time - curr_time, next_time - start_time,
+                           self.error[:, self.citer].item(), self.relative_error[:, self.citer].item(),
+                           self.reconstruction_error[:, self.citer].item()))
                 curr_time = next_time
 
             # If we want intermediate values in U S and V
@@ -1184,18 +1463,28 @@ class NMTF:
             if self.termTol > self.relative_error[:, self.citer].item() >= 0:
                 break
 
-    def visualize_clusters(self, cmap='Dark2', interp='nearest'):
+    def visualize_clusters(self, cmap='viridis', interp='nearest', max_x=1):
         """
-        Visualizes cluster assignments.
-        Args:
-            cmap: string, optional, default is 'viridis'
-                The color map to be used for visualizing clusters.
+                Visualizes the cluster assignments.
 
-            interp: string, optional, default is 'nearest'
-                The interpolation method for image rendering.
+                This function generates a visualization of the cluster assignments, where each cluster is represented by a
+                distinct color. The visualization uses the specified colormap and interpolation method for rendering.
+
+                :param cmap: The colormap to be used for visualizing clusters. Default is 'viridis'.
+                :type cmap: str, optional
+
+                :param interp: The interpolation method for image rendering. Default is 'nearest'.
+                :type interp: str, optional
+
+                :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
+                Default is 1.
+                :type max_x: int, optional
+
+                :return: Heatmap representation of cluster assignments for U and V, with values of X.
+                :rtype:matplotlib.figure.Figure
         """
         fig = plt.figure(figsize=(8, 6))
-        grids = GridSpec.GridSpec(2, 2, hspace=0.1, wspace=0.1, width_ratios=(0.2, 0.8), height_ratios=(0.3, 0.7))
+        grids = GridSpec.GridSpec(2, 2, hspace=0.1, wspace=0.1, width_ratios=(0.05, 0.95), height_ratios=(0.05, 0.95))
 
         # Setup safe color palette for U
         n_u_clusters = max(self.U_assign)
@@ -1203,7 +1492,7 @@ class NMTF:
         if n_u_clusters > 20:
             raise ValueWarning('Number of U clusters exceeds maximum number of supported by palette (tab20). Repeat '
                                'colors will be used.')
-        colors = [tab_20(i % 20) for i in range(n_u_clusters)]
+        colors = [tab_20(i % 20) for i in range(n_u_clusters + 1)]
         u_cmap = ListedColormap(colors)
 
         # Visualize U matrix
@@ -1216,7 +1505,7 @@ class NMTF:
         if n_v_clusters > 20:
             raise ValueWarning('Number of V clusters exceeds maximum of supported by palette (tab20). Repeat '
                                "colors will be used.")
-        colors = [tab_20(i % 20) for i in range(n_v_clusters)]
+        colors = [tab_20(i % 20) for i in range(n_v_clusters + 1)]
         v_cmap = ListedColormap(colors)
 
         # Visualize V matrix
@@ -1226,19 +1515,34 @@ class NMTF:
         ax3.set_axis_off()
 
         ax4 = fig.add_subplot(grids[1, 1])
-        ax4.imshow(self.X, norm='linear', aspect="auto", cmap=cmap, interpolation=interp)
+        X_viz = self.X.detach().numpy()
+        X_viz = (X_viz - X_viz.min()) / (X_viz.max() - X_viz.min())
+        ax4.imshow(X_viz, norm='linear', aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_x)
         ax4.set_axis_off()
         plt.close(fig)
         return fig
 
-    def visualize_clusters_sorted(self, cmap='viridis', interp='nearest'):
+    def visualize_clusters_sorted(self, cmap='viridis', interp='nearest', max_x=1):
         """
-        Visualizes clusters. orders elements of the matrix by cluster order (e.g) sorted. Because of this we color
-        each of the different clusters as either grey or black in an alternating fashion. This avoids issues with
-        limited palettes.
-        Args:
-            cmap: The colormap to be used for visualization. Defaults to 'viridis'.
-            interp: The interpolation method. Defaults to 'nearest'.
+                Visualizes the clusters by ordering elements of the matrix based on their cluster assignments.
+
+                The function sorts the elements of the matrix by their cluster order and alternates the color of each
+                cluster between grey and black. This approach avoids potential issues with limited color palettes, ensuring
+                better visual distinction between clusters.
+
+                :param cmap: The colormap to be used for visualization. Defaults to 'viridis'.
+                :type cmap: str, optional
+
+                :param interp: The interpolation method for rendering the image. Defaults to 'nearest'.
+                :type interp: str, optional
+
+                :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
+                Default is 1.
+                :type max_x: int, optional
+
+                :return: Sorted clusters heatmap representation.
+                :rtype: matplotlib.figure.Figure
         """
         fig = plt.figure(figsize=(8, 6))
         grids = GridSpec.GridSpec(2, 2, hspace=0.1, wspace=0.1, width_ratios=(0.05, 0.95), height_ratios=(0.05, 0.95))
@@ -1273,9 +1577,24 @@ class NMTF:
         ax3.set_axis_off()
         # ax3.set_title("V Matrix")
 
-        X_temp = self.X[sorted_U_indices, :][:, sorted_V_indices]
+        X_temp = self.X.detach().numpy()[sorted_U_indices, :][:, sorted_V_indices]
+        X_temp = (X_temp - X_temp.min()) / (X_temp.max() - X_temp.min())
         ax5 = fig.add_subplot(grids[1, 1])
-        ax5.imshow(X_temp, aspect="auto", cmap=cmap, interpolation=interp)
+        ax5.imshow(X_temp, aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_x)
         ax5.set_axis_off()
         plt.close(fig)
         return fig
+
+    def row_normalize_u_values(self):
+        row_norm_U = np.linalg.norm(self.U, axis=1, keepdims=True)
+        row_norm_V = np.linalg.norm(self.V, axis=0, keepdims=True)
+
+        D_U = np.diag(row_norm_U.flatten())
+        D_V = np.diag(row_norm_V.flatten())
+
+        self.U = self.U / row_norm_U
+        self.V = self.V / row_norm_V
+
+
+

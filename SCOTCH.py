@@ -7,37 +7,75 @@ from DataLoader import DataLoader
 from NMTF import NMTF
 import os
 
+
 class SCOTCH(NMTF):
     """
-        This is the SCOTCH class that extends from the NMTF class. It has a specific __init__ method with several input
-        parameters. The only required inputs are k1 and k2.
+SCOTCH Class
+============
 
-        __init__ Input parameters:
-          - k1, k2: lower dimension size of U and V. (required)
-          - verbose: If true, prints messages (default is True).
-          - max_iter: Maximum number of iterations (default is 100).
-          - seed: Random seed for initialization (default is 1001).
-          - term_tol: Relative error threshold for convergence (default is 1e-5)
-          - max_l_u: Maximum regularization on U. (default is 0)
-          - max_l_v: Maximum regularization on V. (default is 0)
-          - max_a_u: Maximum sparse regularization U. (default is 0, change at own risk)
-          - max_a_v: Maximum sparse regularization V. (default is 0, change at own risk)
-          - var_lambda: If True, the regularization parameter l_U and l_V are increased to max value using
-            a sigmoid scheduler. Generally should be set to FALSE. (default is False)
-         - var_alpha: If True, the regularization parameter a_U and a_V are increased to max value using
-            a sigmoid scheduler. Generally should be set to FALSE. (default is False)
-         - shape_param : controls rate of  l_U, l_V, a_U and a_V  increase when var_lambda = TRUE. (default is 10)
-         - mid_epoch_param:  sets epoch where lU, lV, a_U and a_V achieve max/2, if var_lambda = TRUE. (default is 5)
-         - init_style: Initialization method for SCOTCH. Should be "random" or "nnsvd". (default is "random")
-         - save_clust: Whether to save clusters assignment after each epoch (default is False)
-         - draw_intermediate_graph: If True, will draw matrix representation after each epoch and save them to SCOTCH
-             object. These can be printed to a GIF file. (default is False)
-         - track_objective: Depreciated (default is False)
-         - kill_factors: if True, SCOTCH will halt updates if at any point factors in U and V go to zero
-            (default is False).
-         - device: which machine to run SCOTCH. set to "cpu" or "cuda:". default is "cpu"
-         - out_path: where to save files form SCOTCH. (default is '.')
+The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` method with several input parameters. The only required inputs are `k1` and `k2`.
 
+**__init__ Input Parameters:**
+
+- **k1, k2** (*int*):
+  Lower dimension size of `U` and `V`. *(required)*
+
+- **verbose** (*bool*, optional):
+  If `True`, prints messages. *(default: True)*
+
+- **max_iter** (*int*, optional):
+  Maximum number of iterations. *(default: 100)*
+
+- **seed** (*int*, optional):
+  Random seed for initialization. *(default: 1001)*
+
+- **term_tol** (*float*, optional):
+  Relative error threshold for convergence. *(default: 1e-5)*
+
+- **max_l_u** (*float*, optional):
+  Maximum regularization on `U`. *(default: 0)*
+
+- **max_l_v** (*float*, optional):
+  Maximum regularization on `V`. *(default: 0)*
+
+- **max_a_u** (*float*, optional):
+  Maximum sparse regularization on `U`. *(default: 0, change at own risk)*
+
+- **max_a_v** (*float*, optional):
+  Maximum sparse regularization on `V`. *(default: 0, change at own risk)*
+
+- **var_lambda** (*bool*, optional):
+  If `True`, the regularization parameters `l_U` and `l_V` increase to max value using a sigmoid scheduler. Generally set to `False`. *(default: False)*
+
+- **var_alpha** (*bool*, optional):
+  If `True`, the regularization parameters `a_U` and `a_V` increase to max value using a sigmoid scheduler. Generally set to `False`. *(default: False)*
+
+- **shape_param** (*float*, optional):
+  Controls the rate of increase for `l_U`, `l_V`, `a_U`, and `a_V` when `var_lambda=True`. *(default: 10)*
+
+- **mid_epoch_param** (*int*, optional):
+  Sets the epoch where `l_U`, `l_V`, `a_U`, and `a_V` reach half of their max values if `var_lambda=True`. *(default: 5)*
+
+- **init_style** (*str*, optional):
+  Initialization method for SCOTCH. Should be either `"random"` or `"nnsvd"`. *(default: "random")*
+
+- **save_clust** (*bool*, optional):
+  Whether to save cluster assignments after each epoch. *(default: False)*
+
+- **draw_intermediate_graph** (*bool*, optional):
+  If `True`, draws and saves the matrix representation after each epoch. These can be saved as a GIF. *(default: False)*
+
+- **track_objective** (*bool*, deprecated):
+  *(default: False)*
+
+- **kill_factors** (*bool*, optional):
+  If `True`, SCOTCH will halt updates if any factors in `U` and `V` reach zero. *(default: False)*
+
+- **device** (*str*, optional):
+  Specifies the device to run SCOTCH on: `"cpu"` or `"cuda:"`. *(default: "cpu")*
+
+- **out_path** (*str*, optional):
+  Directory to save SCOTCH output files. *(default: '.')*
     """
     def __init__(self, k1, k2, verbose=True, max_iter=100, seed=1001, term_tol=1e-5,
                  max_l_u=0, max_l_v=0, max_a_u=0, max_a_v=0, var_lambda=False,
@@ -53,10 +91,10 @@ class SCOTCH(NMTF):
 
     def add_data_from_file(self, file):
         """
-        Loads matrix representation into pytorch tensor object to run with SCOTCH.
+        Loads matrix representation into PyTorch tensor object to run with SCOTCH.
 
-        Args:
-            file: The file path to load data from and should have the valid extensions like '.pt', '.txt', or '.h5ad'.
+        :param file: The file path to load data from and should have the valid extensions like '.pt', '.txt', or '.h5ad'.
+        :type file: str
         """
         if not isinstance(file, str):
             raise TypeError('file must be a string')
@@ -84,14 +122,15 @@ class SCOTCH(NMTF):
 
     def add_data_from_adata(self, adata):
         """
-        Loads data from adata object into SCOTCH framework.
-        Args:
-            adata: anndata.AnnData object to extract data from. Transform adata.X to pytorch object.
+        Loads data from AnnData object into SCOTCH framework.
+
+        :param adata: anndata.AnnData object to extract data from. Transforms adata.X to PyTorch object.
+        :type adata: anndata.AnnData
         """
         if not isinstance(adata, anndata.AnnData):
             raise TypeError("adata must be an AnnData object")
 
-        #Extract the X matrix and covert to a torch tensor
+        # Extract the X matrix and covert to a torch tensor
         X = adata.X
         if issparse(X):
             X_coo = X.tocoo()
@@ -108,17 +147,20 @@ class SCOTCH(NMTF):
 
     def add_scotch_embeddings_to_adata(self, adata, prefix=""):
         """
-        Adds SCOTCH objects to an AnnData object
-        Args:
-            prefix: prefix to add to adata objects created by SCOTCH
-            adata: the AnnData object to which Scotch embeddings will be added.
+        Adds SCOTCH objects to an AnnData object.
+
+        :param prefix: Prefix to add to AnnData objects created by SCOTCH.
+        :type prefix: str
+
+        :param adata: The AnnData object to which SCOTCH embeddings will be added.
+        :type adata: anndata.AnnData
         """
         if not isinstance(adata, anndata.AnnData):
             raise TypeError("adata must be an AnnData object")
 
         if not isinstance(prefix, str):
             raise TypeError("prefix must be a string")
-        if prefix[-1] != '_':
+        if len(prefix) > 0 and prefix[-1] != '_':
             prefix = prefix + '_'
 
         adata.obs[prefix + 'cell_clusters'] = pd.Categorical(self.U_assign.detach().numpy())
@@ -136,26 +178,21 @@ class SCOTCH(NMTF):
         """
         Create an AnnData object from the given data.
 
-        Parameters:
-            self: object
-                The instance of the class containing the data.
+        :param self: The instance of the class containing the data.
+        :type self: object
 
-            prefix: string
-                A string appended to
+        :param prefix: A string appended to the generated AnnData objects.
+        :type prefix: str
 
-        Returns:
-            anndata.AnnData
-                An AnnData object containing the processed data.
+        :returns: An AnnData object containing the processed data.
+        :rtype: anndata.AnnData
         """
         if not isinstance(prefix, str):
             raise TypeError("prefix must be a str")
 
-        if prefix[-1] != '_':
+        if len(prefix) > 0 and prefix[-1] != '_':
             prefix = prefix + '_'
-
+        X = self.X
         adata = anndata.AnnData(self.X.numpy())
-        self.add_scotch_embeddings_to_adata(adata)
+        adata = self.add_scotch_embeddings_to_adata(adata)
         return adata
-
-
-

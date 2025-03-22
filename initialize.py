@@ -4,18 +4,29 @@ import torch
 
 def nnsvd_nmf_initialize(X, k, seed=None):
     """
-        NNDSVD-based initialization for Non-negative Matrix Factorization (NMF)
-        using PyTorch.
+    Initializes the factors W and H for Non-negative Matrix Factorization (NMF)
+    using the Non-negative Double Singular Value Decomposition (NNDSVD) method
+    with PyTorch.
 
-        Parameters:
-        X (torch.Tensor): The input non-negative matrix to factorize, shape (m, n).
-        k (int): The rank for the factorization (number of components).
-        seed (int, optional): Random seed for reproducibility.
+    This initialization helps improve convergence speed and avoid local minima
+    by providing structured non-negative starting points for W and H.
 
-        Returns:
-        W (torch.Tensor): Initialized matrix of shape (m, k).
-        H (torch.Tensor): Initialized matrix of shape (n, k).
-        """
+    :param torch.Tensor X:
+        The input non-negative matrix to be factorized, with shape (m, n).
+        All elements of X should be non-negative.
+    :param int k:
+        The rank for the factorization, representing the number of components.
+    :param int seed:
+        (Optional) The random seed for reproducibility of the initialization.
+        If not specified, a random seed will be used.
+
+    :return:
+        A tuple containing:
+        - **W** (*torch.Tensor*): Initialized factor matrix of shape (m, k).
+        - **H** (*torch.Tensor*): Initialized factor matrix of shape (n, k).
+    :rtype: Tuple[torch.Tensor, torch.Tensor]
+    """
+
     if seed is not None:
         torch.manual_seed(seed)
 
@@ -73,17 +84,27 @@ def nnsvd_nmf_initialize(X, k, seed=None):
 def nnsvd_nmtf_initialize(X, k1, k2, seed=None):
     """
     NNDSVD-based initialization for Non-negative Matrix Tri-Factorization (NMTF)
-    where the internal dimensions of W and H differ, using PyTorch.
+    using PyTorch. Unlike standard NMF, the internal dimensions of W and H can differ.
 
-    Parameters:
-    X (torch.Tensor): The input non-negative matrix to factorize, shape (m, n).
-    k_W (int): The rank for the row factorization (number of components in W).
-    k_H (int): The rank for the column factorization (number of components in H).
-    seed (int, optional): Random seed for reproducibility.
+    This method aims to provide a structured, non-negative initialization for
+    W and H, improving convergence speed and stability.
 
-    Returns:
-    W (torch.Tensor): Initialized matrix of shape (m, k_W).
-    H (torch.Tensor): Initialized matrix of shape (n, k_H).
+    :param torch.Tensor X:
+        The input non-negative matrix to factorize, with shape (m, n).
+        All elements of X should be non-negative.
+    :param int k_W:
+        The rank for the row factorization, representing the number of components in W.
+    :param int k_H:
+        The rank for the column factorization, representing the number of components in H.
+    :param int seed:
+        (Optional) The random seed for reproducibility. If not specified, a random
+        seed will be used.
+
+    :return:
+        A tuple containing the initialized factor matrices:
+        - **W** (*torch.Tensor*): Factor matrix of shape (m, k_W).
+        - **H** (*torch.Tensor*): Factor matrix of shape (n, k_H).
+    :rtype: Tuple[torch.Tensor, torch.Tensor]
     """
     if seed is not None:
         torch.manual_seed(seed)
