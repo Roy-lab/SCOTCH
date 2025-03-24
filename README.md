@@ -26,19 +26,19 @@ This works simililarly to the ortho regularization. In this case, the number of 
 
 ## Arguments 
 
-| Argument | is Required? | Description | additional Info |
-| ---------|--------------|-------------|-----------------|
-| --in_file: | required | The file containing the tab delimited X matrix if full form. | example: test/A.txt |
-| --k1:		   | required |	The lower dimension of the U matrix.                         | example 2| 
-| --k2:		   | required | The lower dimension of the V matrix.                         | example 3|
-| --lU:		   | optional	|	strength of ortho reg on U.                                  | example 1000 (value dependent on number of features along rows) |
-| --lV:		   | optional	|	strength of ortho reg on V.                                  | example 1000 (value dependent on number of features along cols) |
-| --aU:		   | optional	|	strength of sparsity reg on U. |example 1000 (value dependent on number of features along rows) |
-| --aV:		   | optional	|	strength of sparsity reg on V. |example 1000 (value dependent on number of featurs along cols) |
+| Argument | is Required? | Description | additional Info                               |
+| ---------|--------------|-------------|-----------------------------------------------|
+| --in_file: | required | The file containing the tab delimited X matrix if full form. | example: test/A.txt                           |
+| --k1:		   | required |	The lower dimension of the U matrix.                         | example 2                                     | 
+| --k2:		   | required | The lower dimension of the V matrix.                         | example 3                                     |
+| --lU:		   | optional	|	strength of ortho reg on U.                                  | example 0.1 (value should be between [0, 1])  |
+| --lV:		   | optional	|	strength of ortho reg on V.                                  | example 0.1 (values should be between [0, 1]) |
+| --aU:		   | optional	|	strength of sparsity reg on U. | example 0.1 (values should be between [0, 1]) |
+| --aV:		   | optional	|	strength of sparsity reg on V. | example 0.1 (values should be between [0, 1]) |
 | --verbose	 | optional |		if included, time and convergence info will be printed to terminal |
-| --seed		 | optional	|	random seed used to initialize U, S, and V. | Default 1010 |
-| --max_iter | optional	|	number of epochs to attempt prior to output.| Default 100  |
-| --term_tol | optional	|	the relative change in error prior to completion. | Default 1e-5 |	
+| --seed		 | optional	|	random seed used to initialize U, S, and V. | Default 1010                                  |
+| --max_iter | optional	|	number of epochs to attempt prior to output.| Default 100                                   |
+| --term_tol | optional	|	the relative change in error prior to completion. | Default 1e-5                                  |	
 | --out_dir	 | optional	|	output directory to print U, S, and V.  |
 | --cpu		   | optional	|	if included, defuaults to using the CPU | 
 
