@@ -1,117 +1,246 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="Python" data-content_root="./">
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NMTF module &mdash; SCOTCH &#39;1.1.0&#39; documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=92fd9be5" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+<html lang="Python" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
 
   
-      <script src="_static/jquery.js?v=5d32c60e"></script>
-      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=0398fb1d"></script>
-      <script src="_static/doctools.js?v=9a2dae69"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/js/theme.js"></script>
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>NMTF module &#8212; SCOTCH &#39;1.1.0&#39; documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e7352e39" />
+    <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
+    <script src="_static/documentation_options.js?v=0398fb1d"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="SCOTCH module" href="SCOTCH.html" />
-    <link rel="prev" title="SCOTCH" href="modules.html" /> 
-</head>
+    <link rel="prev" title="SCOTCH" href="modules.html" />
+  
+   
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue-grey data-md-color-accent=blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#NMTF" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="index.html" title="SCOTCH &#39;1.1.0&#39; documentation"
+           class="md-header-nav__button md-logo">
           
+            &nbsp;
           
-          <a href="index.html" class="icon icon-home">
-            SCOTCH
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="README.html">pyNMTF</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="run_sim_example.html">Running SCOTCH on Simulated Data</a></li>
-</ul>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">SCOTCH</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">NMTF module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#NMTF.NMTF"><code class="docutils literal notranslate"><span class="pre">NMTF</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.assign_X_data"><code class="docutils literal notranslate"><span class="pre">NMTF.assign_X_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.assign_cluster"><code class="docutils literal notranslate"><span class="pre">NMTF.assign_cluster()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.fit"><code class="docutils literal notranslate"><span class="pre">NMTF.fit()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.print_USV"><code class="docutils literal notranslate"><span class="pre">NMTF.print_USV()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.print_output"><code class="docutils literal notranslate"><span class="pre">NMTF.print_output()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.recluster_V"><code class="docutils literal notranslate"><span class="pre">NMTF.recluster_V()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.save_cluster"><code class="docutils literal notranslate"><span class="pre">NMTF.save_cluster()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.send_to_cpu"><code class="docutils literal notranslate"><span class="pre">NMTF.send_to_cpu()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.send_to_gpu"><code class="docutils literal notranslate"><span class="pre">NMTF.send_to_gpu()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.update"><code class="docutils literal notranslate"><span class="pre">NMTF.update()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.update_unit"><code class="docutils literal notranslate"><span class="pre">NMTF.update_unit()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.visualize_clusters"><code class="docutils literal notranslate"><span class="pre">NMTF.visualize_clusters()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.visualize_clusters_sorted"><code class="docutils literal notranslate"><span class="pre">NMTF.visualize_clusters_sorted()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.visualize_factors"><code class="docutils literal notranslate"><span class="pre">NMTF.visualize_factors()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.visualize_factors_sorted"><code class="docutils literal notranslate"><span class="pre">NMTF.visualize_factors_sorted()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#NMTF.NMTF.write_gif"><code class="docutils literal notranslate"><span class="pre">NMTF.write_gif()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="SCOTCH.html">SCOTCH module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="initialize.html">initialize module</a></li>
-</ul>
-</li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="utilities.html">Utility Functions</a></li>
-</ul>
-
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">SCOTCH '1.1.0' documentation</span>
+          <span class="md-header-nav__topic"> NMTF module </span>
         </div>
       </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">SCOTCH</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">SCOTCH</a></li>
-      <li class="breadcrumb-item active">NMTF module</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="_sources/NMTF.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+
+      </div>
+      
+      
+  
+  <script src="_static/javascripts/version_dropdown.js"></script>
+  <script>
+    var json_loc = ""versions.json"",
+        target_loc = "../",
+        text = "Versions";
+    $( document ).ready( add_version_dropdown(json_loc, target_loc, text));
+  </script>
+  
+
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="index.html" class="md-tabs__link">SCOTCH '1.1.0' documentation</a></li>
+          <li class="md-tabs__item"><a href="modules.html" class="md-tabs__link">SCOTCH</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="index.html" title="SCOTCH &#39;1.1.0&#39; documentation" class="md-nav__button md-logo">
+      
+        <img src="_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="index.html"
+       title="SCOTCH &#39;1.1.0&#39; documentation">SCOTCH '1.1.0' documentation</a>
+  </label>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#nmtf--page-root" class="md-nav__link">NMTF module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#NMTF.NMTF" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#NMTF.NMTF.assign_X_data" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.assign_X_data()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.assign_cluster" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.assign_cluster()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.fit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.fit()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.print_USV" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.print_USV()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.print_output" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.print_output()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.recluster_V" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.recluster_V()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.save_cluster" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.save_cluster()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.send_to_cpu" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.send_to_cpu()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.send_to_gpu" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.send_to_gpu()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.update" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.update()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.update_unit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.update_unit()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.visualize_clusters" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.visualize_clusters()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.visualize_clusters_sorted" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.visualize_clusters_sorted()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.visualize_factors" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.visualize_factors()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.visualize_factors_sorted" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.visualize_factors_sorted()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#NMTF.NMTF.write_gif" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">NMTF.write_gif()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/NMTF.rst.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
   <section id="module-NMTF">
-<span id="nmtf-module"></span><h1>NMTF module<a class="headerlink" href="#module-NMTF" title="Link to this heading"></a></h1>
+<span id="nmtf-module"></span><h1 id="nmtf--page-root">NMTF module<a class="headerlink" href="#nmtf--page-root" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="NMTF.NMTF">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">NMTF.</span></span><span class="sig-name descname"><span class="pre">NMTF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_l_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_l_v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_a_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_a_v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_lambda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_epoch_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_clust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">draw_intermediate_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_intermediate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_objective</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_factors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legacy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">NMTF.</span></span><span class="sig-name descname"><span class="pre">NMTF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_l_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_l_v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_a_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_a_v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_lambda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_epoch_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_clust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">draw_intermediate_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_intermediate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_objective</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_factors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legacy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for NMTF model. Provides minimal support functionality and returns factorized matrices.</p>
 <dl class="field-list simple">
@@ -131,11 +260,11 @@
 <li><p><strong>var_alpha</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, alpha increases based on a sigmoid schedule. (Default: False)</p></li>
 <li><p><strong>shape_param</strong> (<em>float</em><em>, </em><em>optional</em>) -- Controls the steepness of the sigmoid schedule for both alpha and lambda. (Default: 10)</p></li>
 <li><p><strong>mid_epoch_param</strong> (<em>int</em><em>, </em><em>optional</em>) -- Epoch at which the sigmoid scheduling function achieves a mean value. (Default: 5)</p></li>
-<li><p><strong>init_style</strong> (<em>str</em><em>, </em><em>optional</em>) -- Initialization method for factors; either &quot;nnsvd&quot; (default) or &quot;random&quot;.</p></li>
+<li><p><strong>init_style</strong> (<em>str</em><em>, </em><em>optional</em>) -- Initialization method for factors; either "nnsvd" (default) or "random".</p></li>
 <li><p><strong>save_clust</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, saves cluster assignments after every iteration. (Default: False)</p></li>
 <li><p><strong>track_objective</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, tracks the objective function. (Default: False)</p></li>
 <li><p><strong>kill_factors</strong> (<em>bool</em><em>, </em><em>optional</em>) -- If True, halts updates if factor values go to zero. (Default: False)</p></li>
-<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) -- Device for computation, either &quot;cpu&quot; or &quot;cuda&quot;. (Default: &quot;cpu&quot;)</p></li>
+<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) -- Device for computation, either "cpu" or "cuda". (Default: "cpu")</p></li>
 <li><p><strong>out_path</strong> (<em>str</em><em>, </em><em>optional</em>) -- Path to save output files. (Default: '.')</p></li>
 </ul>
 </dd>
@@ -145,7 +274,7 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.assign_X_data">
-<span class="sig-name descname"><span class="pre">assign_X_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.assign_X_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.assign_X_data" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">assign_X_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.assign_X_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.assign_X_data" title="Link to this definition">¶</a></dt>
 <dd><p>Adds a Torch data object to SCOTCH. The input <cite>X</cite> must be a two-dimensional, non-negative Torch tensor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -153,10 +282,9 @@
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.assign_cluster">
-<span class="sig-name descname"><span class="pre">assign_cluster</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.assign_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.assign_cluster" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">assign_cluster</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.assign_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.assign_cluster" title="Link to this definition">¶</a></dt>
 <dd><p>Assign clusters based on the lower-dimensional embedding matrices U and V.</p>
 <p>This method assigns clusters by taking the <cite>argmax</cite> along the appropriate dimensions of the
 lower-dimensional embedding matrices <cite>U</cite> and <cite>V</cite>. Specifically, it assigns clusters to each
@@ -169,10 +297,9 @@ and the maximum value in the corresponding column of <cite>V</cite> (for the V a
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.fit" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.fit" title="Link to this definition">¶</a></dt>
 <dd><p>Fits the data using the optimization algorithm.</p>
 <p>This method executes the necessary steps to fit the model to the data using an optimization algorithm. It begins by
 initializing factors, normalizing, and scaling them, and then updates the S matrix. The NMTF algorithm is then started
@@ -204,10 +331,9 @@ and iterated upon. It tracks the objective function setup and updates the model'
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.print_USV">
-<span class="sig-name descname"><span class="pre">print_USV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_pre</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.print_USV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.print_USV" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">print_USV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_pre</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.print_USV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.print_USV" title="Link to this definition">¶</a></dt>
 <dd><p>Write the lower-dimensional matrices (U, V, and S) to tab-delimited text files.</p>
 <p>This method saves the U, V, and S matrices to text files with names based on the
 provided prefix. The matrices are saved in tab-delimited format and will be named
@@ -221,10 +347,9 @@ provided prefix. The matrices are saved in tab-delimited format and will be name
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.print_output">
-<span class="sig-name descname"><span class="pre">print_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.print_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.print_output" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">print_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.print_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.print_output" title="Link to this definition">¶</a></dt>
 <dd><p>Write output files related to the factorization and clustering results.</p>
 <p>This method writes multiple output files, including the lower-dimensional matrices (U, S, V),
 terms associated with the objective function (e.g., reconstruction error, lambda regularization terms),
@@ -251,10 +376,9 @@ and the assignment of U and V at every iteration. It also tracks the stepwise co
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.recluster_V">
-<span class="sig-name descname"><span class="pre">recluster_V</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linkage_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'average'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.recluster_V"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.recluster_V" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">recluster_V</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linkage_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'average'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.recluster_V"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.recluster_V" title="Link to this definition">¶</a></dt>
 <dd><p>Clusters the V matrix using hierarchical clustering, with the specified linkage type and distance metric.
 Afterward, it reapplies SCOTCH based on the cluster representations to remove overly redundant factors from S.</p>
 <p>This process involves performing hierarchical clustering on the V matrix to group similar factors and
@@ -275,12 +399,10 @@ or an integer for a p-metric. Default is 'euclidean'.</p></li>
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.save_cluster">
-<span class="sig-name descname"><span class="pre">save_cluster</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.save_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.save_cluster" title="Link to this definition"></a></dt>
-<dd><blockquote>
-<div><p>Save cluster assignments and errors for each iteration of the algorithm.</p>
+<span class="sig-name descname"><span class="pre">save_cluster</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.save_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.save_cluster" title="Link to this definition">¶</a></dt>
+<dd><p>Save cluster assignments and errors for each iteration of the algorithm.</p>
 <p>This method initializes tensors to store the cluster assignments for both U and V matrices
 at each iteration of the algorithm. It also initializes tensors for the Jaccard Index (JI)
 for both U and V and tracks the relative error over iterations.</p>
@@ -288,17 +410,15 @@ for both U and V and tracks the relative error over iterations.</p>
 1. Initializes tensors for storing U cluster assignments (<cite>U_assign</cite>) and Jaccard Index (<cite>U_JI</cite>).
 2. Initializes tensors for storing V cluster assignments (<cite>V_assign</cite>) and Jaccard Index (<cite>V_JI</cite>).
 3. Initializes tensor to store the relative error over iterations (<cite>relative_error</cite>).</p>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.send_to_cpu">
-<span class="sig-name descname"><span class="pre">send_to_cpu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.send_to_cpu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.send_to_cpu" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">send_to_cpu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.send_to_cpu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.send_to_cpu" title="Link to this definition">¶</a></dt>
 <dd><p>Sends all tensors to the CPU if CUDA is available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -306,10 +426,9 @@ for both U and V and tracks the relative error over iterations.</p>
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.send_to_gpu">
-<span class="sig-name descname"><span class="pre">send_to_gpu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.send_to_gpu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.send_to_gpu" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">send_to_gpu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.send_to_gpu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.send_to_gpu" title="Link to this definition">¶</a></dt>
 <dd><p>Sends all tensors to GPU if CUDA is available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -317,10 +436,9 @@ for both U and V and tracks the relative error over iterations.</p>
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.update" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.update" title="Link to this definition">¶</a></dt>
 <dd><p>Defines one update step for the U, V, and S factors.</p>
 <p>This method updates the U, V, and S matrices in one iteration by performing the necessary operations for
 each matrix, including applying regularization, sparsity constraints, and other updates to ensure the
@@ -345,10 +463,9 @@ factors are optimized. It also updates the residual matrix (R) as part of the op
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.update_unit">
-<span class="sig-name descname"><span class="pre">update_unit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.update_unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.update_unit" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">update_unit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.update_unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.update_unit" title="Link to this definition">¶</a></dt>
 <dd><p>Defines one update step for U, V, and S, using the unit rules.</p>
 <p>This method updates the U, V, and S matrices in one iteration using the unit-based update rules. The update
 steps ensure that regularization, sparsity constraints, and other necessary updates are applied in the manner
@@ -370,10 +487,9 @@ that follows the unit rule approach.</p>
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.visualize_clusters">
-<span class="sig-name descname"><span class="pre">visualize_clusters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.visualize_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.visualize_clusters" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">visualize_clusters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.visualize_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.visualize_clusters" title="Link to this definition">¶</a></dt>
 <dd><p>Visualizes the factors from the NMTF model.</p>
 <p>This function generates a visualization of the factors resulting from the NMTF model. It supports customizing the
 color scheme, interpolation method, and the scaling of the visualization.</p>
@@ -394,10 +510,9 @@ color scheme, interpolation method, and the scaling of the visualization.</p>
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.visualize_clusters_sorted">
-<span class="sig-name descname"><span class="pre">visualize_clusters_sorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.visualize_clusters_sorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.visualize_clusters_sorted" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">visualize_clusters_sorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.visualize_clusters_sorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.visualize_clusters_sorted" title="Link to this definition">¶</a></dt>
 <dd><p>Visualizes the clusters by ordering elements of the matrix based on their cluster assignments.</p>
 <dl class="simple">
 <dt>The function sorts the elements of the matrix by their cluster order and alternates the color of each</dt><dd><p>cluster between grey and black. This approach avoids potential issues with limited color palettes, ensuring
@@ -409,8 +524,7 @@ better visual distinction between clusters.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) -- The colormap to be used for visualization. Defaults to 'viridis'.</p></li>
 <li><p><strong>interp</strong> (<em>str</em><em>, </em><em>optional</em>) -- The interpolation method for rendering the image. Defaults to 'nearest'.</p></li>
-<li><p><strong>max_x</strong> (<em>int</em><em>, </em><em>optional</em>) -- The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
-Default is 1.</p></li>
+<li><p><strong>max_x</strong> (<em>int</em><em>, </em><em>optional</em>) -- The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.  Default is 1.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -421,64 +535,58 @@ Default is 1.</p></li>
 </dd>
 </dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.visualize_factors">
-<span class="sig-name descname"><span class="pre">visualize_factors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.visualize_factors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.visualize_factors" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">visualize_factors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.visualize_factors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.visualize_factors" title="Link to this definition">¶</a></dt>
 <dd><p>This function generates a visual representation of the NMTF factors, allowing users to specify
-the colormap and interpolation method used for image display.
-:type cmap: 
-:param cmap: The colormap to be used for visualization. Default is 'viridis'.
-:type cmap: str, optional
-:type interp: 
-:param interp: The interpolation method to be used for image display. Default is 'nearest'.
-:type interp: str, optional
-:type max_u: 
-:param max_u: The maximum for color scale. Value between [0, 1] where 1 represents the max value in U.
-Default is 1.
-:type max_u: float, optional
-:type max_v: 
-:param max_v: The maximum for color scale. Value between [0, 1] where 1 represents the max value in V.
-Default is 1.
-:type max_v: float, optional
-:type max_x: 
-:param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
-Default is 1.
-:type max_x: float, optional
-:return: U, S, V  matrix heatmaps with X and product.
-:rtype: matplotlib.figure.Figure</p>
+the colormap and interpolation method used for image display.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) -- The colormap to be used for visualization. Default is 'viridis'.</p></li>
+<li><p><strong>interp</strong> (<em>str</em><em>, </em><em>optional</em>) -- The interpolation method to be used for image display. Default is 'nearest'.</p></li>
+<li><p><strong>max_u</strong> (<em>float</em><em>, </em><em>optional</em>) -- The maximum for color scale. Value between [0, 1] where 1 represents the max value in U.
+Default is 1.</p></li>
+<li><p><strong>max_v</strong> (<em>float</em><em>, </em><em>optional</em>) -- The maximum for color scale. Value between [0, 1] where 1 represents the max value in V.
+Default is 1.</p></li>
+<li><p><strong>max_x</strong> (<em>float</em><em>, </em><em>optional</em>) -- The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
+Default is 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>U, S, V  matrix heatmaps with X and product.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure</p>
+</dd>
+</dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.visualize_factors_sorted">
-<span class="sig-name descname"><span class="pre">visualize_factors_sorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.visualize_factors_sorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.visualize_factors_sorted" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">visualize_factors_sorted</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nearest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.visualize_factors_sorted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.visualize_factors_sorted" title="Link to this definition">¶</a></dt>
 <dd><p>This function generates a visual representation of the NMTF factors, allowing users to specify
-the colormap and interpolation method used for image display.
-:type cmap: 
-:param cmap: Colormap for the visualization. Default is 'viridis'.
-:type cmap: str, optional
-:type interp: 
-:param interp: Interpolation method for image display. Default is 'nearest'.
-:type interp: str, optional
-:type max_u: 
-:param max_u: The maximum for color scale. Value between [0, 1] where 1 represents the max value in U.
-Default is 1.
-:type max_u: float, optional
-:type max_v: 
-:param max_v: The maximum for color scale. Value between [0, 1] where 1 represents the max value in V.
-Default is 1.
-:type max_v: float, optional
-:type max_x: 
-:param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
-Default is 1.
-:type max_x: float, optional
-:return: U, S, V  matrix heatmaps with X and product.
-:rtype: matplotlib.figure.Figure</p>
+the colormap and interpolation method used for image display.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) -- Colormap for the visualization. Default is 'viridis'.</p></li>
+<li><p><strong>interp</strong> (<em>str</em><em>, </em><em>optional</em>) -- Interpolation method for image display. Default is 'nearest'.</p></li>
+<li><p><strong>max_u</strong> (<em>float</em><em>, </em><em>optional</em>) -- The maximum for color scale. Value between [0, 1] where 1 represents the max value in U. Default is 1.</p></li>
+<li><p><strong>max_v</strong> (<em>float</em><em>, </em><em>optional</em>) -- The maximum for color scale. Value between [0, 1] where 1 represents the max value in V. Default is 1.</p></li>
+<li><p><strong>max_x</strong> (<em>float</em><em>, </em><em>optional</em>) -- The maximum for color scale. Value between [0, 1] where 1 represents the max value in X. Default is 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>U, S, V  matrix heatmaps with X and product.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure</p>
+</dd>
+</dl>
 </dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="NMTF.NMTF.write_gif">
-<span class="sig-name descname"><span class="pre">write_gif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NMTF_fit.gif'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.write_gif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.write_gif" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">write_gif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NMTF_fit.gif'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/NMTF.html#NMTF.write_gif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#NMTF.NMTF.write_gif" title="Link to this definition">¶</a></dt>
 <dd><p>Save frames of NMTF fit to a GIF figure.</p>
 <p>This method generates and saves a GIF showing the intermediate steps of the NMTF fitting process.
 It is important that the <cite>draw_interm ediate_graph</cite> parameter is set to <cite>True</cite> during the fit to
@@ -486,7 +594,7 @@ capture these frames.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) -- The file name to save the GIF. Default is &quot;NMTF_fit.gif&quot;.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) -- The file name to save the GIF. Default is "NMTF_fit.gif".</p></li>
 <li><p><strong>fps</strong> (<em>int</em><em>, </em><em>optional</em>) -- The desired frames per second for the GIF. Default is 5.</p></li>
 </ul>
 </dd>
@@ -495,40 +603,65 @@ capture these frames.</p>
 </dd>
 </dl>
 </dd></dl>
-
 </dd></dl>
-
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules.html" class="btn btn-neutral float-left" title="SCOTCH" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="SCOTCH.html" class="btn btn-neutral float-right" title="SCOTCH module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2025, Spencer Halberg-Spencer, Harmon Bhasin, Sushmita Roy.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
+          </article>
         </div>
       </div>
-    </section>
+    </main>
   </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
-
-</body>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="modules.html" title="SCOTCH"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> SCOTCH </span>
+              </div>
+            </a>
+          
+          
+            <a href="SCOTCH.html" title="SCOTCH module"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> SCOTCH module </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2025, Spencer Halberg-Spencer, Harmon Bhasin, Sushmita Roy.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
 </html>
