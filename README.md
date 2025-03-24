@@ -1,6 +1,4 @@
-# pyNMTF
-
-Documentation
+# SCOTCH 
 
 ## Documentation
 You can find the documentation for this project at [GitHub Pages](https://roy-lab.github.io/SCOTCH/).
