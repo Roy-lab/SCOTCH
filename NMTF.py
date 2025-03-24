@@ -1099,20 +1099,20 @@ class NMTF:
 
     def save_cluster(self):
         """
-               Save cluster assignments and errors for each iteration of the algorithm.
+        Save cluster assignments and errors for each iteration of the algorithm.
 
-               This method initializes tensors to store the cluster assignments for both U and V matrices
-               at each iteration of the algorithm. It also initializes tensors for the Jaccard Index (JI)
-               for both U and V and tracks the relative error over iterations.
+        This method initializes tensors to store the cluster assignments for both U and V matrices
+        at each iteration of the algorithm. It also initializes tensors for the Jaccard Index (JI)
+        for both U and V and tracks the relative error over iterations.
 
-               Steps:
-               1. Initializes tensors for storing U cluster assignments (`U_assign`) and Jaccard Index (`U_JI`).
-               2. Initializes tensors for storing V cluster assignments (`V_assign`) and Jaccard Index (`V_JI`).
-               3. Initializes tensor to store the relative error over iterations (`relative_error`).
+        Steps:
+        1. Initializes tensors for storing U cluster assignments (`U_assign`) and Jaccard Index (`U_JI`).
+        2. Initializes tensors for storing V cluster assignments (`V_assign`) and Jaccard Index (`V_JI`).
+        3. Initializes tensor to store the relative error over iterations (`relative_error`).
 
 
-           Returns:
-               None
+        Returns:
+            None
        """
         self.U_assign = torch.zeros(size=[self.num_u, self.maxIter + 1], dtype=torch.uint8)
         self.U_assign[:, 0] = torch.argmax(self.U, dim=1)
@@ -1161,21 +1161,28 @@ class NMTF:
         """
         This function generates a visual representation of the NMTF factors, allowing users to specify
         the colormap and interpolation method used for image display.
+
         :param cmap: The colormap to be used for visualization. Default is 'viridis'.
         :type cmap: str, optional
+
         :param interp: The interpolation method to be used for image display. Default is 'nearest'.
         :type interp: str, optional
+
         :param max_u: The maximum for color scale. Value between [0, 1] where 1 represents the max value in U.
-        Default is 1.
+            Default is 1.
         :type max_u: float, optional
+
         :param max_v: The maximum for color scale. Value between [0, 1] where 1 represents the max value in V.
-        Default is 1.
+            Default is 1.
         :type max_v: float, optional
+
         :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
-        Default is 1.
+            Default is 1.
         :type max_x: float, optional
+
         :return: U, S, V  matrix heatmaps with X and product.
         :rtype: matplotlib.figure.Figure
+
         """
         fig = plt.figure(figsize=(16, 6))
         grids = GridSpec.GridSpec(2, 3, wspace=0.1, width_ratios=(0.2, 0.4, 0.4), height_ratios=(0.3, 0.7))
@@ -1223,23 +1230,26 @@ class NMTF:
 
     def visualize_factors_sorted(self, cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1):
         """
-            This function generates a visual representation of the NMTF factors, allowing users to specify
-            the colormap and interpolation method used for image display.
-            :param cmap: Colormap for the visualization. Default is 'viridis'.
-            :type cmap: str, optional
-            :param interp: Interpolation method for image display. Default is 'nearest'.
-            :type interp: str, optional
-            :param max_u: The maximum for color scale. Value between [0, 1] where 1 represents the max value in U.
-            Default is 1.
-            :type max_u: float, optional
-            :param max_v: The maximum for color scale. Value between [0, 1] where 1 represents the max value in V.
-            Default is 1.
-            :type max_v: float, optional
-            :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
-            Default is 1.
-            :type max_x: float, optional
-            :return: U, S, V  matrix heatmaps with X and product.
-            :rtype: matplotlib.figure.Figure
+        This function generates a visual representation of the NMTF factors, allowing users to specify
+        the colormap and interpolation method used for image display.
+
+        :param cmap: Colormap for the visualization. Default is 'viridis'.
+        :type cmap: str, optional
+
+        :param interp: Interpolation method for image display. Default is 'nearest'.
+        :type interp: str, optional
+
+        :param max_u: The maximum for color scale. Value between [0, 1] where 1 represents the max value in U. Default is 1.
+        :type max_u: float, optional
+
+        :param max_v: The maximum for color scale. Value between [0, 1] where 1 represents the max value in V. Default is 1.
+        :type max_v: float, optional
+
+        :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X. Default is 1.
+        :type max_x: float, optional
+
+        :return: U, S, V  matrix heatmaps with X and product.
+        :rtype: matplotlib.figure.Figure
         """
         fig = plt.figure(figsize=(16, 6))
         grids = GridSpec.GridSpec(2, 3, wspace=0.1, width_ratios=(0.2, 0.4, 0.4), height_ratios=(0.3, 0.7))
@@ -1525,8 +1535,7 @@ class NMTF:
             :type cmap: str, optional
             :param interp: The interpolation method for rendering the image. Defaults to 'nearest'.
             :type interp: str, optional
-            :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
-                Default is 1.
+            :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.  Default is 1.
             :type max_x: int, optional
             :return: Sorted clusters heatmap representation.
             :rtype: matplotlib.figure.Figure
