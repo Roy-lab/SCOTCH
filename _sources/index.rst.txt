@@ -17,7 +17,7 @@ Examples
 .. toctree::
    :maxdepth: 2
 
-   Example_A
+   run_sim_example
 
 Modules
 -------
