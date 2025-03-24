@@ -18,10 +18,10 @@ A pytorch implementation of the regularized non-negative matrix tri-factorizatio
 ## Methods/Outputs
 The goal of this function is to take a matrix X of dimension n x m and factor it into three matrices, U in n x k1, S in k1 x k2, and V in k2 x m, such that the difference between X and the product U x S x V is minimized. Formally this is resolved by minimizing the objective || X - U S V ||2^2. The program outputs the three product matrices. 
 
-#### Orthoganilty regularization
+### Orthoganilty regularization
 The model allows for the addition of orthoganility regularization on the U and/or the V matrix. The idea of this regularization is to generate unique factors. It is particularly useful in resolving unique clusters from the lower dimensional embedding. It is recommend to put orthoganility reg. on either or both factors such that they are unique. If both are selected, then the S matrix will have more overlap. 
 
-#### Sparsity regularization. 
+### Sparsity regularization. 
 This works simililarly to the ortho regularization. In this case, the number of non-zero entries in each factor in penalized. It again will result in more unique factors although. 
 
 ## Arguments 
