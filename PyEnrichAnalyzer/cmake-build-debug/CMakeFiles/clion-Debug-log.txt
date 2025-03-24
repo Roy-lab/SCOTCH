@@ -1,0 +1,18 @@
+/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/aarch64/ninja -G Ninja -S /Users/shalberg/Desktop/PyEnrichAnalyzer -B /Users/shalberg/Desktop/PyEnrichAnalyzer/cmake-build-debug
+CMake Warning (dev) at /opt/anaconda3/envs/PyEnrichAnalyzer/share/cmake/pybind11/FindPythonLibsNew.cmake:101 (message):
+  Policy CMP0148 is not set: The FindPythonInterp and FindPythonLibs modules
+  are removed.  Run "cmake --help-policy CMP0148" for policy details.  Use
+  the cmake_policy command to set the policy and suppress this warning, or
+  preferably upgrade to using FindPython, either by calling it explicitly
+  before pybind11, or by setting PYBIND11_FINDPYTHON ON before pybind11.
+Call Stack (most recent call first):
+  /opt/anaconda3/envs/PyEnrichAnalyzer/share/cmake/pybind11/pybind11Tools.cmake:50 (find_package)
+  /opt/anaconda3/envs/PyEnrichAnalyzer/share/cmake/pybind11/pybind11Common.cmake:228 (include)
+  /opt/anaconda3/envs/PyEnrichAnalyzer/share/cmake/pybind11/pybind11Config.cmake:250 (include)
+  CMakeLists.txt:24 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found pybind11: /opt/anaconda3/envs/PyEnrichAnalyzer/include (found version "2.13.6")
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/shalberg/Desktop/PyEnrichAnalyzer/cmake-build-debug
