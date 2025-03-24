@@ -1,5 +1,11 @@
 # pyNMTF
 
+Documentation
+
+## Documentation
+You can find the documentation for this project at [GitHub Pages](https://shalberg.github.io/Roy-lab/SCOTCH).
+
+
 ## Description 
 A pytorch implementation of the regularized non-negative matrix tri-factorization algorithm. Compatible with CUDA enabled GPU's. The code was developed in an enviroment with the following packages. This uses the cuda11.6 package.  
 
