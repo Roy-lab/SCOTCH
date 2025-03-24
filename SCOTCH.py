@@ -6,6 +6,7 @@ import numpy as np
 from DataLoader import DataLoader
 from NMTF import NMTF
 import os
+import matplotlib.pyplot as plt
 
 
 class SCOTCH(NMTF):
@@ -196,3 +197,25 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         adata = anndata.AnnData(self.X.numpy())
         adata = self.add_scotch_embeddings_to_adata(adata)
         return adata
+
+    def make_top_regulators_list(self, adata, top_k=5):
+        cluster_gene_idx = [(i, torch.topk(self.V[i, :], top_k).indices.tolist()) for i in range(self.k2)]
+        cluster_gene = []
+        for i, indices in cluster_gene_idx:
+            top_genes = adata.var_names[indices]
+            cluster_gene.append((i, top_genes))
+
+        if self.verbose:
+            for c_g in cluster_gene:
+                print(f"Gene Cluster {c_g[0]}: {c_g[1]}")
+        return cluster_gene
+
+    def write_gene_clusters_to_enrich_analyzer(self, adata, prefix):
+        adata.prefix
+
+
+
+
+
+
+
