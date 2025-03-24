@@ -1157,31 +1157,25 @@ class NMTF:
         """
         return 1 / (1 + np.exp(-shape * (self.citer - mid_iter)))
 
-    def visualize_factors(self, cmap='viridis', interp='nearest', max_u = 1, max_v = 1, max_x = 1):
+    def visualize_factors(self, cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1):
         """
         This function generates a visual representation of the NMTF factors, allowing users to specify
         the colormap and interpolation method used for image display.
-
         :param cmap: The colormap to be used for visualization. Default is 'viridis'.
         :type cmap: str, optional
-
         :param interp: The interpolation method to be used for image display. Default is 'nearest'.
         :type interp: str, optional
-
         :param max_u: The maximum for color scale. Value between [0, 1] where 1 represents the max value in U.
         Default is 1.
         :type max_u: float, optional
-
         :param max_v: The maximum for color scale. Value between [0, 1] where 1 represents the max value in V.
         Default is 1.
         :type max_v: float, optional
-
         :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
         Default is 1.
         :type max_x: float, optional
-
         :return: U, S, V  matrix heatmaps with X and product.
-        :rtype:matplotlib.figure.Figure
+        :rtype: matplotlib.figure.Figure
         """
         fig = plt.figure(figsize=(16, 6))
         grids = GridSpec.GridSpec(2, 3, wspace=0.1, width_ratios=(0.2, 0.4, 0.4), height_ratios=(0.3, 0.7))
@@ -1231,27 +1225,21 @@ class NMTF:
         """
             This function generates a visual representation of the NMTF factors, allowing users to specify
             the colormap and interpolation method used for image display.
-
             :param cmap: Colormap for the visualization. Default is 'viridis'.
             :type cmap: str, optional
-
             :param interp: Interpolation method for image display. Default is 'nearest'.
             :type interp: str, optional
-
             :param max_u: The maximum for color scale. Value between [0, 1] where 1 represents the max value in U.
             Default is 1.
             :type max_u: float, optional
-
             :param max_v: The maximum for color scale. Value between [0, 1] where 1 represents the max value in V.
             Default is 1.
             :type max_v: float, optional
-
             :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
             Default is 1.
             :type max_x: float, optional
-
             :return: U, S, V  matrix heatmaps with X and product.
-            :rtype:matplotlib.figure.Figure
+            :rtype: matplotlib.figure.Figure
         """
         fig = plt.figure(figsize=(16, 6))
         grids = GridSpec.GridSpec(2, 3, wspace=0.1, width_ratios=(0.2, 0.4, 0.4), height_ratios=(0.3, 0.7))
@@ -1465,23 +1453,25 @@ class NMTF:
 
     def visualize_clusters(self, cmap='viridis', interp='nearest', max_x=1):
         """
-                Visualizes the cluster assignments.
+        Visualizes the factors from the NMTF model.
 
-                This function generates a visualization of the cluster assignments, where each cluster is represented by a
-                distinct color. The visualization uses the specified colormap and interpolation method for rendering.
+        This function generates a visualization of the factors resulting from the NMTF model. It supports customizing the
+        color scheme, interpolation method, and the scaling of the visualization.
 
-                :param cmap: The colormap to be used for visualizing clusters. Default is 'viridis'.
-                :type cmap: str, optional
+        :param factor_name: The name of the factor to visualize (e.g., 'U', 'V').
+        :type factor_name: str
 
-                :param interp: The interpolation method for image rendering. Default is 'nearest'.
-                :type interp: str, optional
+        :param cmap: The colormap to use for the visualization. Default is 'viridis'.
+        :type cmap: str, optional
 
-                :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
-                Default is 1.
-                :type max_x: int, optional
+        :param interp: The interpolation method for rendering. Default is 'nearest'.
+        :type interp: str, optional
 
-                :return: Heatmap representation of cluster assignments for U and V, with values of X.
-                :rtype:matplotlib.figure.Figure
+        :param max_val: The maximum value for scaling the color map. Default is 1.
+        :type max_val: float, optional
+
+        :return: The matplotlib figure object representing the factor visualization.
+        :rtype: matplotlib.figure.Figure
         """
         fig = plt.figure(figsize=(8, 6))
         grids = GridSpec.GridSpec(2, 2, hspace=0.1, wspace=0.1, width_ratios=(0.05, 0.95), height_ratios=(0.05, 0.95))
@@ -1525,24 +1515,21 @@ class NMTF:
 
     def visualize_clusters_sorted(self, cmap='viridis', interp='nearest', max_x=1):
         """
-                Visualizes the clusters by ordering elements of the matrix based on their cluster assignments.
+            Visualizes the clusters by ordering elements of the matrix based on their cluster assignments.
 
-                The function sorts the elements of the matrix by their cluster order and alternates the color of each
+            The function sorts the elements of the matrix by their cluster order and alternates the color of each
                 cluster between grey and black. This approach avoids potential issues with limited color palettes, ensuring
                 better visual distinction between clusters.
 
-                :param cmap: The colormap to be used for visualization. Defaults to 'viridis'.
-                :type cmap: str, optional
-
-                :param interp: The interpolation method for rendering the image. Defaults to 'nearest'.
-                :type interp: str, optional
-
-                :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
+            :param cmap: The colormap to be used for visualization. Defaults to 'viridis'.
+            :type cmap: str, optional
+            :param interp: The interpolation method for rendering the image. Defaults to 'nearest'.
+            :type interp: str, optional
+            :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
                 Default is 1.
-                :type max_x: int, optional
-
-                :return: Sorted clusters heatmap representation.
-                :rtype: matplotlib.figure.Figure
+            :type max_x: int, optional
+            :return: Sorted clusters heatmap representation.
+            :rtype: matplotlib.figure.Figure
         """
         fig = plt.figure(figsize=(8, 6))
         grids = GridSpec.GridSpec(2, 2, hspace=0.1, wspace=0.1, width_ratios=(0.05, 0.95), height_ratios=(0.05, 0.95))
@@ -1585,16 +1572,6 @@ class NMTF:
         ax5.set_axis_off()
         plt.close(fig)
         return fig
-
-    def row_normalize_u_values(self):
-        row_norm_U = np.linalg.norm(self.U, axis=1, keepdims=True)
-        row_norm_V = np.linalg.norm(self.V, axis=0, keepdims=True)
-
-        D_U = np.diag(row_norm_U.flatten())
-        D_V = np.diag(row_norm_V.flatten())
-
-        self.U = self.U / row_norm_U
-        self.V = self.V / row_norm_V
 
 
 

@@ -1,0 +1,243 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="Python" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCOTCH module &mdash; SCOTCH &#39;1.1.0&#39; documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=0398fb1d"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="initialize module" href="initialize.html" />
+    <link rel="prev" title="NMTF module" href="NMTF.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SCOTCH
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">pyNMTF</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Example_A.html">Running SCOTCH on Simulated Data</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">SCOTCH</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="NMTF.html">NMTF module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SCOTCH module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#SCOTCH.SCOTCH"><code class="docutils literal notranslate"><span class="pre">SCOTCH</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#SCOTCH.SCOTCH.add_data_from_adata"><code class="docutils literal notranslate"><span class="pre">SCOTCH.add_data_from_adata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SCOTCH.SCOTCH.add_data_from_file"><code class="docutils literal notranslate"><span class="pre">SCOTCH.add_data_from_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SCOTCH.SCOTCH.add_scotch_embeddings_to_adata"><code class="docutils literal notranslate"><span class="pre">SCOTCH.add_scotch_embeddings_to_adata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SCOTCH.SCOTCH.make_adata_from_scotch"><code class="docutils literal notranslate"><span class="pre">SCOTCH.make_adata_from_scotch()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="initialize.html">initialize module</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">Utility Functions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SCOTCH</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">SCOTCH</a></li>
+      <li class="breadcrumb-item active">SCOTCH module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/SCOTCH.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-SCOTCH">
+<span id="scotch-module"></span><h1>SCOTCH module<a class="headerlink" href="#module-SCOTCH" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SCOTCH.</span></span><span class="sig-name descname"><span class="pre">SCOTCH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_l_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_l_v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_a_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_a_v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_lambda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_epoch_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_clust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">draw_intermediate_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_intermediate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_objective</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kill_factors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="NMTF.html#NMTF.NMTF" title="NMTF.NMTF"><code class="xref py py-class docutils literal notranslate"><span class="pre">NMTF</span></code></a></p>
+<section id="scotch-class">
+<h2>SCOTCH Class<a class="headerlink" href="#scotch-class" title="Link to this heading"></a></h2>
+<p>The <cite>SCOTCH</cite> class extends from the <cite>NMTF</cite> class. It has a specific <cite>__init__</cite> method with several input parameters. The only required inputs are <cite>k1</cite> and <cite>k2</cite>.</p>
+<p><strong>__init__ Input Parameters:</strong></p>
+<ul class="simple">
+<li><p><strong>k1, k2</strong> (<em>int</em>):
+Lower dimension size of <cite>U</cite> and <cite>V</cite>. <em>(required)</em></p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>, optional):
+If <cite>True</cite>, prints messages. <em>(default: True)</em></p></li>
+<li><p><strong>max_iter</strong> (<em>int</em>, optional):
+Maximum number of iterations. <em>(default: 100)</em></p></li>
+<li><p><strong>seed</strong> (<em>int</em>, optional):
+Random seed for initialization. <em>(default: 1001)</em></p></li>
+<li><p><strong>term_tol</strong> (<em>float</em>, optional):
+Relative error threshold for convergence. <em>(default: 1e-5)</em></p></li>
+<li><p><strong>max_l_u</strong> (<em>float</em>, optional):
+Maximum regularization on <cite>U</cite>. <em>(default: 0)</em></p></li>
+<li><p><strong>max_l_v</strong> (<em>float</em>, optional):
+Maximum regularization on <cite>V</cite>. <em>(default: 0)</em></p></li>
+<li><p><strong>max_a_u</strong> (<em>float</em>, optional):
+Maximum sparse regularization on <cite>U</cite>. <em>(default: 0, change at own risk)</em></p></li>
+<li><p><strong>max_a_v</strong> (<em>float</em>, optional):
+Maximum sparse regularization on <cite>V</cite>. <em>(default: 0, change at own risk)</em></p></li>
+<li><p><strong>var_lambda</strong> (<em>bool</em>, optional):
+If <cite>True</cite>, the regularization parameters <cite>l_U</cite> and <cite>l_V</cite> increase to max value using a sigmoid scheduler. Generally set to <cite>False</cite>. <em>(default: False)</em></p></li>
+<li><p><strong>var_alpha</strong> (<em>bool</em>, optional):
+If <cite>True</cite>, the regularization parameters <cite>a_U</cite> and <cite>a_V</cite> increase to max value using a sigmoid scheduler. Generally set to <cite>False</cite>. <em>(default: False)</em></p></li>
+<li><p><strong>shape_param</strong> (<em>float</em>, optional):
+Controls the rate of increase for <cite>l_U</cite>, <cite>l_V</cite>, <cite>a_U</cite>, and <cite>a_V</cite> when <cite>var_lambda=True</cite>. <em>(default: 10)</em></p></li>
+<li><p><strong>mid_epoch_param</strong> (<em>int</em>, optional):
+Sets the epoch where <cite>l_U</cite>, <cite>l_V</cite>, <cite>a_U</cite>, and <cite>a_V</cite> reach half of their max values if <cite>var_lambda=True</cite>. <em>(default: 5)</em></p></li>
+<li><p><strong>init_style</strong> (<em>str</em>, optional):
+Initialization method for SCOTCH. Should be either <cite>&quot;random&quot;</cite> or <cite>&quot;nnsvd&quot;</cite>. <em>(default: &quot;random&quot;)</em></p></li>
+<li><p><strong>save_clust</strong> (<em>bool</em>, optional):
+Whether to save cluster assignments after each epoch. <em>(default: False)</em></p></li>
+<li><p><strong>draw_intermediate_graph</strong> (<em>bool</em>, optional):
+If <cite>True</cite>, draws and saves the matrix representation after each epoch. These can be saved as a GIF. <em>(default: False)</em></p></li>
+<li><p><strong>track_objective</strong> (<em>bool</em>, deprecated):
+<em>(default: False)</em></p></li>
+<li><p><strong>kill_factors</strong> (<em>bool</em>, optional):
+If <cite>True</cite>, SCOTCH will halt updates if any factors in <cite>U</cite> and <cite>V</cite> reach zero. <em>(default: False)</em></p></li>
+<li><p><strong>device</strong> (<em>str</em>, optional):
+Specifies the device to run SCOTCH on: <cite>&quot;cpu&quot;</cite> or <cite>&quot;cuda:&quot;</cite>. <em>(default: &quot;cpu&quot;)</em></p></li>
+<li><p><strong>out_path</strong> (<em>str</em>, optional):
+Directory to save SCOTCH output files. <em>(default: '.')</em></p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.add_data_from_adata">
+<span class="sig-name descname"><span class="pre">add_data_from_adata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.add_data_from_adata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.add_data_from_adata" title="Link to this definition"></a></dt>
+<dd><p>Loads data from AnnData object into SCOTCH framework.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>adata</strong> (<em>anndata.AnnData</em>) -- anndata.AnnData object to extract data from. Transforms adata.X to PyTorch object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.add_data_from_file">
+<span class="sig-name descname"><span class="pre">add_data_from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.add_data_from_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.add_data_from_file" title="Link to this definition"></a></dt>
+<dd><p>Loads matrix representation into PyTorch tensor object to run with SCOTCH.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file</strong> (<em>str</em>) -- The file path to load data from and should have the valid extensions like '.pt', '.txt', or '.h5ad'.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.add_scotch_embeddings_to_adata">
+<span class="sig-name descname"><span class="pre">add_scotch_embeddings_to_adata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.add_scotch_embeddings_to_adata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.add_scotch_embeddings_to_adata" title="Link to this definition"></a></dt>
+<dd><p>Adds SCOTCH objects to an AnnData object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> (<em>str</em>) -- Prefix to add to AnnData objects created by SCOTCH.</p></li>
+<li><p><strong>adata</strong> (<em>anndata.AnnData</em>) -- The AnnData object to which SCOTCH embeddings will be added.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.make_adata_from_scotch">
+<span class="sig-name descname"><span class="pre">make_adata_from_scotch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.make_adata_from_scotch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.make_adata_from_scotch" title="Link to this definition"></a></dt>
+<dd><p>Create an AnnData object from the given data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> (<em>object</em>) -- The instance of the class containing the data.</p></li>
+<li><p><strong>prefix</strong> (<em>str</em>) -- A string appended to the generated AnnData objects.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An AnnData object containing the processed data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>anndata.AnnData</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="NMTF.html" class="btn btn-neutral float-left" title="NMTF module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="initialize.html" class="btn btn-neutral float-right" title="initialize module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Spencer Halberg-Spencer, Harmon Bhasin, Sushmita Roy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

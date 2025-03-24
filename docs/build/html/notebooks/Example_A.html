@@ -1,0 +1,694 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="Python" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Running SCOTCH on Simulated Data &mdash; SCOTCH &#39;1.1.0&#39; documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=0398fb1d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SCOTCH
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">pyNMTF</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Example_A.html">Running SCOTCH on Simulated Data</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">SCOTCH</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../utilities.html">Utility Functions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SCOTCH</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Running SCOTCH on Simulated Data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notebooks/Example_A.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">SCOTCH</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">anndata</span> <span class="k">as</span> <span class="nn">ad</span>
+<span class="kn">import</span> <span class="nn">scanpy</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+<section id="Running-SCOTCH-on-Simulated-Data">
+<h1>Running SCOTCH on Simulated Data<a class="headerlink" href="#Running-SCOTCH-on-Simulated-Data" title="Link to this heading"></a></h1>
+<p>This notebook is an example of utilizing SCOTCH to factor an example matrix, with a generated block structure. The matrix is found in the text &quot;test/A.txt&quot;. The matrix contains 500 rows and 1000 columns. The matrix naturally can be factorized into 3 row clusters and 9 column clusters. In the code block below, we load the A matrix into a pandas dataframe and visualize the heatmap.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;test/A.txt&quot;</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_A_3_0.png" src="../_images/notebooks_Example_A_3_0.png" />
+</div>
+</div>
+<p>SCOTCH interfaces with anndata structure to perform its . In the next code block we convert A into an anndata object and initialize a scotch object. For the first factor example, we are using <span class="math notranslate nohighlight">\(k1=3\)</span>, and <span class="math notranslate nohighlight">\(k2 = 9\)</span>. These are the expected number of row and column clusters respectively. <span class="math notranslate nohighlight">\(max\_l\_u\)</span> and <span class="math notranslate nohighlight">\(max\_l\_v\)</span> corresponds to the orthogonal regularization parameter. In general, it is recommended to use regularization with scotch. We are running it without regularization
+in the context to demonstrate the poor clustering performance and to estimate the error associated NMTF without regularization.</p>
+<p>An explanation of the remaining parameters is below:</p>
+<ul class="simple">
+<li><p>var_lambda: SCOTCH allows for a ramping of the regularization parameters using a sigmoid scheduler. In general this is not need to determine good clusters and embeddings. By setting this to False, the max_l_u and max_l_v values are used for all interactions of the update.</p></li>
+<li><p>device: SCOTCH updates are GPU enabled for reasonably sized feature matrices. If using a GPU this should point to the name of the GPU device.</p></li>
+<li><p>init_style: SCOTCH supports multiple different NM(T)F initializations. Here we are initializing all elements of <span class="math notranslate nohighlight">\(U\)</span>, <span class="math notranslate nohighlight">\(V\)</span>, and <span class="math notranslate nohighlight">\(S\)</span>. Other supported values of this parameter are &quot;nnsvd&quot; for non-negative SVD initialization.</p></li>
+<li><p>draw_intermediate_graph: This parameter allows for visualization of the factors and estimates during the SCOTCH update. Each full update of <span class="math notranslate nohighlight">\(U\)</span>, <span class="math notranslate nohighlight">\(S\)</span>, and <span class="math notranslate nohighlight">\(V\)</span> are captured into a frame and stitched together and can be stitched into a GIF. Including this parameter does slow down the update especially for large expression matrices.</p></li>
+</ul>
+<p>After initializing SCOTCH, we add the data from adata object to scotch for factorization.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata</span> <span class="o">=</span> <span class="n">ad</span><span class="o">.</span><span class="n">AnnData</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="n">scotch</span> <span class="o">=</span> <span class="n">SCOTCH</span><span class="o">.</span><span class="n">SCOTCH</span><span class="p">(</span><span class="n">k1</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">k2</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">max_l_u</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">max_l_v</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">term_tol</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">var_lambda</span><span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">init_style</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="n">draw_intermediate_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">scotch</span><span class="o">.</span><span class="n">add_data_from_adata</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/opt/anaconda3/envs/Pytorch/lib/python3.9/site-packages/anndata/_core/aligned_df.py:67: ImplicitModificationWarning: Transforming to str index.
+  warnings.warn(&#34;Transforming to str index.&#34;, ImplicitModificationWarning)
+/opt/anaconda3/envs/Pytorch/lib/python3.9/site-packages/anndata/_core/aligned_df.py:67: ImplicitModificationWarning: Transforming to str index.
+  warnings.warn(&#34;Transforming to str index.&#34;, ImplicitModificationWarning)
+</pre></div></div>
+</div>
+<p>This block runs SCOTCH. If the verbose SCOTCH input parameter The following information is printed for each iteration:</p>
+<ul class="simple">
+<li><p>Iter - the current interation that is being run.</p></li>
+<li><p>Iter time - The time that it took to complete the iteration. Iteration 1 generally takes longer than all other iters due to some initialization at the beginning of SCOTCH.</p></li>
+<li><p>Total time - the current run time.</p></li>
+<li><p>Objective - An estimate of the objective.</p></li>
+<li><p>Relative Delta Objective - The change relative in the objective from the previous iteration. When this value is less that term_tol, and greater than zero the algorithm with stop.</p></li>
+<li><p>Reconstruction error - This is the component of the objective related to <span class="math notranslate nohighlight">\(|| X - USV^T ||_F^2\)</span>. This value is comparable across different random initialization or with different regularization parameters.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scotch</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Initializing NMTF factors
+Beginning NMTF
+Iter: 1 Iter Time: 0.223        Total Time: 0.223       Objective: 8.195e+06    Relative Delta Objective: 2.086e-01     Reconstruction Error: 8.195e+06
+Iter: 2 Iter Time: 0.065        Total Time: 0.288       Objective: 8.021e+06    Relative Delta Objective: 2.124e-02     Reconstruction Error: 8.021e+06
+Iter: 3 Iter Time: 0.060        Total Time: 0.348       Objective: 7.722e+06    Relative Delta Objective: 3.729e-02     Reconstruction Error: 7.722e+06
+Iter: 4 Iter Time: 0.056        Total Time: 0.404       Objective: 7.339e+06    Relative Delta Objective: 4.962e-02     Reconstruction Error: 7.339e+06
+Iter: 5 Iter Time: 0.063        Total Time: 0.466       Objective: 7.143e+06    Relative Delta Objective: 2.665e-02     Reconstruction Error: 7.143e+06
+Iter: 6 Iter Time: 0.046        Total Time: 0.513       Objective: 6.968e+06    Relative Delta Objective: 2.456e-02     Reconstruction Error: 6.968e+06
+Iter: 7 Iter Time: 0.053        Total Time: 0.566       Objective: 6.861e+06    Relative Delta Objective: 1.528e-02     Reconstruction Error: 6.861e+06
+Iter: 8 Iter Time: 0.053        Total Time: 0.619       Objective: 6.824e+06    Relative Delta Objective: 5.451e-03     Reconstruction Error: 6.824e+06
+Iter: 9 Iter Time: 0.136        Total Time: 0.755       Objective: 6.812e+06    Relative Delta Objective: 1.791e-03     Reconstruction Error: 6.812e+06
+Iter: 10        Iter Time: 0.048        Total Time: 0.803       Objective: 6.807e+06    Relative Delta Objective: 6.477e-04     Reconstruction Error: 6.807e+06
+Iter: 11        Iter Time: 0.053        Total Time: 0.856       Objective: 6.806e+06    Relative Delta Objective: 2.322e-04     Reconstruction Error: 6.806e+06
+Iter: 12        Iter Time: 0.048        Total Time: 0.904       Objective: 6.805e+06    Relative Delta Objective: 9.426e-05     Reconstruction Error: 6.805e+06
+Iter: 13        Iter Time: 0.046        Total Time: 0.950       Objective: 6.805e+06    Relative Delta Objective: 4.372e-05     Reconstruction Error: 6.805e+06
+Iter: 14        Iter Time: 0.048        Total Time: 0.998       Objective: 6.804e+06    Relative Delta Objective: 2.271e-05     Reconstruction Error: 6.804e+06
+Iter: 15        Iter Time: 0.046        Total Time: 1.044       Objective: 6.804e+06    Relative Delta Objective: 1.279e-05     Reconstruction Error: 6.804e+06
+Iter: 16        Iter Time: 0.054        Total Time: 1.098       Objective: 6.804e+06    Relative Delta Objective: 7.495e-06     Reconstruction Error: 6.804e+06
+Iter: 17        Iter Time: 0.054        Total Time: 1.152       Objective: 6.804e+06    Relative Delta Objective: 4.556e-06     Reconstruction Error: 6.804e+06
+Iter: 18        Iter Time: 0.055        Total Time: 1.206       Objective: 6.804e+06    Relative Delta Objective: 2.719e-06     Reconstruction Error: 6.804e+06
+Iter: 19        Iter Time: 0.055        Total Time: 1.261       Objective: 6.804e+06    Relative Delta Objective: 1.690e-06     Reconstruction Error: 6.804e+06
+Iter: 20        Iter Time: 0.044        Total Time: 1.305       Objective: 6.804e+06    Relative Delta Objective: 1.029e-06     Reconstruction Error: 6.804e+06
+Iter: 21        Iter Time: 0.045        Total Time: 1.350       Objective: 6.804e+06    Relative Delta Objective: 6.614e-07     Reconstruction Error: 6.804e+06
+Iter: 22        Iter Time: 0.141        Total Time: 1.491       Objective: 6.804e+06    Relative Delta Objective: 3.674e-07     Reconstruction Error: 6.804e+06
+Iter: 23        Iter Time: 0.045        Total Time: 1.536       Objective: 6.804e+06    Relative Delta Objective: 2.205e-07     Reconstruction Error: 6.804e+06
+Iter: 24        Iter Time: 0.041        Total Time: 1.577       Objective: 6.804e+06    Relative Delta Objective: 1.470e-07     Reconstruction Error: 6.804e+06
+Iter: 25        Iter Time: 0.045        Total Time: 1.622       Objective: 6.804e+06    Relative Delta Objective: 1.470e-07     Reconstruction Error: 6.804e+06
+Iter: 26        Iter Time: 0.045        Total Time: 1.667       Objective: 6.804e+06    Relative Delta Objective: 0.000e+00     Reconstruction Error: 6.804e+06
+</pre></div></div>
+</div>
+<p>If the draw_intermediate_graph is set to true, you can write a gif using the following function after initialization. It is saved to the SCOTCH output directory, under the following file name.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scotch</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s1">&#39;NMTF_no_reg.gif&#39;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+writing gif to ./NMTF_no_reg.gif
+</pre></div></div>
+</div>
+<p><img alt="NMTF with no regularization" src="../_images/NMTF_lU_lV_0.15.gif" /></p>
+<p>In this context, without regularilization, the SCOTCH fit is roughly equivelent to the NMF fit. First the three U factors, are related to a single V factor (this is indicated by the three bright values of the S matrix). Each of the three main factors of V represent the mean profile of each of the correspond cell blocks. The remaining factors of V (3-8) are contributing little to the estimation scheme). Below we repeat the SCOTCH runs with regularization. The value of lambda can range from
+<span class="math notranslate nohighlight">\([0, 1]\)</span> but in practice we find that the values between <span class="math notranslate nohighlight">\(0.05\)</span> and <span class="math notranslate nohighlight">\(0.20\)</span> produce orthogonal vector representations of U and V without drastically increasing the reconstructions error.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scotch</span> <span class="o">=</span> <span class="n">SCOTCH</span><span class="o">.</span><span class="n">SCOTCH</span><span class="p">(</span><span class="n">k1</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">k2</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">max_l_u</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span> <span class="n">max_l_v</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span> <span class="n">term_tol</span> <span class="o">=</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="n">var_lambda</span><span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">init_style</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">scotch</span><span class="o">.</span><span class="n">draw_intermediate_graph</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">scotch</span><span class="o">.</span><span class="n">add_data_from_adata</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+<span class="n">scotch</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Initializing NMTF factors
+Beginning NMTF
+Iter: 1 Iter Time: 0.087        Total Time: 0.087       Objective: 8.179e+06    Relative Delta Objective: 2.102e-01     Reconstruction Error: 8.179e+06
+Iter: 2 Iter Time: 0.069        Total Time: 0.156       Objective: 7.971e+06    Relative Delta Objective: 2.539e-02     Reconstruction Error: 7.971e+06
+Iter: 3 Iter Time: 0.053        Total Time: 0.209       Objective: 7.528e+06    Relative Delta Objective: 5.562e-02     Reconstruction Error: 7.528e+06
+Iter: 4 Iter Time: 0.055        Total Time: 0.264       Objective: 7.331e+06    Relative Delta Objective: 2.615e-02     Reconstruction Error: 7.331e+06
+Iter: 5 Iter Time: 0.047        Total Time: 0.311       Objective: 7.228e+06    Relative Delta Objective: 1.402e-02     Reconstruction Error: 7.228e+06
+Iter: 6 Iter Time: 0.044        Total Time: 0.355       Objective: 7.122e+06    Relative Delta Objective: 1.468e-02     Reconstruction Error: 7.122e+06
+Iter: 7 Iter Time: 0.049        Total Time: 0.404       Objective: 6.987e+06    Relative Delta Objective: 1.901e-02     Reconstruction Error: 6.987e+06
+Iter: 8 Iter Time: 0.058        Total Time: 0.462       Objective: 6.889e+06    Relative Delta Objective: 1.402e-02     Reconstruction Error: 6.889e+06
+Iter: 9 Iter Time: 0.047        Total Time: 0.510       Objective: 6.861e+06    Relative Delta Objective: 4.105e-03     Reconstruction Error: 6.861e+06
+Iter: 10        Iter Time: 0.049        Total Time: 0.559       Objective: 6.855e+06    Relative Delta Objective: 7.902e-04     Reconstruction Error: 6.855e+06
+Iter: 11        Iter Time: 0.206        Total Time: 0.765       Objective: 6.856e+06    Relative Delta Objective: -1.282e-04    Reconstruction Error: 6.856e+06
+Iter: 12        Iter Time: 0.056        Total Time: 0.821       Objective: 6.858e+06    Relative Delta Objective: -2.930e-04    Reconstruction Error: 6.858e+06
+Iter: 13        Iter Time: 0.051        Total Time: 0.872       Objective: 6.859e+06    Relative Delta Objective: -1.691e-04    Reconstruction Error: 6.859e+06
+Iter: 14        Iter Time: 0.049        Total Time: 0.921       Objective: 6.860e+06    Relative Delta Objective: -6.014e-05    Reconstruction Error: 6.860e+06
+Iter: 15        Iter Time: 0.043        Total Time: 0.964       Objective: 6.860e+06    Relative Delta Objective: -6.232e-05    Reconstruction Error: 6.860e+06
+Iter: 16        Iter Time: 0.074        Total Time: 1.038       Objective: 6.861e+06    Relative Delta Objective: -1.389e-04    Reconstruction Error: 6.861e+06
+Iter: 17        Iter Time: 0.069        Total Time: 1.107       Objective: 6.861e+06    Relative Delta Objective: -1.100e-05    Reconstruction Error: 6.861e+06
+Iter: 18        Iter Time: 0.052        Total Time: 1.159       Objective: 6.861e+06    Relative Delta Objective: -1.377e-05    Reconstruction Error: 6.861e+06
+Iter: 19        Iter Time: 0.048        Total Time: 1.208       Objective: 6.861e+06    Relative Delta Objective: 9.036e-06     Reconstruction Error: 6.861e+06
+Iter: 20        Iter Time: 0.047        Total Time: 1.255       Objective: 6.861e+06    Relative Delta Objective: 5.750e-05     Reconstruction Error: 6.861e+06
+Iter: 21        Iter Time: 0.048        Total Time: 1.303       Objective: 6.860e+06    Relative Delta Objective: 8.345e-05     Reconstruction Error: 6.860e+06
+Iter: 22        Iter Time: 0.048        Total Time: 1.351       Objective: 6.859e+06    Relative Delta Objective: 1.003e-04     Reconstruction Error: 6.859e+06
+Iter: 23        Iter Time: 0.052        Total Time: 1.403       Objective: 6.859e+06    Relative Delta Objective: 2.872e-05     Reconstruction Error: 6.859e+06
+Iter: 24        Iter Time: 0.047        Total Time: 1.449       Objective: 6.859e+06    Relative Delta Objective: -3.572e-06    Reconstruction Error: 6.859e+06
+Iter: 25        Iter Time: 0.136        Total Time: 1.585       Objective: 6.859e+06    Relative Delta Objective: -1.174e-05    Reconstruction Error: 6.859e+06
+Iter: 26        Iter Time: 0.045        Total Time: 1.630       Objective: 6.859e+06    Relative Delta Objective: -2.435e-05    Reconstruction Error: 6.859e+06
+Iter: 27        Iter Time: 0.053        Total Time: 1.683       Objective: 6.860e+06    Relative Delta Objective: -6.896e-05    Reconstruction Error: 6.860e+06
+Iter: 28        Iter Time: 0.043        Total Time: 1.726       Objective: 6.860e+06    Relative Delta Objective: -7.471e-05    Reconstruction Error: 6.860e+06
+Iter: 29        Iter Time: 0.044        Total Time: 1.771       Objective: 6.861e+06    Relative Delta Objective: -9.132e-05    Reconstruction Error: 6.861e+06
+Iter: 30        Iter Time: 0.051        Total Time: 1.821       Objective: 6.862e+06    Relative Delta Objective: -7.572e-05    Reconstruction Error: 6.862e+06
+Iter: 31        Iter Time: 0.048        Total Time: 1.870       Objective: 6.862e+06    Relative Delta Objective: -6.281e-05    Reconstruction Error: 6.862e+06
+Iter: 32        Iter Time: 0.045        Total Time: 1.914       Objective: 6.862e+06    Relative Delta Objective: -5.326e-05    Reconstruction Error: 6.862e+06
+Iter: 33        Iter Time: 0.044        Total Time: 1.958       Objective: 6.863e+06    Relative Delta Objective: -5.727e-05    Reconstruction Error: 6.863e+06
+Iter: 34        Iter Time: 0.042        Total Time: 2.000       Objective: 6.863e+06    Relative Delta Objective: -3.096e-05    Reconstruction Error: 6.863e+06
+Iter: 35        Iter Time: 0.044        Total Time: 2.043       Objective: 6.863e+06    Relative Delta Objective: -2.477e-06    Reconstruction Error: 6.863e+06
+Iter: 36        Iter Time: 0.051        Total Time: 2.094       Objective: 6.863e+06    Relative Delta Objective: -3.278e-06    Reconstruction Error: 6.863e+06
+Iter: 37        Iter Time: 0.046        Total Time: 2.140       Objective: 6.863e+06    Relative Delta Objective: 1.683e-05     Reconstruction Error: 6.863e+06
+Iter: 38        Iter Time: 0.051        Total Time: 2.191       Objective: 6.863e+06    Relative Delta Objective: 3.825e-05     Reconstruction Error: 6.863e+06
+Iter: 39        Iter Time: 0.047        Total Time: 2.238       Objective: 6.862e+06    Relative Delta Objective: 5.923e-05     Reconstruction Error: 6.862e+06
+Iter: 40        Iter Time: 0.062        Total Time: 2.300       Objective: 6.862e+06    Relative Delta Objective: 4.794e-05     Reconstruction Error: 6.862e+06
+Iter: 41        Iter Time: 0.045        Total Time: 2.345       Objective: 6.862e+06    Relative Delta Objective: 4.241e-05     Reconstruction Error: 6.862e+06
+Iter: 42        Iter Time: 0.042        Total Time: 2.386       Objective: 6.862e+06    Relative Delta Objective: -3.133e-06    Reconstruction Error: 6.862e+06
+Iter: 43        Iter Time: 0.157        Total Time: 2.543       Objective: 6.862e+06    Relative Delta Objective: -4.154e-05    Reconstruction Error: 6.862e+06
+Iter: 44        Iter Time: 0.050        Total Time: 2.593       Objective: 6.862e+06    Relative Delta Objective: -6.062e-05    Reconstruction Error: 6.862e+06
+Iter: 45        Iter Time: 0.069        Total Time: 2.662       Objective: 6.863e+06    Relative Delta Objective: -7.935e-05    Reconstruction Error: 6.863e+06
+Iter: 46        Iter Time: 0.060        Total Time: 2.722       Objective: 6.863e+06    Relative Delta Objective: -7.045e-05    Reconstruction Error: 6.863e+06
+Iter: 47        Iter Time: 0.046        Total Time: 2.768       Objective: 6.864e+06    Relative Delta Objective: -7.059e-05    Reconstruction Error: 6.864e+06
+Iter: 48        Iter Time: 0.043        Total Time: 2.811       Objective: 6.864e+06    Relative Delta Objective: -4.910e-05    Reconstruction Error: 6.864e+06
+Iter: 49        Iter Time: 0.047        Total Time: 2.858       Objective: 6.864e+06    Relative Delta Objective: -4.167e-05    Reconstruction Error: 6.864e+06
+Iter: 50        Iter Time: 0.043        Total Time: 2.901       Objective: 6.865e+06    Relative Delta Objective: -2.739e-05    Reconstruction Error: 6.865e+06
+Iter: 51        Iter Time: 0.049        Total Time: 2.950       Objective: 6.865e+06    Relative Delta Objective: -4.326e-05    Reconstruction Error: 6.865e+06
+Iter: 52        Iter Time: 0.046        Total Time: 2.996       Objective: 6.865e+06    Relative Delta Objective: -3.853e-05    Reconstruction Error: 6.865e+06
+Iter: 53        Iter Time: 0.061        Total Time: 3.057       Objective: 6.866e+06    Relative Delta Objective: -4.049e-05    Reconstruction Error: 6.866e+06
+Iter: 54        Iter Time: 0.046        Total Time: 3.103       Objective: 6.866e+06    Relative Delta Objective: -4.311e-05    Reconstruction Error: 6.866e+06
+Iter: 55        Iter Time: 0.047        Total Time: 3.151       Objective: 6.866e+06    Relative Delta Objective: -5.302e-05    Reconstruction Error: 6.866e+06
+Iter: 56        Iter Time: 0.054        Total Time: 3.205       Objective: 6.867e+06    Relative Delta Objective: -5.229e-05    Reconstruction Error: 6.867e+06
+Iter: 57        Iter Time: 0.049        Total Time: 3.254       Objective: 6.867e+06    Relative Delta Objective: -5.330e-05    Reconstruction Error: 6.867e+06
+Iter: 58        Iter Time: 0.048        Total Time: 3.302       Objective: 6.867e+06    Relative Delta Objective: -5.410e-05    Reconstruction Error: 6.867e+06
+Iter: 59        Iter Time: 0.050        Total Time: 3.353       Objective: 6.868e+06    Relative Delta Objective: -5.359e-05    Reconstruction Error: 6.868e+06
+Iter: 60        Iter Time: 0.064        Total Time: 3.417       Objective: 6.868e+06    Relative Delta Objective: -4.740e-05    Reconstruction Error: 6.868e+06
+Iter: 61        Iter Time: 0.058        Total Time: 3.475       Objective: 6.868e+06    Relative Delta Objective: -4.186e-05    Reconstruction Error: 6.868e+06
+Iter: 62        Iter Time: 0.047        Total Time: 3.522       Objective: 6.869e+06    Relative Delta Objective: -3.756e-05    Reconstruction Error: 6.869e+06
+Iter: 63        Iter Time: 0.051        Total Time: 3.573       Objective: 6.869e+06    Relative Delta Objective: -3.290e-05    Reconstruction Error: 6.869e+06
+Iter: 64        Iter Time: 0.064        Total Time: 3.637       Objective: 6.869e+06    Relative Delta Objective: -2.977e-05    Reconstruction Error: 6.869e+06
+Iter: 65        Iter Time: 0.174        Total Time: 3.811       Objective: 6.869e+06    Relative Delta Objective: -2.875e-05    Reconstruction Error: 6.869e+06
+Iter: 66        Iter Time: 0.048        Total Time: 3.859       Objective: 6.869e+06    Relative Delta Objective: -2.744e-05    Reconstruction Error: 6.869e+06
+Iter: 67        Iter Time: 0.047        Total Time: 3.905       Objective: 6.869e+06    Relative Delta Objective: -2.213e-05    Reconstruction Error: 6.869e+06
+Iter: 68        Iter Time: 0.050        Total Time: 3.955       Objective: 6.870e+06    Relative Delta Objective: -1.885e-05    Reconstruction Error: 6.870e+06
+Iter: 69        Iter Time: 0.043        Total Time: 3.998       Objective: 6.870e+06    Relative Delta Objective: -1.892e-05    Reconstruction Error: 6.870e+06
+Iter: 70        Iter Time: 0.041        Total Time: 4.039       Objective: 6.870e+06    Relative Delta Objective: -1.885e-05    Reconstruction Error: 6.870e+06
+Iter: 71        Iter Time: 0.040        Total Time: 4.079       Objective: 6.870e+06    Relative Delta Objective: -1.958e-05    Reconstruction Error: 6.870e+06
+Iter: 72        Iter Time: 0.043        Total Time: 4.122       Objective: 6.870e+06    Relative Delta Objective: -1.870e-05    Reconstruction Error: 6.870e+06
+Iter: 73        Iter Time: 0.053        Total Time: 4.175       Objective: 6.870e+06    Relative Delta Objective: -1.870e-05    Reconstruction Error: 6.870e+06
+Iter: 74        Iter Time: 0.045        Total Time: 4.220       Objective: 6.870e+06    Relative Delta Objective: -1.718e-05    Reconstruction Error: 6.870e+06
+Iter: 75        Iter Time: 0.044        Total Time: 4.264       Objective: 6.870e+06    Relative Delta Objective: -1.150e-05    Reconstruction Error: 6.870e+06
+Iter: 76        Iter Time: 0.053        Total Time: 4.317       Objective: 6.871e+06    Relative Delta Objective: -7.496e-06    Reconstruction Error: 6.871e+06
+Iter: 77        Iter Time: 0.052        Total Time: 4.368       Objective: 6.871e+06    Relative Delta Objective: 9.461e-07     Reconstruction Error: 6.871e+06
+Iter: 78        Iter Time: 0.041        Total Time: 4.409       Objective: 6.870e+06    Relative Delta Objective: 6.477e-06     Reconstruction Error: 6.870e+06
+Iter: 79        Iter Time: 0.046        Total Time: 4.455       Objective: 6.870e+06    Relative Delta Objective: 1.390e-05     Reconstruction Error: 6.870e+06
+Iter: 80        Iter Time: 0.042        Total Time: 4.498       Objective: 6.870e+06    Relative Delta Objective: 2.016e-05     Reconstruction Error: 6.870e+06
+Iter: 81        Iter Time: 0.049        Total Time: 4.546       Objective: 6.870e+06    Relative Delta Objective: 2.875e-05     Reconstruction Error: 6.870e+06
+Iter: 82        Iter Time: 0.047        Total Time: 4.594       Objective: 6.870e+06    Relative Delta Objective: 4.309e-05     Reconstruction Error: 6.870e+06
+Iter: 83        Iter Time: 0.045        Total Time: 4.639       Objective: 6.869e+06    Relative Delta Objective: 5.022e-05     Reconstruction Error: 6.869e+06
+Iter: 84        Iter Time: 0.043        Total Time: 4.681       Objective: 6.869e+06    Relative Delta Objective: 6.456e-05     Reconstruction Error: 6.869e+06
+Iter: 85        Iter Time: 0.041        Total Time: 4.722       Objective: 6.869e+06    Relative Delta Objective: 6.333e-05     Reconstruction Error: 6.869e+06
+Iter: 86        Iter Time: 0.046        Total Time: 4.768       Objective: 6.868e+06    Relative Delta Objective: 6.173e-05     Reconstruction Error: 6.868e+06
+Iter: 87        Iter Time: 0.045        Total Time: 4.813       Objective: 6.868e+06    Relative Delta Objective: 5.780e-05     Reconstruction Error: 6.868e+06
+Iter: 88        Iter Time: 0.080        Total Time: 4.893       Objective: 6.867e+06    Relative Delta Objective: 4.849e-05     Reconstruction Error: 6.867e+06
+Iter: 89        Iter Time: 0.082        Total Time: 4.975       Objective: 6.867e+06    Relative Delta Objective: 4.165e-05     Reconstruction Error: 6.867e+06
+Iter: 90        Iter Time: 0.076        Total Time: 5.051       Objective: 6.867e+06    Relative Delta Objective: 3.357e-05     Reconstruction Error: 6.867e+06
+Iter: 91        Iter Time: 0.076        Total Time: 5.128       Objective: 6.867e+06    Relative Delta Objective: 2.774e-05     Reconstruction Error: 6.867e+06
+Iter: 92        Iter Time: 0.246        Total Time: 5.374       Objective: 6.867e+06    Relative Delta Objective: 2.184e-05     Reconstruction Error: 6.867e+06
+Iter: 93        Iter Time: 0.051        Total Time: 5.424       Objective: 6.866e+06    Relative Delta Objective: 1.544e-05     Reconstruction Error: 6.866e+06
+Iter: 94        Iter Time: 0.042        Total Time: 5.467       Objective: 6.866e+06    Relative Delta Objective: 1.085e-05     Reconstruction Error: 6.866e+06
+Iter: 95        Iter Time: 0.063        Total Time: 5.529       Objective: 6.866e+06    Relative Delta Objective: 7.646e-06     Reconstruction Error: 6.866e+06
+Iter: 96        Iter Time: 0.062        Total Time: 5.591       Objective: 6.866e+06    Relative Delta Objective: 5.898e-06     Reconstruction Error: 6.866e+06
+Iter: 97        Iter Time: 0.061        Total Time: 5.652       Objective: 6.866e+06    Relative Delta Objective: 4.588e-06     Reconstruction Error: 6.866e+06
+Iter: 98        Iter Time: 0.047        Total Time: 5.699       Objective: 6.866e+06    Relative Delta Objective: 3.423e-06     Reconstruction Error: 6.866e+06
+Iter: 99        Iter Time: 0.049        Total Time: 5.748       Objective: 6.866e+06    Relative Delta Objective: 2.330e-06     Reconstruction Error: 6.866e+06
+Iter: 100       Iter Time: 0.047        Total Time: 5.795       Objective: 6.866e+06    Relative Delta Objective: 2.622e-06     Reconstruction Error: 6.866e+06
+Iter: 101       Iter Time: 0.047        Total Time: 5.842       Objective: 6.866e+06    Relative Delta Objective: 2.112e-06     Reconstruction Error: 6.866e+06
+Iter: 102       Iter Time: 0.046        Total Time: 5.888       Objective: 6.866e+06    Relative Delta Objective: 1.748e-06     Reconstruction Error: 6.866e+06
+Iter: 103       Iter Time: 0.044        Total Time: 5.932       Objective: 6.866e+06    Relative Delta Objective: 1.238e-06     Reconstruction Error: 6.866e+06
+Iter: 104       Iter Time: 0.045        Total Time: 5.977       Objective: 6.866e+06    Relative Delta Objective: 8.739e-07     Reconstruction Error: 6.866e+06
+Iter: 105       Iter Time: 0.056        Total Time: 6.033       Objective: 6.866e+06    Relative Delta Objective: 4.369e-07     Reconstruction Error: 6.866e+06
+Iter: 106       Iter Time: 0.046        Total Time: 6.079       Objective: 6.866e+06    Relative Delta Objective: 2.913e-07     Reconstruction Error: 6.866e+06
+Iter: 107       Iter Time: 0.045        Total Time: 6.124       Objective: 6.866e+06    Relative Delta Objective: 1.456e-07     Reconstruction Error: 6.866e+06
+Iter: 108       Iter Time: 0.042        Total Time: 6.166       Objective: 6.866e+06    Relative Delta Objective: 7.282e-08     Reconstruction Error: 6.866e+06
+Iter: 109       Iter Time: 0.041        Total Time: 6.207       Objective: 6.866e+06    Relative Delta Objective: 0.000e+00     Reconstruction Error: 6.866e+06
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scotch</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s1">&#39;NMTF_lU_lV_0.15.gif&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+writing gif to ./NMTF_lU_lV_0.15.gif
+</pre></div></div>
+</div>
+<p><img alt="NMTF with no regularization" src="../_images/NMTF_lU_lV_0.15.gif" /></p>
+<p>This factorization produces a much richer representation in S which indicate the relationship between column clusters and row clusters. The function below plots the factors in a manor where they are sorted by the U and V with maximum contributions. In the sorted representation below we can see that most factors of U and V are orthogonal. Notably, some of the factors in V, e.g. 3, 4, and 5, larely reflect a similar trend in the matrix. Specifically, they capture columns which are representation
+in all clusters.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">scotch</span><span class="o">.</span><span class="n">visualize_factors_sorted</span><span class="p">()</span>
+<span class="n">display</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_A_16_0.png" src="../_images/notebooks_Example_A_16_0.png" />
+</div>
+</div>
+<p>The orthogonal representation naturally lends itself to assigning these row and column features to clusters. For each row of U and V (note the representation above shows <span class="math notranslate nohighlight">\(V^T\)</span>) we assign them to the cluster based on the <span class="math notranslate nohighlight">\(argmax(U[i, :])\)</span> and <span class="math notranslate nohighlight">\(argmax(V[i, :])\)</span>. The clustering is implemented in the assign_cluster function below. After assigning clusters, the SCOTCH information can be directly added back to the adata object using he addScotchEmbeddingToAnnData() function.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scotch</span><span class="o">.</span><span class="n">assign_cluster</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scotch</span><span class="o">.</span><span class="n">add_scotch_embeddings_to_adata</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="s1">&#39;NMTF_lU_lV_0.15&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+AnnData object with n_obs × n_vars = 500 × 1000
+    obs: &#39;NMTF_lU_lV_0.15_cell_clusters&#39;
+    var: &#39;NMTF_lU_lV_0.15_gene_clusters&#39;
+    uns: &#39;NMTF_lU_lV_0.15_S_matrix&#39;, &#39;NMTF_lU_lV_0.15_reconstruction_error&#39;, &#39;NMTF_lU_lV_0.15_error&#39;
+    obsm: &#39;NMTF_lU_lV_0.15_cell_embedding&#39;, &#39;NMTF_lU_lV_0.15_P_embedding&#39;
+    varm: &#39;NMTF_lU_lV_0.15_gene_embedding&#39;, &#39;NMTF_lU_lV_0.15_Q_embedding&#39;
+</pre></div></div>
+</div>
+<p>We can visualize the different U and V components using UMAP below. The first UMAP is generated using PCA. The second and third UMAP are generated using the SCOTCH embeddings. First using <span class="math notranslate nohighlight">\(U\)</span>, and second using <span class="math notranslate nohighlight">\(U*S = P\)</span>. The <span class="math notranslate nohighlight">\(U\)</span> matrix’s orthogonality may lead to poor representations in the UMAP space due to the instability in the knn graph. Generally this can be improved by increasing the number of neighbors. The <span class="math notranslate nohighlight">\(P\)</span> embedding generally produces better representation in
+the UMAP space because it is less effected by the orthogonality constraint. The 4th UMAP demonstrates the relationships captured in the column space.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">pca</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">use_rep</span><span class="o">=</span> <span class="s2">&quot;X_pca&quot;</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;NMTF_lU_lV_0.15_cell_clusters&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_A_21_0.png" src="../_images/notebooks_Example_A_21_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">pca</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">use_rep</span><span class="o">=</span> <span class="s2">&quot;NMTF_lU_lV_0.15_cell_embedding&quot;</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;NMTF_lU_lV_0.15_cell_clusters&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_A_22_0.png" src="../_images/notebooks_Example_A_22_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">pca</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">use_rep</span><span class="o">=</span> <span class="s2">&quot;NMTF_lU_lV_0.15_P_embedding&quot;</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">adata</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">adata</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;NMTF_lU_lV_0.15_cell_clusters&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_A_23_0.png" src="../_images/notebooks_Example_A_23_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adata_genes</span> <span class="o">=</span> <span class="n">adata</span><span class="o">.</span><span class="n">T</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">pca</span><span class="p">(</span><span class="n">adata_genes</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pp</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">adata_genes</span><span class="p">,</span> <span class="n">use_rep</span><span class="o">=</span> <span class="s2">&quot;NMTF_lU_lV_0.15_Q_embedding&quot;</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span> <span class="mi">300</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">adata_genes</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">umap</span><span class="p">(</span><span class="n">adata_genes</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;NMTF_lU_lV_0.15_gene_clusters&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/opt/anaconda3/envs/Pytorch/lib/python3.9/site-packages/sklearn/manifold/_spectral_embedding.py:274: UserWarning: Graph is not fully connected, spectral embedding may not work as expected.
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_A_24_1.png" src="../_images/notebooks_Example_A_24_1.png" />
+</div>
+</div>
+<p>SCOTCH provides cluster visualization technique where the clusters are ordered, and each alternating cluster is assigned either a black or grey barcode.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scotch</span><span class="o">.</span><span class="n">visualize_clusters</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_A_26_0.png" src="../_images/notebooks_Example_A_26_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scotch</span><span class="o">.</span><span class="n">visualize_clusters_sorted</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_A_27_0.png" src="../_images/notebooks_Example_A_27_0.png" />
+</div>
+</div>
+<p>The scotch update is susceptible to poor initialization which results in multiple factors representation similar contributions in V. This can result in some of the errors in clustering. One method to get around this is to utilize NMTF to generate a lower embedding, clustering the embedding, and using this as an initialization which accurately capture the relationship between factors. This is performed using the reclusterV function below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scotch</span><span class="o">.</span><span class="n">recluster_V</span><span class="p">()</span>
+<span class="n">scotch</span><span class="o">.</span><span class="n">assign_cluster</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Iter: 1 Iter Time: 0.124        Total Time: 0.124       Objective: 6.858e+06    Relative Delta Objective: 7.597e-04     Reconstruction Error: 6.858e+06
+Iter: 2 Iter Time: 0.062        Total Time: 0.186       Objective: 6.858e+06    Relative Delta Objective: -6.657e-05    Reconstruction Error: 6.858e+06
+Iter: 3 Iter Time: 0.060        Total Time: 0.246       Objective: 6.859e+06    Relative Delta Objective: -1.027e-04    Reconstruction Error: 6.859e+06
+Iter: 4 Iter Time: 0.053        Total Time: 0.299       Objective: 6.859e+06    Relative Delta Objective: -5.154e-05    Reconstruction Error: 6.859e+06
+Iter: 5 Iter Time: 0.183        Total Time: 0.482       Objective: 6.859e+06    Relative Delta Objective: -3.601e-05    Reconstruction Error: 6.859e+06
+Iter: 6 Iter Time: 0.073        Total Time: 0.554       Objective: 6.860e+06    Relative Delta Objective: -3.550e-05    Reconstruction Error: 6.860e+06
+Iter: 7 Iter Time: 0.068        Total Time: 0.622       Objective: 6.860e+06    Relative Delta Objective: -4.162e-05    Reconstruction Error: 6.860e+06
+Iter: 8 Iter Time: 0.065        Total Time: 0.687       Objective: 6.860e+06    Relative Delta Objective: -4.942e-05    Reconstruction Error: 6.860e+06
+Iter: 9 Iter Time: 0.062        Total Time: 0.748       Objective: 6.861e+06    Relative Delta Objective: -6.049e-05    Reconstruction Error: 6.861e+06
+Iter: 10        Iter Time: 0.066        Total Time: 0.814       Objective: 6.861e+06    Relative Delta Objective: -6.770e-05    Reconstruction Error: 6.861e+06
+Iter: 11        Iter Time: 0.094        Total Time: 0.908       Objective: 6.862e+06    Relative Delta Objective: -6.457e-05    Reconstruction Error: 6.862e+06
+Iter: 12        Iter Time: 0.066        Total Time: 0.975       Objective: 6.862e+06    Relative Delta Objective: -5.560e-05    Reconstruction Error: 6.862e+06
+Iter: 13        Iter Time: 0.073        Total Time: 1.048       Objective: 6.862e+06    Relative Delta Objective: -4.037e-05    Reconstruction Error: 6.862e+06
+Iter: 14        Iter Time: 0.079        Total Time: 1.127       Objective: 6.863e+06    Relative Delta Objective: -2.485e-05    Reconstruction Error: 6.863e+06
+Iter: 15        Iter Time: 0.055        Total Time: 1.182       Objective: 6.863e+06    Relative Delta Objective: -8.015e-06    Reconstruction Error: 6.863e+06
+Iter: 16        Iter Time: 0.069        Total Time: 1.251       Objective: 6.862e+06    Relative Delta Objective: 1.209e-05     Reconstruction Error: 6.862e+06
+Iter: 17        Iter Time: 0.057        Total Time: 1.308       Objective: 6.862e+06    Relative Delta Objective: 4.736e-06     Reconstruction Error: 6.862e+06
+Iter: 18        Iter Time: 0.062        Total Time: 1.370       Objective: 6.862e+06    Relative Delta Objective: 2.689e-05     Reconstruction Error: 6.862e+06
+Iter: 19        Iter Time: 0.060        Total Time: 1.430       Objective: 6.862e+06    Relative Delta Objective: 2.324e-05     Reconstruction Error: 6.862e+06
+Iter: 20        Iter Time: 0.049        Total Time: 1.479       Objective: 6.862e+06    Relative Delta Objective: 3.629e-05     Reconstruction Error: 6.862e+06
+Iter: 21        Iter Time: 0.162        Total Time: 1.641       Objective: 6.862e+06    Relative Delta Objective: 2.784e-05     Reconstruction Error: 6.862e+06
+Iter: 22        Iter Time: 0.046        Total Time: 1.688       Objective: 6.861e+06    Relative Delta Objective: 2.536e-05     Reconstruction Error: 6.861e+06
+Iter: 23        Iter Time: 0.045        Total Time: 1.732       Objective: 6.861e+06    Relative Delta Objective: 1.137e-05     Reconstruction Error: 6.861e+06
+Iter: 24        Iter Time: 0.047        Total Time: 1.779       Objective: 6.861e+06    Relative Delta Objective: 1.385e-06     Reconstruction Error: 6.861e+06
+Iter: 25        Iter Time: 0.043        Total Time: 1.822       Objective: 6.861e+06    Relative Delta Objective: -6.558e-07    Reconstruction Error: 6.861e+06
+Iter: 26        Iter Time: 0.048        Total Time: 1.870       Objective: 6.861e+06    Relative Delta Objective: 1.166e-06     Reconstruction Error: 6.861e+06
+Iter: 27        Iter Time: 0.044        Total Time: 1.915       Objective: 6.861e+06    Relative Delta Objective: 3.352e-06     Reconstruction Error: 6.861e+06
+Iter: 28        Iter Time: 0.043        Total Time: 1.958       Objective: 6.861e+06    Relative Delta Objective: 5.538e-06     Reconstruction Error: 6.861e+06
+Iter: 29        Iter Time: 0.042        Total Time: 2.000       Objective: 6.861e+06    Relative Delta Objective: 3.279e-06     Reconstruction Error: 6.861e+06
+Iter: 30        Iter Time: 0.053        Total Time: 2.053       Objective: 6.861e+06    Relative Delta Objective: 3.206e-06     Reconstruction Error: 6.861e+06
+Iter: 31        Iter Time: 0.048        Total Time: 2.101       Objective: 6.861e+06    Relative Delta Objective: 2.478e-06     Reconstruction Error: 6.861e+06
+Iter: 32        Iter Time: 0.049        Total Time: 2.151       Objective: 6.861e+06    Relative Delta Objective: 4.810e-06     Reconstruction Error: 6.861e+06
+Iter: 33        Iter Time: 0.054        Total Time: 2.205       Objective: 6.861e+06    Relative Delta Objective: 3.644e-06     Reconstruction Error: 6.861e+06
+Iter: 34        Iter Time: 0.053        Total Time: 2.258       Objective: 6.861e+06    Relative Delta Objective: 2.915e-06     Reconstruction Error: 6.861e+06
+Iter: 35        Iter Time: 0.044        Total Time: 2.301       Objective: 6.861e+06    Relative Delta Objective: 5.538e-06     Reconstruction Error: 6.861e+06
+Iter: 36        Iter Time: 0.056        Total Time: 2.357       Objective: 6.861e+06    Relative Delta Objective: 3.935e-06     Reconstruction Error: 6.861e+06
+Iter: 37        Iter Time: 0.068        Total Time: 2.426       Objective: 6.861e+06    Relative Delta Objective: 2.623e-06     Reconstruction Error: 6.861e+06
+Iter: 38        Iter Time: 0.047        Total Time: 2.473       Objective: 6.861e+06    Relative Delta Objective: 6.340e-06     Reconstruction Error: 6.861e+06
+Iter: 39        Iter Time: 0.048        Total Time: 2.521       Objective: 6.861e+06    Relative Delta Objective: 5.101e-06     Reconstruction Error: 6.861e+06
+Iter: 40        Iter Time: 0.049        Total Time: 2.569       Objective: 6.861e+06    Relative Delta Objective: 4.883e-06     Reconstruction Error: 6.861e+06
+Iter: 41        Iter Time: 0.181        Total Time: 2.750       Objective: 6.861e+06    Relative Delta Objective: 1.822e-06     Reconstruction Error: 6.861e+06
+Iter: 42        Iter Time: 0.047        Total Time: 2.798       Objective: 6.861e+06    Relative Delta Objective: 3.571e-06     Reconstruction Error: 6.861e+06
+Iter: 43        Iter Time: 0.050        Total Time: 2.848       Objective: 6.861e+06    Relative Delta Objective: 2.478e-06     Reconstruction Error: 6.861e+06
+Iter: 44        Iter Time: 0.051        Total Time: 2.899       Objective: 6.861e+06    Relative Delta Objective: 1.822e-06     Reconstruction Error: 6.861e+06
+Iter: 45        Iter Time: 0.048        Total Time: 2.947       Objective: 6.861e+06    Relative Delta Objective: 1.530e-06     Reconstruction Error: 6.861e+06
+Iter: 46        Iter Time: 0.043        Total Time: 2.990       Objective: 6.861e+06    Relative Delta Objective: 1.312e-06     Reconstruction Error: 6.861e+06
+Iter: 47        Iter Time: 0.044        Total Time: 3.034       Objective: 6.861e+06    Relative Delta Objective: 1.166e-06     Reconstruction Error: 6.861e+06
+Iter: 48        Iter Time: 0.043        Total Time: 3.078       Objective: 6.861e+06    Relative Delta Objective: 1.020e-06     Reconstruction Error: 6.861e+06
+Iter: 49        Iter Time: 0.045        Total Time: 3.122       Objective: 6.861e+06    Relative Delta Objective: 1.020e-06     Reconstruction Error: 6.861e+06
+Iter: 50        Iter Time: 0.047        Total Time: 3.169       Objective: 6.861e+06    Relative Delta Objective: 8.745e-07     Reconstruction Error: 6.861e+06
+Iter: 51        Iter Time: 0.041        Total Time: 3.210       Objective: 6.861e+06    Relative Delta Objective: 3.134e-06     Reconstruction Error: 6.861e+06
+Iter: 52        Iter Time: 0.053        Total Time: 3.263       Objective: 6.861e+06    Relative Delta Objective: 1.239e-06     Reconstruction Error: 6.861e+06
+Iter: 53        Iter Time: 0.047        Total Time: 3.310       Objective: 6.861e+06    Relative Delta Objective: -2.186e-07    Reconstruction Error: 6.861e+06
+Iter: 54        Iter Time: 0.045        Total Time: 3.354       Objective: 6.861e+06    Relative Delta Objective: 2.186e-07     Reconstruction Error: 6.861e+06
+Iter: 55        Iter Time: 0.044        Total Time: 3.399       Objective: 6.861e+06    Relative Delta Objective: 2.915e-07     Reconstruction Error: 6.861e+06
+Iter: 56        Iter Time: 0.048        Total Time: 3.447       Objective: 6.861e+06    Relative Delta Objective: 2.915e-07     Reconstruction Error: 6.861e+06
+Iter: 57        Iter Time: 0.062        Total Time: 3.508       Objective: 6.861e+06    Relative Delta Objective: 2.186e-07     Reconstruction Error: 6.861e+06
+Iter: 58        Iter Time: 0.064        Total Time: 3.572       Objective: 6.861e+06    Relative Delta Objective: 1.458e-07     Reconstruction Error: 6.861e+06
+Iter: 59        Iter Time: 0.043        Total Time: 3.614       Objective: 6.861e+06    Relative Delta Objective: 1.458e-07     Reconstruction Error: 6.861e+06
+Iter: 60        Iter Time: 0.043        Total Time: 3.657       Objective: 6.861e+06    Relative Delta Objective: 7.288e-08     Reconstruction Error: 6.861e+06
+Iter: 61        Iter Time: 0.042        Total Time: 3.700       Objective: 6.861e+06    Relative Delta Objective: 7.288e-08     Reconstruction Error: 6.861e+06
+Iter: 62        Iter Time: 0.049        Total Time: 3.749       Objective: 6.861e+06    Relative Delta Objective: 0.000e+00     Reconstruction Error: 6.861e+06
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scotch</span><span class="o">.</span><span class="n">visualize_factors</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_A_30_0.png" src="../_images/notebooks_Example_A_30_0.png" />
+</div>
+</div>
+<p>After running this function the elements of better capture different natural column clusters.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scotch</span><span class="o">.</span><span class="n">visualize_clusters</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_A_32_0.png" src="../_images/notebooks_Example_A_32_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scotch</span><span class="o">.</span><span class="n">visualize_clusters_sorted</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_A_33_0.png" src="../_images/notebooks_Example_A_33_0.png" />
+</div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Spencer Halberg-Spencer, Harmon Bhasin, Sushmita Roy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
