@@ -1,7 +1,0 @@
-SCOTCH module
-=============
-
-.. automodule:: SCOTCH
-   :members:
-   :undoc-members:
-   :show-inheritance:
