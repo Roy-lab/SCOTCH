@@ -1,0 +1,227 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="Python" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>initialize &mdash; SCOTCH &#39;1.1.0&#39; documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=0398fb1d"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SCOTCH
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">pyNMTF</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Example_A.html">Running SCOTCH on Simulated Data</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">SCOTCH</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SCOTCH</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">initialize</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for initialize</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+
+
+<div class="viewcode-block" id="nnsvd_nmf_initialize">
+<a class="viewcode-back" href="../initialize.html#initialize.nnsvd_nmf_initialize">[docs]</a>
+<span class="k">def</span> <span class="nf">nnsvd_nmf_initialize</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes the factors W and H for Non-negative Matrix Factorization (NMF)</span>
+<span class="sd">    using the Non-negative Double Singular Value Decomposition (NNDSVD) method</span>
+<span class="sd">    with PyTorch.</span>
+
+<span class="sd">    This initialization helps improve convergence speed and avoid local minima</span>
+<span class="sd">    by providing structured non-negative starting points for W and H.</span>
+
+<span class="sd">    :param torch.Tensor X:</span>
+<span class="sd">        The input non-negative matrix to be factorized, with shape (m, n).</span>
+<span class="sd">        All elements of X should be non-negative.</span>
+<span class="sd">    :param int k:</span>
+<span class="sd">        The rank for the factorization, representing the number of components.</span>
+<span class="sd">    :param int seed:</span>
+<span class="sd">        (Optional) The random seed for reproducibility of the initialization.</span>
+<span class="sd">        If not specified, a random seed will be used.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        A tuple containing:</span>
+<span class="sd">        - **W** (*torch.Tensor*): Initialized factor matrix of shape (m, k).</span>
+<span class="sd">        - **H** (*torch.Tensor*): Initialized factor matrix of shape (n, k).</span>
+<span class="sd">    :rtype: Tuple[torch.Tensor, torch.Tensor]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="c1"># Dimensions of A</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># Calculate the mean of A to use for filling non-positive values</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+    <span class="c1"># Perform SVD on A using torch&#39;s SVD function</span>
+    <span class="c1"># R</span>
+    <span class="n">U</span><span class="p">,</span> <span class="n">S_svd</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">svd_lowrank</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+
+    <span class="c1"># Initialize W and H matrices</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="c1"># We need to initialize the first comp because technically we could have double negatives... This is resolved here.</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">U</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">V</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># Split into positive and negative parts</span>
+        <span class="n">up</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">un</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">u</span><span class="p">)</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">vp</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">vn</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Calculate norms</span>
+        <span class="n">up_norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">up</span><span class="p">)</span>
+        <span class="n">un_norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">un</span><span class="p">)</span>
+        <span class="n">vp_norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vp</span><span class="p">)</span>
+        <span class="n">vn_norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vn</span><span class="p">)</span>
+
+        <span class="c1"># Compute positive and negative products</span>
+        <span class="n">mp</span> <span class="o">=</span> <span class="n">up_norm</span> <span class="o">*</span> <span class="n">vp_norm</span>
+        <span class="n">mn</span> <span class="o">=</span> <span class="n">un_norm</span> <span class="o">*</span> <span class="n">vn_norm</span>
+
+        <span class="c1"># Choose the component with a larger product</span>
+        <span class="k">if</span> <span class="n">mp</span> <span class="o">&gt;</span> <span class="n">mn</span><span class="p">:</span>
+            <span class="n">W</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">S_svd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">mp</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">up</span> <span class="o">/</span> <span class="n">up_norm</span><span class="p">)</span>
+            <span class="n">H</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">S_svd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">mp</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">vp</span> <span class="o">/</span> <span class="n">vp_norm</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">W</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">S_svd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">mn</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">un</span> <span class="o">/</span> <span class="n">un_norm</span><span class="p">)</span>
+            <span class="n">H</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">S_svd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">mn</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">vn</span> <span class="o">/</span> <span class="n">vn_norm</span><span class="p">)</span>
+
+    <span class="c1"># This is in the C++ code but not in the original paper.</span>
+    <span class="c1"># Replace non-positive values in W and H with the mean of A. Prevents too many zeros.</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">W</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">H</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">H</span></div>
+
+
+
+<div class="viewcode-block" id="nnsvd_nmtf_initialize">
+<a class="viewcode-back" href="../initialize.html#initialize.nnsvd_nmtf_initialize">[docs]</a>
+<span class="k">def</span> <span class="nf">nnsvd_nmtf_initialize</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    NNDSVD-based initialization for Non-negative Matrix Tri-Factorization (NMTF)</span>
+<span class="sd">    using PyTorch. Unlike standard NMF, the internal dimensions of W and H can differ.</span>
+
+<span class="sd">    This method aims to provide a structured, non-negative initialization for</span>
+<span class="sd">    W and H, improving convergence speed and stability.</span>
+
+<span class="sd">    :param torch.Tensor X:</span>
+<span class="sd">        The input non-negative matrix to factorize, with shape (m, n).</span>
+<span class="sd">        All elements of X should be non-negative.</span>
+<span class="sd">    :param int k_W:</span>
+<span class="sd">        The rank for the row factorization, representing the number of components in W.</span>
+<span class="sd">    :param int k_H:</span>
+<span class="sd">        The rank for the column factorization, representing the number of components in H.</span>
+<span class="sd">    :param int seed:</span>
+<span class="sd">        (Optional) The random seed for reproducibility. If not specified, a random</span>
+<span class="sd">        seed will be used.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        A tuple containing the initialized factor matrices:</span>
+<span class="sd">        - **W** (*torch.Tensor*): Factor matrix of shape (m, k_W).</span>
+<span class="sd">        - **H** (*torch.Tensor*): Factor matrix of shape (n, k_H).</span>
+<span class="sd">    :rtype: Tuple[torch.Tensor, torch.Tensor]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="n">W</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">nnsvd_nmf_initialize</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k1</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>  <span class="c1"># Optimal initialization of the rows as ortho bases</span>
+    <span class="n">H</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">nnsvd_nmf_initialize</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">t</span><span class="p">(),</span> <span class="n">k2</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>  <span class="c1"># Optimal initialization of the columns as ortho bases</span>
+    <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">H</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Spencer Halberg-Spencer, Harmon Bhasin, Sushmita Roy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
