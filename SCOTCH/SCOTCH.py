@@ -1,7 +1,5 @@
-import numpy as np
-from DataLoader import DataLoader
-from NMTF import NMTF
-import seaborn as sns
+from SCOTCH.DataLoader import DataLoader
+from SCOTCH.NMTF import NMTF
 
 from scipy.sparse import issparse
 import torch
@@ -10,6 +8,8 @@ import anndata
 import os
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import seaborn as sns
+import numpy as np
 
 import pyEnrichAnalyzer
 
