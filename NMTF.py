@@ -894,6 +894,7 @@ class NMTF:
         self.citer = 0
         start_time = time.time()
         curr_time = time.time()
+        stop_marker = 0
 
         if self.verbose:
             print("Initializing NMTF factors")
@@ -964,7 +965,11 @@ class NMTF:
                 plt.close(fig)
 
             if self.termTol > self.relative_error[:, self.citer].item() >= 0:
-                break
+                stop_marker = stop_marker + 1
+                if stop_marker >= 5:
+                    break
+            else:
+                stop_marker = 0
         return None
 
     def print_USV(self, file_pre):
