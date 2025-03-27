@@ -1129,17 +1129,12 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         S_matrix_id : str, optional
             Key in `adata.uns` for an externally referenced matrix (e.g., factor matrix or count matrix).
 
-    Returns
-    -------
-    matplotlib.figure.Figure
-        A matplotlib figure containing the generated visualizations.
-
-
-        Returns
+         Returns
         -------
         matplotlib.figure.Figure
-            A matplotlib figure object containing the embedding visualizations.
-    """
+            A matplotlib figure containing the generated visualizations.
+
+        """
         # Setup plot grid:
         if var2 is not None and var2 in adata.obs.columns:
             n_set_2 = adata.obs[var2].unique().shape[0]
