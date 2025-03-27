@@ -164,7 +164,7 @@ class NMTF:
         if len(X.shape) != 2:
             raise ValueError('X must be a two dimensional tensor')
 
-        if sum(X < 0) > 0:
+        if torch.any(X < 0):
             raise ValueError('X must be non-negative')
 
         self.X = X
@@ -179,9 +179,9 @@ class NMTF:
         :returns: None
         """
         if self.init_style == "random":
-            self.U = torch.rand(self.num_u, self.k1, device=self.device, dtype=torch.float64)
-            self.V = torch.rand(self.k2, self.num_v, device=self.device, dtype=torch.float64)
-            self.S = self.X.max() * torch.rand((self.k1, self.k2), device=self.device, dtype=torch.float64)
+            self.U = torch.rand(self.num_u, self.k1, device=self.device, dtype=torch.float32)
+            self.V = torch.rand(self.k2, self.num_v, device=self.device, dtype=torch.float32)
+            self.S = self.X.max() * torch.rand((self.k1, self.k2), device=self.device, dtype=torch.float32)
             self.P = self.U @ self.S
             self.Q = self.S @ self.V
             self.R = self.X - self.P @ self.V
@@ -194,7 +194,7 @@ class NMTF:
 
             # Not a real good way of doing this. Start with something random and let's update S first.
             # Perhaps bias toward diagonal.
-            self.S = torch.rand((self.k1, self.k2), device=self.device, dtype=torch.float64)
+            self.S = torch.rand((self.k1, self.k2), device=self.device, dtype=torch.float32)
             self.P = self.U @ self.S
             self.Q = self.S @ self.V
             self.R = self.X - self.P @ self.V

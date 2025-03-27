@@ -27,6 +27,27 @@ def nnsvd_nmf_initialize(X, k, seed=None):
     :rtype: Tuple[torch.Tensor, torch.Tensor]
     """
 
+    # Input type validation
+    if not isinstance(X, torch.Tensor):
+        raise TypeError("Input X must be a PyTorch tensor.")
+
+    # Non-negative validation for X
+    if torch.any(X < 0):
+        raise ValueError("All elements of the input tensor X must be non-negative.")
+
+    # Dimensional compatibility check
+    if X.dim() != 2:
+        raise ValueError(f"Input tensor X must be 2-dimensional, but got {X.dim()} dimensions.")
+
+    m, n = X.shape  # Rows and columns of X
+    if k <= 0:
+        raise ValueError("k1 and k2 must be positive integers.")
+    if k > m:
+        raise ValueError(f"k1 cannot be greater than the number of rows in X ({m}).")
+    if k > n:
+        raise ValueError(f"k2 cannot be greater than the number of columns in X ({n}).")
+
+
     if seed is not None:
         torch.manual_seed(seed)
 
@@ -106,6 +127,29 @@ def nnsvd_nmtf_initialize(X, k1, k2, seed=None):
         - **H** (*torch.Tensor*): Factor matrix of shape (n, k_H).
     :rtype: Tuple[torch.Tensor, torch.Tensor]
     """
+    if not isinstance(X, torch.Tensor):
+        raise TypeError("Input X must be a PyTorch tensor.")
+
+    # Non-negative validation for X
+    if torch.any(X < 0):
+        raise ValueError("All elements of the input tensor X must be non-negative.")
+
+    # Dimensional compatibility check
+    if X.dim() != 2:
+        raise ValueError(f"Input tensor X must be 2-dimensional, but got {X.dim()} dimensions.")
+
+    m, n = X.shape  # Rows and columns of X
+    if k1 <= 0 or k2 <= 0:
+        raise ValueError("k1 and k2 must be positive integers.")
+    if k1 > m:
+        raise ValueError(f"k1 cannot be greater than the number of rows in X ({m}).")
+    if k2 > n:
+        raise ValueError(f"k2 cannot be greater than the number of columns in X ({n}).")
+
+    # Seed validation
+    if seed is not None and not isinstance(seed, int):
+        raise TypeError("Seed must be an integer if specified.")
+
     if seed is not None:
         torch.manual_seed(seed)
 
