@@ -192,7 +192,29 @@
         </li>
         <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.add_scotch_embeddings_to_adata" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.add_scotch_embeddings_to_adata()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.combined_embedding_visualization" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.combined_embedding_visualization()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.combined_enrichment_visualization" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.combined_enrichment_visualization()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.make_adata_from_scotch" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.make_adata_from_scotch()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.make_top_regulators_list" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.make_top_regulators_list()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.plot_S_matrix" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.plot_S_matrix()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.plot_cooccurrence_proportions" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.plot_cooccurrence_proportions()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.plot_element_count_heatmap" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.plot_element_count_heatmap()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.plot_reconstruction_error" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.plot_reconstruction_error()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.run_enrich_analyzer" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.run_enrich_analyzer()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.visualize_enrichment_bubbleplots" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.visualize_enrichment_bubbleplots()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.visualize_marker_gene_bubbleplot_per_cell_cluster" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.visualize_marker_gene_bubbleplot_per_cell_cluster()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#SCOTCH.SCOTCH.visualize_marker_gene_bubbleplot_per_gene_cluster" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SCOTCH.visualize_marker_gene_bubbleplot_per_gene_cluster()</span></code></a>
         </li></ul>
             </nav>
         </li></ul>
@@ -298,6 +320,60 @@ Directory to save SCOTCH output files. <em>(default: '.')</em></p></li>
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.combined_embedding_visualization">
+<span class="sig-name descname"><span class="pre">combined_embedding_visualization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_cluster_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gene_clusters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_embedding_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gene_embedding'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_point_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">palette</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cell_clusters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sample'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_matrix_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'S_matrix'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.combined_embedding_visualization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.combined_embedding_visualization" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a combined visualization of embeddings from the data, with options to color by metadata.</p>
+<p>This function is designed to visualize embeddings (e.g., UMAP, PCA, t-SNE) stored in <cite>adata</cite>, optionally
+allowing users to color the points by specific metadata columns (like cell type or condition). It arranges
+one or more plots in a grid layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adata</strong> (<em>anndata.AnnData</em>) -- An AnnData object containing single-cell data. Must contain embeddings in <cite>adata.obsm</cite>.</p></li>
+<li><p><strong>gene_embedding_id</strong> (<em>str</em><em>, </em><em>optional</em>) -- The key in <cite>adata.obsm</cite> where the embedding is stored (e.g., <cite>'X_umap'</cite> for UMAP). Default is <cite>'gene_embedding'</cite>.</p></li>
+<li><p><strong>top_k</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>default=5</em><em>)</em>) -- the number of top features to display per gene cluster. Must be a positive integer.</p></li>
+<li><p><strong>max_point_size</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>default=2</em><em>)</em>) -- Max point size for V bubble plot.</p></li>
+<li><p><strong>palette</strong> (<em>str</em><em>, </em><em>optional</em><em> (</em><em>default='viridis'</em><em>)</em>) -- The color palette to use for the scatter plot when coloring points.</p></li>
+<li><p><strong>var1</strong> (<em>str</em><em>, </em><em>optional</em>) -- The primary variable (from <cite>adata.obs</cite>) to use for heatmap plotting (e.g., 'cell_clusters').</p></li>
+<li><p><strong>var2</strong> (<em>str</em><em>, </em><em>optional</em>) -- The secondary variable (from <cite>adata.obs</cite>) for co-occurrence and proportions (e.g., 'sample').</p></li>
+<li><p><strong>S_matrix_id</strong> (<em>str</em><em>, </em><em>optional</em>) -- <p>Key in <cite>adata.uns</cite> for an externally referenced matrix (e.g., factor matrix or count matrix).</p>
+<p>Returns</p>
+</p></li>
+<li><p><strong>-------</strong></p></li>
+<li><p><strong>matplotlib.figure.Figure</strong> -- A matplotlib figure containing the generated visualizations.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.combined_enrichment_visualization">
+<span class="sig-name descname"><span class="pre">combined_enrichment_visualization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enrich_object_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_point_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">palette</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cell_clusters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sample'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_matrix_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.combined_enrichment_visualization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.combined_enrichment_visualization" title="Link to this definition">¶</a></dt>
+<dd><p>Create a 2x3 subplot visualization combining enrichment bubble plots, element count heatmaps,
+co-occurrence proportions, and S matrix heatmaps.</p>
+<p>This visualization provides insights into cellular data enrichment and relationships between variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adata</strong> (<em>anndata.AnnData</em>) -- An AnnData object containing single-cell data. Must contain <cite>obs</cite>, <cite>uns</cite>, and required data matrices.</p></li>
+<li><p><strong>enrich_object_id</strong> (<em>str</em>) -- The identifier for enrichment data in <cite>adata.uns</cite>.</p></li>
+<li><p><strong>top_k</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>default=5</em><em>)</em>) -- The number of top enrichment terms to display in visualizations.
+Must be a positive integer.</p></li>
+<li><p><strong>max_point_size</strong> (<em>int</em><em>, </em><em>optional</em><em> (</em><em>default=100</em><em>)</em>) -- The maximum size for the points in the bubble plot. Determines the largest bubble size.</p></li>
+<li><p><strong>palette</strong> (<em>str</em><em>, </em><em>optional</em><em> (</em><em>default='viridis'</em><em>)</em>) -- The color palette used for the bubble plot.</p></li>
+<li><p><strong>var1</strong> (<em>str</em><em>, </em><em>optional</em>) -- The first variable for co-occurrence proportions. Must exist in <cite>adata.obs.columns</cite>.</p></li>
+<li><p><strong>var2</strong> (<em>str</em><em>, </em><em>optional</em>) -- The second variable for co-occurrence proportions. Must exist in <cite>adata.obs.columns</cite>.</p></li>
+<li><p><strong>S_matrix_id</strong> (<em>str</em><em>, </em><em>optional</em>) -- The key in <cite>adata.uns</cite> for the additional heatmap matrix. The associated value must be a 2D matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A matplotlib figure object containing the generated subplots.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="SCOTCH.SCOTCH.make_adata_from_scotch">
 <span class="sig-name descname"><span class="pre">make_adata_from_scotch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.make_adata_from_scotch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.make_adata_from_scotch" title="Link to this definition">¶</a></dt>
 <dd><p>Create an AnnData object from the given data.</p>
@@ -313,6 +389,232 @@ Directory to save SCOTCH output files. <em>(default: '.')</em></p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>anndata.AnnData</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.make_top_regulators_list">
+<span class="sig-name descname"><span class="pre">make_top_regulators_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_cluster_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gene_clusters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_embedding_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gene_embedding'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.make_top_regulators_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.make_top_regulators_list" title="Link to this definition">¶</a></dt>
+<dd><p>Create a list of top regulators for each gene cluster based on gene embeddings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> (<em>object</em>) -- The instance of the class containing the data.</p></li>
+<li><p><strong>adata</strong> (<em>anndata.AnnData</em>) -- An AnnData object containing single-cell gene expression data.</p></li>
+<li><p><strong>gene_cluster_id</strong> (<em>str</em>) -- The key for the gene clusters stored in <cite>adata.var</cite>. (default is "gene_clusters")</p></li>
+<li><p><strong>gene_embedding_id</strong> (<em>str</em>) -- The key for the gene embedding matrix stored in <cite>adata.varm</cite>. (default is "gene_embedding")</p></li>
+<li><p><strong>prefix</strong> (<em>str</em>) -- The string utilized when adding SCOTCH data to anndata. Use instead of gene_cluster_id and gene_embedding_id. (default is None)</p></li>
+<li><p><strong>top_k</strong> (<em>int</em><em>, </em><em>optional</em>) -- The number of top genes to select per cluster (default is 5).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of tuples, each containing the cluster index and the top <cite>top_k</cite> genes for that cluster.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of tuples</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.plot_S_matrix">
+<span class="sig-name descname"><span class="pre">plot_S_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S_matrix_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'S_matrix'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">palette</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.plot_S_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.plot_S_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Plot a heatmap of the S matrix stored in <cite>adata.uns</cite> under the given key (<cite>S_matrix_id</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adata</strong> (<em>anndata.AnnData</em>) -- An AnnData object containing the single-cell data.</p></li>
+<li><p><strong>S_matrix_id</strong> (<em>str</em>) -- The key in <cite>adata.uns</cite> where the S matrix is stored. Default is 'S_matrix'.</p></li>
+<li><p><strong>palette</strong> (<em>str</em>) -- The color palette to use for the heatmap. Default is 'viridis'.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) -- A matplotlib Axes object to plot the heatmap on. If not provided, a new figure and Axes will be created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A matplotlib Figure object containing the heatmap, or None if <cite>ax</cite> is provided.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure or None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.plot_cooccurrence_proportions">
+<span class="sig-name descname"><span class="pre">plot_cooccurrence_proportions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cell_clusters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sample'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Reds'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.plot_cooccurrence_proportions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.plot_cooccurrence_proportions" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a heatmap of co-occurrence proportions between two categorical variables.</p>
+<p>This function creates a heatmap to visualize the co-occurrence proportions of two categorical variables
+stored in the <cite>adata.obs</cite> dataframe. The rows correspond to values from <cite>field_1</cite> and the
+columns correspond to values from <cite>field_2</cite>. The heatmap displays normalized proportions per row.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adata</strong> (<em>anndata.AnnData</em>) -- An AnnData object containing the single-cell data.
+It must include <cite>adata.obs</cite> with <cite>field_1</cite> and <cite>field_2</cite> as categorical variables.</p></li>
+<li><p><strong>field_1</strong> (<em>str</em><em>, </em><em>optional</em>) -- The name of the first categorical variable in <cite>adata.obs</cite> (used for heatmap rows).
+Its values will define the rows in the heatmap. (default is 'cell_clusters')</p></li>
+<li><p><strong>field_2</strong> (<em>str</em><em>, </em><em>optional</em>) -- The name of the second categorical variable in <cite>adata.obs</cite> (used for heatmap columns).
+Its values will define the columns in the heatmap. (Default is 'sample'.)</p></li>
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) -- The color map used for the heatmap. It must be a valid Matplotlib colormap, with "Reds"
+as the default. This determines the gradient colors representing value intensity in the heatmap.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em> or </em><em>None</em><em>, </em><em>optional</em>) -- A Matplotlib <cite>Axes</cite> object on which the heatmap will be plotted. If <cite>None</cite>, a new figure
+and axis are created, and the function returns the generated figure. If provided, the heatmap
+is plotted on the existing axis, and no figure is returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Matplotlib <cite>Figure</cite> object containing the heatmap of co-occurrence proportions,
+if a new figure is generated. If <cite>ax</cite> is provided, the function returns None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure or None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> -- If <cite>adata</cite> is not an <cite>AnnData</cite> object, or <cite>field_1</cite> and <cite>field_2</cite> are not strings.</p></li>
+<li><p><strong>ValueError</strong> -- If <cite>field_1</cite> or <cite>field_2</cite> are not found in <cite>adata.obs.columns</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.plot_element_count_heatmap">
+<span class="sig-name descname"><span class="pre">plot_element_count_heatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cell_clusters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'vertical'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Blues'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.plot_element_count_heatmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.plot_element_count_heatmap" title="Link to this definition">¶</a></dt>
+<dd><p>This function produces a heatmap displaying the count of unique elements in a specific column of an <cite>AnnData</cite> object.
+The orientation of the heatmap can be controlled, along with customization options like the color map and axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adata</strong> (<em>anndata.AnnData</em>) -- An AnnData object containing the single-cell data.
+This parameter stores observations and variables, including metadata used for the analysis.</p></li>
+<li><p><strong>field</strong> (<em>str optional.</em>) -- The column in <cite>adata.obs</cite> for which the counts should be calculated.
+The unique values in this column are counted and visualized in the heatmap. Default is cell_clusters</p></li>
+<li><p><strong>orientation</strong> (<em>str</em><em>, </em><em>optional</em>) -- The orientation of the heatmap (either rows or columns represent the elements being counted).
+Acceptable values are 'vertical' (default) or 'horizontal'.</p></li>
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) -- The color map used to style the heatmap. For example, use 'Blues' for a blue shade gradient.
+Defaults to 'Blues'.</p></li>
+<li><p><strong>v_min</strong> (<em>int</em><em>, </em><em>optional</em>) -- The minimum value for the heatmap color scale.
+This is useful to set a threshold for visualization. Default is 0.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) -- A matplotlib <cite>Axes</cite> object onto which the heatmap will be drawn.
+If not provided, a new figure and axes will be created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A matplotlib <cite>Figure</cite> object containing the heatmap.
+If <cite>ax</cite> is provided, then the returned <cite>Figure</cite> will be <cite>None</cite>, as the plot will be drawn on the given <cite>Axes</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure or None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.plot_reconstruction_error">
+<span class="sig-name descname"><span class="pre">plot_reconstruction_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.plot_reconstruction_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.plot_reconstruction_error" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.run_enrich_analyzer">
+<span class="sig-name descname"><span class="pre">run_enrich_analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_cluster_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">go_regnet_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fdr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'persg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GO'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.run_enrich_analyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.run_enrich_analyzer" title="Link to this definition">¶</a></dt>
+<dd><p>Perform gene ontology (GO) enrichment analysis and store results in the AnnData object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> (<em>object</em>) -- The instance of the class containing the data.</p></li>
+<li><p><strong>adata</strong> (<em>anndata.AnnData</em>) -- An AnnData object containing single-cell gene expression data.</p></li>
+<li><p><strong>gene_cluster_id</strong> (<em>str</em>) -- Identifier for the gene cluster to be analyzed.</p></li>
+<li><p><strong>go_regnet_file</strong> (<em>str</em>) -- File path to the gene ontology (GO) enrichment file.</p></li>
+<li><p><strong>fdr</strong> (<em>float</em><em>, </em><em>optional</em>) -- The false discovery rate threshold (default is 0.05).</p></li>
+<li><p><strong>test_type</strong> (<em>str</em><em>, </em><em>optional</em>) -- Type of statistical test to be performed (default is 'persg'). Valid options are 'persg' and 'fullgraph'.</p></li>
+<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) -- Prefix for storing enrichment results in the AnnData object (default is 'GO').</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None. Enrichment results are stored in <cite>adata.uns[prefix + "enrichment"]</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.visualize_enrichment_bubbleplots">
+<span class="sig-name descname"><span class="pre">visualize_enrichment_bubbleplots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enrich_object_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_cluster_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gene</span> <span class="pre">cluster'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TermName'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FC_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Foldenr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_val_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CorrPval'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_point_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">palette</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_cluster_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.visualize_enrichment_bubbleplots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.visualize_enrichment_bubbleplots" title="Link to this definition">¶</a></dt>
+<dd><p>Visualize enrichment results as a bubble plot, where the size of the bubbles represents log2 fold change
+and the color represents -log10 p-values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> (<em>object</em>) -- The instance of the class containing the data.</p></li>
+<li><p><strong>adata</strong> (<em>anndata.AnnData</em>) -- An AnnData object containing single-cell gene expression data.</p></li>
+<li><p><strong>enrich_object_id</strong> (<em>str</em>) -- The key in <cite>adata.uns</cite> containing the enrichment data.</p></li>
+<li><p><strong>gene_cluster_id</strong> (<em>str</em><em>, </em><em>optional</em>) -- The column name representing gene clusters in the enrichment data (default is 'gene cluster').</p></li>
+<li><p><strong>term_id</strong> (<em>str</em><em>, </em><em>optional</em>) -- The column name representing terms in the enrichment data (default is 'TermName').</p></li>
+<li><p><strong>FC_id</strong> (<em>str</em><em>, </em><em>optional</em>) -- The column name representing fold change values in the enrichment data (default is 'Foldenr').</p></li>
+<li><p><strong>q_val_id</strong> (<em>str</em><em>, </em><em>optional</em>) -- The column name representing the corrected p-values in the enrichment data (default is 'CorrPval').</p></li>
+<li><p><strong>top_k</strong> (<em>int</em><em>, </em><em>optional</em>) -- The number of top terms to select per gene cluster (default is 5).</p></li>
+<li><p><strong>max_point_size</strong> (<em>int</em><em>, </em><em>optional</em>) -- The maximum size of the bubbles in the plot (default is 100).</p></li>
+<li><p><strong>palette</strong> (<em>str</em><em>, </em><em>optional</em>) -- The color palette used for the plot (default is 'viridis').</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <cite>matplotlib.figure.Figure</cite> object containing the bubble plot.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.visualize_marker_gene_bubbleplot_per_cell_cluster">
+<span class="sig-name descname"><span class="pre">visualize_marker_gene_bubbleplot_per_cell_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_cluster_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cell_clusters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_cluster_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gene_clusters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_embedding_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gene_embedding'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_point_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">palette</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.visualize_marker_gene_bubbleplot_per_cell_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.visualize_marker_gene_bubbleplot_per_cell_cluster" title="Link to this definition">¶</a></dt>
+<dd><p>Visualize marker gene expression as a bubble plot, where the size of the bubbles represents the
+percent of non-zero counts and the color represents the mean marker expression. Top_k are selected for each
+gene cluster. Genes names are follows by the gene cluster that each gene corresponds to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> (<em>object</em>) -- The instance of the class containing the data.</p></li>
+<li><p><strong>adata</strong> (<em>anndata.AnnData</em>) -- An AnnData object containing single-cell gene expression data.</p></li>
+<li><p><strong>cell_cluster_id</strong> (<em>str</em>) -- The column name representing cell clusters in <cite>adata.obs</cite>. (default is 'cell_clusters')</p></li>
+<li><p><strong>gene_cluster_id</strong> (<em>str</em>) -- The column name representing gene clusters in <cite>adata.var</cite>. (default is 'gene_clusters')</p></li>
+<li><p><strong>gene_embedding_id</strong> (<em>str</em>) -- The identifier for the gene embedding used for selecting top markers. (default is 'gene_embedding')</p></li>
+<li><p><strong>prefix</strong> (<em>str</em>) -- The string utilized when adding SCOTCH data to anndata. Use instead of gene_cluster_id and gene_embedding_id. (default is None)</p></li>
+<li><p><strong>top_k</strong> (<em>int</em><em>, </em><em>optional</em>) -- The number of top markers to consider per gene cluster (default is 5).</p></li>
+<li><p><strong>max_point_size</strong> (<em>int</em><em>, </em><em>optional</em>) -- The maximum size of the bubbles in the plot (default is 300).</p></li>
+<li><p><strong>palette</strong> (<em>str</em><em>, </em><em>optional</em>) -- The color palette used for the plot (default is 'viridis').</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) -- The matplotlib.axes.axes object to plot in. If none, new figure is generated and returned (default is None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <cite>matplotlib.figure.Figure</cite> object containing the bubble plot if ax not passed. Else returns none.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure or None</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="SCOTCH.SCOTCH.visualize_marker_gene_bubbleplot_per_gene_cluster">
+<span class="sig-name descname"><span class="pre">visualize_marker_gene_bubbleplot_per_gene_cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_cluster_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gene_clusters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_embedding_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gene_embedding'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_point_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">palette</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SCOTCH.html#SCOTCH.visualize_marker_gene_bubbleplot_per_gene_cluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SCOTCH.SCOTCH.visualize_marker_gene_bubbleplot_per_gene_cluster" title="Link to this definition">¶</a></dt>
+<dd><p>Visualize marker gene expression as a bubble plot, where the size of the bubbles represents the
+percent of non-zero counts and the color represents the mean marker expression. Top_k are selected for each
+gene cluster. Genes names are follows by the gene cluster that each gene corresponds to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> (<em>object</em>) -- The instance of the class containing the data.</p></li>
+<li><p><strong>adata</strong> (<em>anndata.AnnData</em>) -- An AnnData object containing single-cell gene expression data.</p></li>
+<li><p><strong>gene_cluster_id</strong> (<em>str</em><em>, </em><em>optional</em>) -- The identifier for the gene cluster used for selecting top markers.</p></li>
+<li><p><strong>gene_embedding_id</strong> (<em>str</em><em>, </em><em>optional</em>) -- The identifier for the gene embedding used for selecting top markers.</p></li>
+<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) -- The prefix string used when adding SCOTCH data to anndata object.</p></li>
+<li><p><strong>top_k</strong> (<em>int</em><em>, </em><em>optional</em>) -- The number of top markers to consider per gene cluster (default is 5).</p></li>
+<li><p><strong>max_point_size</strong> (<em>int</em><em>, </em><em>optional</em>) -- The maximum size of the bubbles in the plot (default is 300).</p></li>
+<li><p><strong>palette</strong> (<em>str</em><em>, </em><em>optional</em>) -- The color palette used for the plot (default is 'viridis').</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) -- A <cite>matplotlib.axes.Axes</cite> object to plot the bubble plot. If not provided a new figures is generated</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <cite>matplotlib.figure.Figure</cite> object containing the bubble plot.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>matplotlib.figure.Figure</p>
 </dd>
 </dl>
 </dd></dl>
