@@ -1,3 +1,7 @@
+from matplotlib.colors import ListedColormap
+from statsmodels.tools.sm_exceptions import ValueWarning
+from sympy.codegen import aug_assign
+
 from SCOTCH.DataLoader import DataLoader
 from SCOTCH.NMTF import NMTF
 
@@ -10,6 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import seaborn as sns
 import numpy as np
+
 
 import pyEnrichAnalyzer
 
@@ -1240,3 +1245,351 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+
+    def visualize_adata_factors(self,
+                          adata,
+                          U_factor_id = "cell_embedding",
+                          V_factor_id = "gene_embedding",
+                          S_matrix_id = "S_matrix",
+                          prefix = None,
+                          cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1):
+        """
+        This function generates a visual representation of the NMTF factors, allowing users to specify
+        the colormap and interpolation method used for image display.
+
+        :param cmap: The colormap to be used for visualization. Default is 'viridis'.
+        :type cmap: str, optional
+
+        :param interp: The interpolation method to be used for image display. Default is 'nearest'.
+        :type interp: str, optional
+
+        :param max_u: The maximum for color scale. Value between [0, 1] where 1 represents the max value in U.
+            Default is 1.
+        :type max_u: float, optional
+
+        :param max_v: The maximum for color scale. Value between [0, 1] where 1 represents the max value in V.
+            Default is 1.
+        :type max_v: float, optional
+
+        :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.
+            Default is 1.
+        :type max_x: float, optional
+
+        :return: U, S, V  matrix heatmaps with X and product.
+        :rtype: matplotlib.figure.Figure
+
+        """
+        fig = plt.figure(figsize=(16, 6))
+        grids = gridspec.GridSpec(2, 3, wspace=0.1, width_ratios=(0.2, 0.4, 0.4), height_ratios=(0.3, 0.7))
+
+        if prefix is not None and prefix[-1] != '_':
+            prefix = prefix + '_'
+
+        if prefix is not None:
+            U_factor_id = prefix + U_factor_id
+            V_factor_id = prefix + V_factor_id
+            S_matrix_id = prefix + S_matrix_id
+
+        U = torch.tensor(adata.obsm[U_factor_id])
+        V = torch.tensor(adata.varm[V_factor_id]).t()
+        S = torch.tensor(adata.uns[S_matrix_id])
+
+        fig = plt.figure(figsize=(16, 6))
+        grids = gridspec.GridSpec(2, 3, wspace=0.1, width_ratios=(0.2, 0.4, 0.4), height_ratios=(0.3, 0.7))
+
+        U_viz = U.detach().numpy()
+        U_viz = (U_viz - U_viz.min()) / (U_viz.max() - U_viz.min())
+        ax1 = fig.add_subplot(grids[1, 0])
+        ax1.imshow(U_viz, aspect="auto", cmap=cmap, interpolation=interp,
+                  vmin=0, vmax=max_u)
+        ax1.set_axis_off()
+        # ax1.set_title("U Matrix")
+
+        # Visualize S matrix
+        ax2 = fig.add_subplot(grids[0, 0])
+        ax2.imshow(S.t().detach().numpy(), aspect="auto", cmap=cmap, interpolation=interp)
+        ax2.set_axis_off()
+        # ax2.set_title("S Matrix")
+
+        # Visualize V matrix
+        V_viz = V.detach().numpy()
+        V_viz = (V_viz - V_viz.min()) / (V_viz.max() - V_viz.min())
+        ax3 = fig.add_subplot(grids[0, 1])
+        ax3.imshow(V_viz, aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_v)
+        ax3.set_axis_off()
+        # ax3.set_title("V Matrix")
+
+        # Visualize X matrix
+        X_est_viz = (U @ S @ V).detach().numpy()
+        X_est_viz = (X_est_viz - X_est_viz.min())/(X_est_viz.max() - X_est_viz.min())
+        ax4 = fig.add_subplot(grids[1, 1])
+        ax4.imshow(X_est_viz, aspect="auto", cmap=cmap,
+                   interpolation=interp, vmin=0, vmax=max_x)
+        # ax4.set_title("X Matrix")
+        ax4.set_axis_off()
+
+        X_viz = adata.X.toarray()
+        X_viz = (X_viz - X_viz.min()) / (X_viz.max() - X_viz.min())
+        ax5 = fig.add_subplot(grids[1, 2])
+        ax5.imshow(X_viz, aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_x)
+        ax5.set_axis_off()
+        plt.close(fig)
+        return fig
+
+    def visualize_adata_factors_sorted(self, adata,
+                                 U_factor_id='cell_embedding',
+                                 V_factor_id='gene_embedding',
+                                 S_matrix_id="S_matrix",
+                                 prefix = None,
+                                 cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1):
+        """
+        This function generates a visual representation of the NMTF factors, allowing users to specify
+        the colormap and interpolation method used for image display.
+
+        :param cmap: Colormap for the visualization. Default is 'viridis'.
+        :type cmap: str, optional
+
+        :param interp: Interpolation method for image display. Default is 'nearest'.
+        :type interp: str, optional
+
+        :param max_u: The maximum for color scale. Value between [0, 1] where 1 represents the max value in U. Default is 1.
+        :type max_u: float, optional
+
+        :param max_v: The maximum for color scale. Value between [0, 1] where 1 represents the max value in V. Default is 1.
+        :type max_v: float, optional
+
+        :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X. Default is 1.
+        :type max_x: float, optional
+
+        :return: U, S, V  matrix heatmaps with X and product.
+        :rtype: matplotlib.figure.Figure
+        """
+        fig = plt.figure(figsize=(16, 6))
+        grids = gridspec.GridSpec(2, 3, wspace=0.1, width_ratios=(0.2, 0.4, 0.4), height_ratios=(0.3, 0.7))
+
+        if prefix is not None and prefix[-1] != '_':
+            prefix = prefix + '_'
+
+        if prefix is not None:
+            U_factor_id = prefix + U_factor_id
+            V_factor_id = prefix + V_factor_id
+            S_matrix_id = prefix + S_matrix_id
+
+        U = torch.tensor(adata.obsm[U_factor_id])
+        V = torch.tensor(adata.varm[V_factor_id]).t()
+        S = torch.tensor(adata.uns[S_matrix_id])
+
+        # Generate Sorting for U
+        max_U, max_U_idx = U.max(dim=1)
+        sorting_criteria = torch.stack([max_U_idx, max_U], dim=1)
+        sorted_U_indices = torch.argsort(sorting_criteria, dim=0, stable=True)[:, 0]
+
+        # Generate Sorting for V
+        max_V, max_V_idx = V.max(dim=0)
+        sorting_criteria = torch.stack([max_V_idx, max_V], dim=1)
+        sorted_V_indices = torch.argsort(sorting_criteria, dim=0, stable=True)[:, 0]
+
+        U_viz = U[sorted_U_indices, :].detach().numpy()
+        U_viz = (U_viz - U_viz.min()) / (U_viz.max() - U_viz.min())
+        ax1 = fig.add_subplot(grids[1, 0])
+        ax1.imshow(U_viz, aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_u) # set color scale
+        ax1.set_axis_off()
+        # ax1.set_title("U Matrix")
+
+        # Visualize S matrix
+        ax2 = fig.add_subplot(grids[0, 0])
+        ax2.imshow(S.t().detach().numpy(), aspect="auto", cmap=cmap, interpolation=interp)
+        ax2.set_axis_off()
+        # ax2.set_title("S Matrix")
+
+        # Visualize V matrix
+        V_viz = self.V[:, sorted_V_indices].detach().numpy()
+        V_viz = (V_viz - V_viz.min())/(V_viz.max() - V_viz.min())
+        ax3 = fig.add_subplot(grids[0, 1])
+        ax3.imshow(V_viz, aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_v) # set color scale
+        ax3.set_axis_off()
+        # ax3.set_title("V Matrix")
+
+        # Visualize X matrix
+        X_est = U @ S @ V
+        X_est = X_est[sorted_U_indices, :]
+        X_est = X_est[:, sorted_V_indices]
+        X_est = (X_est - X_est.min()) / (X_est.max() - X_est.min())
+        ax4 = fig.add_subplot(grids[1, 1])
+        ax4.imshow(X_est, aspect="auto", cmap=cmap,
+                   interpolation=interp, vmin=0, vmax=max_x) # set color scale
+        ax4.set_axis_off()
+
+        # ax4.set_title("X Matrix")
+        X_temp = adata.X.toarray()
+        X_temp = X_temp[sorted_U_indices, :]
+        X_temp = X_temp[:, sorted_V_indices]
+        X_temp = (X_temp - X_temp.min()) / (X_temp.max() - X_temp.min())
+        ax5 = fig.add_subplot(grids[1, 2])
+        ax5.imshow(X_temp, aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_x) # set color scale
+        ax5.set_axis_off()
+        plt.close(fig)
+        return fig
+
+    def visualize_adata_clusters(self, adata,
+                                 U_factor_id='cell_embedding',
+                                 V_factor_id='gene_embedding',
+                                 prefix = None,
+                           cmap='viridis', interp='nearest', max_x=1):
+        """
+        Visualizes the factors from the NMTF model.
+
+        This function generates a visualization of the factors resulting from the NMTF model. It supports customizing the
+        color scheme, interpolation method, and the scaling of the visualization.
+
+        :param factor_name: The name of the factor to visualize (e.g., 'U', 'V').
+        :type factor_name: str
+
+        :param cmap: The colormap to use for the visualization. Default is 'viridis'.
+        :type cmap: str, optional
+
+        :param interp: The interpolation method for rendering. Default is 'nearest'.
+        :type interp: str, optional
+
+        :param max_val: The maximum value for scaling the color map. Default is 1.
+        :type max_val: float, optional
+
+        :return: The matplotlib figure object representing the factor visualization.
+        :rtype: matplotlib.figure.Figure
+        """
+
+        if prefix is not None and prefix[-1] != '_':
+            prefix = prefix + '_'
+
+        if prefix is not None:
+            U_factor_id = prefix + U_factor_id
+            V_factor_id = prefix + V_factor_id
+
+        U = torch.tensor(adata.obsm[U_factor_id])
+        V = torch.tensor(adata.varm[V_factor_id]).t()
+
+        U_assign = torch.argmax(U, dim=1)
+        V_assign = torch.argmax(V, dim=0)
+
+        fig = plt.figure(figsize=(8, 6))
+        grids = gridspec.GridSpec(2, 2, hspace=0.1, wspace=0.1, width_ratios=(0.05, 0.95), height_ratios=(0.05, 0.95))
+
+        # Setup safe color palette for U
+        n_u_clusters = max(U_assign)
+        tab_20 = plt.get_cmap('tab20')
+        if n_u_clusters > 20:
+            raise ValueWarning('Number of U clusters exceeds maximum number of supported by palette (tab20). Repeat '
+                               'colors will be used.')
+        colors = [tab_20(i % 20) for i in range(n_u_clusters + 1)]
+        u_cmap = ListedColormap(colors)
+
+        # Visualize U matrix
+        ax1 = fig.add_subplot(grids[1, 0])
+        ax1.imshow(U_assign.view(-1, 1).detach().numpy(), norm='linear', aspect="auto", cmap=u_cmap,
+                   interpolation=interp)
+        ax1.set_axis_off()
+
+        n_v_clusters = max(V_assign)
+        if n_v_clusters > 20:
+            raise ValueWarning('Number of V clusters exceeds maximum of supported by palette (tab20). Repeat '
+                               "colors will be used.")
+        colors = [tab_20(i % 20) for i in range(n_v_clusters + 1)]
+        v_cmap = ListedColormap(colors)
+
+        # Visualize V matrix
+        ax3 = fig.add_subplot(grids[0, 1])
+        ax3.imshow(V_assign.view(1, -1).detach().numpy(), norm='linear', aspect="auto", cmap=v_cmap,
+                   interpolation=interp)
+        ax3.set_axis_off()
+
+        ax4 = fig.add_subplot(grids[1, 1])
+        X_viz = adata.X.toarray()
+        X_viz = (X_viz - X_viz.min()) / (X_viz.max() - X_viz.min())
+        ax4.imshow(X_viz, norm='linear', aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_x)
+        ax4.set_axis_off()
+        plt.close(fig)
+        return fig
+
+    def visualize_adata_clusters_sorted(self, adata,
+                                 U_factor_id='cell_embedding',
+                                 V_factor_id='gene_embedding',
+                                 prefix = None,
+                                 cmap='viridis', interp='nearest', max_x=1):
+        """
+            Visualizes the clusters by ordering elements of the matrix based on their cluster assignments.
+
+            The function sorts the elements of the matrix by their cluster order and alternates the color of each
+                cluster between grey and black. This approach avoids potential issues with limited color palettes, ensuring
+                better visual distinction between clusters.
+
+            :param cmap: The colormap to be used for visualization. Defaults to 'viridis'.
+            :type cmap: str, optional
+            :param interp: The interpolation method for rendering the image. Defaults to 'nearest'.
+            :type interp: str, optional
+            :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X.  Default is 1.
+            :type max_x: int, optional
+            :return: Sorted clusters heatmap representation.
+            :rtype: matplotlib.figure.Figure
+        """
+
+        if prefix is not None and prefix[-1] != '_':
+            prefix = prefix + '_'
+
+        if prefix is not None:
+            U_factor_id = prefix + U_factor_id
+            V_factor_id = prefix + V_factor_id
+
+        U = torch.tensor(adata.obsm[U_factor_id])
+        V = torch.tensor(adata.varm[V_factor_id]).t()
+
+        U_assign = torch.argmax(U, dim=1)
+        V_assign = torch.argmax(V, dim=0)
+
+        fig = plt.figure(figsize=(8, 6))
+        grids = gridspec.GridSpec(2, 2, hspace=0.1, wspace=0.1, width_ratios=(0.05, 0.95), height_ratios=(0.05, 0.95))
+
+        # Generate Sorting for U
+        max_U, max_U_idx = U.max(dim=1)
+        sorting_criteria = torch.stack([max_U_idx, max_U], dim=1)
+        sorted_U_indices = torch.argsort(sorting_criteria, dim=0, stable=True)[:, 0]
+
+        # Generate Sorting for V
+        max_V, max_V_idx = V.max(dim=0)
+        sorting_criteria = torch.stack([max_V_idx, max_V], dim=1)
+        sorted_V_indices = torch.argsort(sorting_criteria, dim=0, stable=True)[:, 0]
+
+        barcode_U = torch.zeros_like(U_assign)
+        for i, class_value in enumerate(torch.unique(self.U_assign)):
+            barcode_U[self.U_assign == class_value] = 0 if i % 2 == 0 else 1.0
+
+        barcode_V = torch.zeros_like(V_assign)
+        for i, class_value in enumerate(torch.unique(self.V_assign)):
+            barcode_V[self.V_assign == class_value] = 0 if i % 2 == 0 else 1.0
+
+        ax1 = fig.add_subplot(grids[1, 0])
+        ax1.imshow(barcode_U[sorted_U_indices].view(-1, 1).detach().numpy(), aspect="auto", cmap='gray', vmin=0,
+                   vmax=2, interpolation=interp)
+        ax1.set_axis_off()
+
+        # Visualize V matrix
+        ax3 = fig.add_subplot(grids[0, 1])
+        ax3.imshow(barcode_V[sorted_V_indices].view(1, -1).detach().numpy(), aspect="auto", cmap='gray',
+                   vmin=0, vmax=2, interpolation=interp)
+        ax3.set_axis_off()
+        # ax3.set_title("V Matrix")
+
+        X_temp = adata.X[sorted_U_indices, :][:, sorted_V_indices].toarray()
+        X_temp = (X_temp - X_temp.min()) / (X_temp.max() - X_temp.min())
+        ax5 = fig.add_subplot(grids[1, 1])
+        ax5.imshow(X_temp, aspect="auto", cmap=cmap, interpolation=interp,
+                   vmin=0, vmax=max_x)
+        ax5.set_axis_off()
+        plt.close(fig)
+        return fig
+

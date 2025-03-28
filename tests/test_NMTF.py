@@ -1,6 +1,6 @@
 import pytest
 import torch
-from NMTF import NMTF
+from SCOTCH.NMTF import NMTF
 
 
 def test_nmtf_initialization_defaults():
