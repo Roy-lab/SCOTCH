@@ -1106,7 +1106,10 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
                                          gene_cluster_id = 'gene_clusters',
                                          gene_embedding_id='gene_embedding',
                                          top_k=5, max_point_size=100,
-                                         palette='viridis', var1='cell_clusters', var2='sample', S_matrix_id="S_matrix",
+                                         palette='viridis',
+                                         var1='cell_clusters', 
+                                         var2='sample', 
+                                         S_matrix_id="S_matrix",
                                          prefix = None):
         """
         Generate a combined visualization of embeddings from the data, with options to color by metadata.
@@ -1406,7 +1409,7 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         # ax2.set_title("S Matrix")
 
         # Visualize V matrix
-        V_viz = self.V[:, sorted_V_indices].detach().numpy()
+        V_viz = V[:, sorted_V_indices].detach().numpy()
         V_viz = (V_viz - V_viz.min())/(V_viz.max() - V_viz.min())
         ax3 = fig.add_subplot(grids[0, 1])
         ax3.imshow(V_viz, aspect="auto", cmap=cmap, interpolation=interp,
