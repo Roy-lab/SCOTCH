@@ -414,7 +414,39 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         :rtype: matplotlib.figure.Figure
         """
 
+        # Validate adata input
+        if adata is None or not hasattr(adata, 'uns'):
+            raise ValueError(
+                "The 'adata' parameter is required and must be a valid AnnData object with an 'uns' attribute.")
+
+        # Validate enrich_object_id
+        if enrich_object_id not in adata.uns:
+            raise KeyError(f"The key '{enrich_object_id}' does not exist in 'adata.uns'. Please check the input.")
+
+        # Validate that 'adata.uns[enrich_object_id]' contains data
+        enrich_data = adata.uns[enrich_object_id]
+        if not enrich_data or not isinstance(enrich_data, dict) or len(enrich_data) == 0:
+            raise ValueError(
+                f"The 'adata.uns[{enrich_object_id}]' object is empty or invalid. Ensure it contains enrichment data.")
+
+        # Validate top_k and max_point_size
+        if not isinstance(top_k, int) or top_k <= 0:
+            raise ValueError("The 'top_k' parameter must be a positive integer.")
+
+        if not isinstance(max_point_size, (int, float)) or max_point_size <= 0:
+            raise ValueError("The 'max_point_size' parameter must be a positive number.")
+
+        # Validate ax if provided
+        if ax is not None and not hasattr(ax, 'plot'):
+            raise ValueError("The 'ax' parameter, if provided, must be a matplotlib Axes object.")
+
+        # If gene_cluster_set is provided, validate it
+        if gene_cluster_set is not None and not isinstance(gene_cluster_set, (list, set)):
+            raise ValueError("The 'gene_cluster_set' parameter must be a list or set of genes.")
+
         enrichment = adata.uns[enrich_object_id]
+
+
         enrichment_topk_terms = enrichment.groupby(gene_cluster_id).apply(lambda grp: grp.nsmallest(top_k, q_val_id),
                                                                           include_groups=False)[term_id]
         filtered_enrichment = enrichment[enrichment[term_id].isin(enrichment_topk_terms)].copy()
@@ -1406,7 +1438,7 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         # ax2.set_title("S Matrix")
 
         # Visualize V matrix
-        V_viz = self.V[:, sorted_V_indices].detach().numpy()
+        V_viz = V[:, sorted_V_indices].detach().numpy()
         V_viz = (V_viz - V_viz.min())/(V_viz.max() - V_viz.min())
         ax3 = fig.add_subplot(grids[0, 1])
         ax3.imshow(V_viz, aspect="auto", cmap=cmap, interpolation=interp,
