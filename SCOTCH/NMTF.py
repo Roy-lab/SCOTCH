@@ -10,6 +10,7 @@ import imageio.v2 as imageio
 from statsmodels.tools.sm_exceptions import ValueWarning
 
 from .initialize import *
+import initialize
 from torchmetrics.classification import MulticlassJaccardIndex
 
 import scipy.cluster.hierarchy as sch
