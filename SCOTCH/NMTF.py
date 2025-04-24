@@ -9,7 +9,7 @@ from matplotlib.colors import ListedColormap
 import imageio.v2 as imageio
 from statsmodels.tools.sm_exceptions import ValueWarning
 
-from SCOTCH.initialize import *
+import SCOTCH.initialize as initialize
 
 from torchmetrics.classification import MulticlassJaccardIndex
 
@@ -87,7 +87,7 @@ class NMTF:
                  max_l_u=0, max_l_v=0, max_a_u=0, max_a_v=0, k1=2, k2=2,
                  var_lambda=False, var_alpha=False, shape_param=10, mid_epoch_param=5,
                  init_style="random", save_clust=False, draw_intermediate_graph=False, save_intermediate=False,
-                 track_objective=False, kill_factors=False, device="cpu", out_path=None, legacy=False):
+                 track_objective=False, kill_factors=False, device="cpu", out_path=None, legacy=False, dtype = torch.float32):
 
         # Initialize Parameter space
         self.verbose = verbose
@@ -117,6 +117,8 @@ class NMTF:
         self.save_intermediate = save_intermediate
         self.draw_intermediate_graph = draw_intermediate_graph
         self.frames = [] if self.draw_intermediate_graph else None
+        self.dtype = dtype
+        torch.set_default_dtype(self.dtype)
 
         if out_path is not None:
             self.out_path = str(out_path)
@@ -180,9 +182,9 @@ class NMTF:
         :returns: None
         """
         if self.init_style == "random":
-            self.U = torch.rand(self.num_u, self.k1, device=self.device, dtype=torch.float32)
-            self.V = torch.rand(self.k2, self.num_v, device=self.device, dtype=torch.float32)
-            self.S = self.X.max() * torch.rand((self.k1, self.k2), device=self.device, dtype=torch.float32)
+            self.U = torch.rand(self.num_u, self.k1, device=self.device)
+            self.V = torch.rand(self.k2, self.num_v, device=self.device)
+            self.S = self.X.max() * torch.rand((self.k1, self.k2), device=self.device)
             self.P = self.U @ self.S
             self.Q = self.S @ self.V
             self.R = self.X - self.P @ self.V
@@ -195,7 +197,7 @@ class NMTF:
 
             # Not a real good way of doing this. Start with something random and let's update S first.
             # Perhaps bias toward diagonal.
-            self.S = torch.rand((self.k1, self.k2), device=self.device, dtype=torch.float32)
+            self.S = torch.rand((self.k1, self.k2), device=self.device)
             self.P = self.U @ self.S
             self.Q = self.S @ self.V
             self.R = self.X - self.P @ self.V
@@ -991,15 +993,16 @@ class NMTF:
         if not isinstance(file_pre, str):
             raise TypeError('file_pre must be a string')
 
-        if file_pre[-1] != '_' and len(file_pre) > 0:
-            file_pre = file_pre + '_'
+        if len(file_pre) > 0:
+            if file_pre[-1] != '_':
+                file_pre = file_pre + '_'
 
         U_out = self.U.cpu()
-        U_out = torch.transpose(U_out, 0, 1)
         U_out = pd.DataFrame(U_out.numpy())
         U_out.to_csv(self.out_path + '/' + file_pre + "U.txt", sep='\t', header=False, index=False)
 
         V_out = self.V.cpu()
+        V_out = torch.transpose(V_out, 0, 1)
         V_out = pd.DataFrame(V_out.numpy())
         V_out.to_csv(self.out_path + '/' + file_pre + "V.txt", sep="\t", header=False, index=False)
 
@@ -1085,11 +1088,11 @@ class NMTF:
 
         :return: None
         """
-        self.reconstruction_error = torch.zeros(size=[1, self.maxIter + 1], dtype=torch.float32)
-        self.lU_error = torch.zeros(size=[1, self.maxIter + 1], dtype=torch.float32)
-        self.lV_error = torch.zeros(size=[1, self.maxIter + 1], dtype=torch.float32)
-        self.relative_error = torch.zeros(size=[1, self.maxIter + 1], dtype=torch.float32)
-        self.error = torch.zeros(size=[1, self.maxIter + 1], dtype=torch.float32)
+        self.reconstruction_error = torch.zeros(size=[1, self.maxIter + 1])
+        self.lU_error = torch.zeros(size=[1, self.maxIter + 1])
+        self.lV_error = torch.zeros(size=[1, self.maxIter + 1])
+        self.relative_error = torch.zeros(size=[1, self.maxIter + 1])
+        self.error = torch.zeros(size=[1, self.maxIter + 1])
         self._calculate_objective()
 
     def _track_clusters_setup(self):
@@ -1097,10 +1100,10 @@ class NMTF:
         Initialize the necessary tensors for tracking clusters setup including U_assign, V_assign, U_JI, V_JI.
         Set the initial values for U_JI and V_JI as infinity.
         """
-        self.U_assign = torch.zeros(size=[self.num_u, self.maxIter + 1], dtype=torch.float32)
-        self.V_assign = torch.zeros(size=[self.num_v, self.maxIter + 1], dtype=torch.float32)
-        self.U_JI = torch.zeros(size=[self.num_u, self.maxIter + 1], dtype=torch.float32)
-        self.V_JI = torch.zeros(size=[self.num_v, self.maxIter + 1], dtype=torch.float32)
+        self.U_assign = torch.zeros(size=[self.num_u, self.maxIter + 1])
+        self.V_assign = torch.zeros(size=[self.num_v, self.maxIter + 1])
+        self.U_JI = torch.zeros(size=[self.num_u, self.maxIter + 1])
+        self.V_JI = torch.zeros(size=[self.num_v, self.maxIter + 1])
         self.U_JI[:, 0] = float('inf')
         self.V_JI[:, 0] = float('inf')
 
@@ -1123,11 +1126,11 @@ class NMTF:
        """
         self.U_assign = torch.zeros(size=[self.num_u, self.maxIter + 1], dtype=torch.uint8)
         self.U_assign[:, 0] = torch.argmax(self.U, dim=1)
-        self.U_JI = torch.zeros(size=[self.num_u, self.maxIter], dtype=torch.float32)
+        self.U_JI = torch.zeros(size=[self.num_u, self.maxIter])
         self.V_assign = torch.zeros(size=[self.num_v, self.maxIter + 1], dtype=torch.uint8)
         self.V_assign[:, 0] = torch.argmax(self.V, dim=0)
-        self.V_JI = torch.zeros(size=[self.num_v, self.maxIter], dtype=torch.float32)
-        self.relative_error = torch.zeros(size=[1, self.maxIter], dtype=torch.float32)
+        self.V_JI = torch.zeros(size=[self.num_v, self.maxIter])
+        self.relative_error = torch.zeros(size=[1, self.maxIter])
 
     def assign_cluster(self):
         """
@@ -1145,18 +1148,36 @@ class NMTF:
         self.U_assign = torch.argmax(self.U, dim=1)
         self.V_assign = torch.argmax(self.V, dim=0)
 
-    def print_cluster(self, file_pre):
+    def print_cluster(self, file_pre=''):
         """
-        Assi
-        :return:
-        """
+        Write the lower-dimensional matrices (U, V, and S) to tab-delimited text files.
 
-        U_out = self.U_assign_assign.cpu()
+        This method saves the U, V, and S matrices to text files with names based on the
+        provided prefix. The matrices are saved in tab-delimited format and will be named
+       `file_pre_U_assign.txt` and `file_pre_V_assign.txt`.
+
+       Args:
+       file_pre (str): Prefix to append to the file names.
+
+       Returns:
+           None
+       """
+
+
+        if not isinstance(file_pre, str):
+            raise TypeError('file_pre must be a string')
+
+        if len(file_pre) > 0:
+            if file_pre[-1] != '_':
+                file_pre = file_pre + '_'
+
+        self.assign_cluster() ## For safety. Assign clusters.
+        U_out = self.U_assign.cpu()
         U_out = pd.DataFrame(U_out.numpy())
         U_out.to_csv(self.out_path + '/' + file_pre + "U_assign.txt", sep='\t', header=False, index=False)
 
         V_out = self.V_assign.cpu()
-        V_out = V_out.transpose(0, 1)
+        #V_out = V_out.transpose(0, 1)
         V_out = pd.DataFrame(V_out.numpy())
         V_out.to_csv(self.out_path + '/' + file_pre + "V_assign.txt", sep="\t", header=False, index=False)
 

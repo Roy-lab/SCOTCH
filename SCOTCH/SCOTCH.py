@@ -128,6 +128,9 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
             self.add_data_from_adata(adata)
         else:
             raise ValueError("Unsupported file type. Select .pt or .txt or .h5ad")
+
+        self.X = self.X.to(dtype = self.dtype)
+
         if shape is not None:
             self.num_u = shape[0]
             self.num_v = shape[1]
@@ -155,6 +158,7 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         else:
             X_tensor = torch.tensor(X)
         self.X = X_tensor
+        self.X = self.X.to(dtype = self.dtype)
         self.num_u = self.X.shape[0]
         self.num_v = self.X.shape[1]
         return None
@@ -354,7 +358,7 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
             prefix = prefix + '_'
 
 
-        EA = pyEnrichAnalyzer.Framework()
+        EA = PyEnrichAnalyzer.Framework()
         enrichment = EA.runEnrichAnalyzer(
             adata.var.to_dict(orient='index'),
             gene_cluster_id,

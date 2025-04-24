@@ -62,8 +62,8 @@ def nnsvd_nmf_initialize(X, k, seed=None):
     U, S_svd, V = torch.svd_lowrank(X, q=k)
 
     # Initialize W and H matrices
-    W = torch.zeros((m, k), dtype=X.dtype, device=X.device)
-    H = torch.zeros((n, k), dtype=X.dtype, device=X.device)
+    W = torch.zeros((m, k), device=X.device)
+    H = torch.zeros((n, k), device=X.device)
 
     # We need to initialize the first comp because technically we could have double negatives... This is resolved here.
     for i in range(0, k):

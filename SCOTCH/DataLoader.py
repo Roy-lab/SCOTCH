@@ -29,7 +29,8 @@ class DataLoader:
         df = df.to_numpy()
         if self.verbose:
             print('Time to read file: {0:.3f}'.format(time.time() - start_time))
-        return torch.from_numpy(df), df.shape
+        X = torch.from_numpy(df)
+        return X, df.shape
 
     def from_pt(self, datafile):
         """
