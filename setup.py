@@ -10,7 +10,7 @@ setup(
         "scipy",
         "matplotlib",
         "seaborn",
-        "pyEnrichAnalyzer",
+        "PyEnrichAnalyzer",
         "anndata", 
         "torchmetrics", 
         "torch",

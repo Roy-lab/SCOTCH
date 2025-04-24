@@ -16,7 +16,7 @@ import seaborn as sns
 import numpy as np
 
 
-import pyEnrichAnalyzer
+import PyEnrichAnalyzer
 
 
 class SCOTCH(NMTF):

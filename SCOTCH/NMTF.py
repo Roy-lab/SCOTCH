@@ -9,8 +9,8 @@ from matplotlib.colors import ListedColormap
 import imageio.v2 as imageio
 from statsmodels.tools.sm_exceptions import ValueWarning
 
-from .initialize import *
-import initialize
+from SCOTCH.initialize import *
+
 from torchmetrics.classification import MulticlassJaccardIndex
 
 import scipy.cluster.hierarchy as sch
@@ -973,7 +973,7 @@ class NMTF:
                 stop_marker = 0
         return None
 
-    def print_USV(self, file_pre):
+    def print_USV(self, file_pre=""):
         """
                Write the lower-dimensional matrices (U, V, and S) to tab-delimited text files.
 
@@ -987,10 +987,11 @@ class NMTF:
                Returns:
                    None
         """
+
         if not isinstance(file_pre, str):
             raise TypeError('file_pre must be a string')
 
-        if file_pre[-1] != '_':
+        if file_pre[-1] != '_' and len(file_pre) > 0:
             file_pre = file_pre + '_'
 
         U_out = self.U.cpu()
@@ -1144,7 +1145,7 @@ class NMTF:
         self.U_assign = torch.argmax(self.U, dim=1)
         self.V_assign = torch.argmax(self.V, dim=0)
 
-    def print_cluster(self):
+    def print_cluster(self, file_pre):
         """
         Assi
         :return:

@@ -3,4 +3,4 @@
 #from .NMTF import *
 from .SCOTCH import SCOTCH
 #from .convertTextToPT import *
-import pyEnrichAnalyzer
+#import PyEnrichAnalyzer
