@@ -1144,6 +1144,21 @@ class NMTF:
         self.U_assign = torch.argmax(self.U, dim=1)
         self.V_assign = torch.argmax(self.V, dim=0)
 
+    def print_cluster(self):
+        """
+        Assi
+        :return:
+        """
+
+        U_out = self.U_assign_assign.cpu()
+        U_out = pd.DataFrame(U_out.numpy())
+        U_out.to_csv(self.out_path + '/' + file_pre + "U_assign.txt", sep='\t', header=False, index=False)
+
+        V_out = self.V_assign.cpu()
+        V_out = V_out.transpose(0, 1)
+        V_out = pd.DataFrame(V_out.numpy())
+        V_out.to_csv(self.out_path + '/' + file_pre + "V_assign.txt", sep="\t", header=False, index=False)
+
     def _sigmoid_schedule(self, mid_iter=5, shape=10.0):
         """
         Generates a sigmoid scheduling function for the lambda U and lambda V regularization parameters.

@@ -42,7 +42,7 @@ class DataLoader:
         start_time = time.time() if self.verbose else None
         if self.verbose:
             print('Starting to read data from {0:s}'.format(datafile))
-        x = torch.load(datafile)
+        x = torch.load(datafile, weights_only=True)
         if self.verbose:
             print('Time to read file: {0:.3f}'.format(time.time() - start_time))
         return x, x.shape
