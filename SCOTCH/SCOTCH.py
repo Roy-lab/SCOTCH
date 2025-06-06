@@ -192,6 +192,35 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         adata.uns[prefix + 'error'] = self.error.detach().numpy()
         return adata
 
+    def add_scotch_embeddings_to_adata_from_file(self, adata, dir):
+        if not isinstance(adata, anndata.AnnData):
+            raise TypeError("adata must be an AnnData object")
+        if  not isinstance(dir, str):
+            raise TypeError("dir must be a string")
+        if len(dir) == 0:
+            raise ValueError("dir must be a non-empty string")
+        if not os.path.isdir(dir):
+            raise ValueError("dir must be a valid directory")
+
+        U = pd.read_csv(dir + '/U.txt', header=None, sep='\t')
+        V = pd.read_csv(dir + '/V.txt', header=None, sep='\t')
+        S = pd.read_csv(dir + '/S.txt', header=None, sep='\t', usecols=range(self.k2))
+        error = pd.read_csv(dir + '/err.txt', header=None, sep='\t')
+
+        self.U = torch.tensor(U.values).t()
+        self.V = torch.tensor(V.values)
+        self.S = torch.tensor(S.values)
+
+        self.P = self.U @ self.S
+        self.Q = self.S @ self.V
+
+        self.reconstruction_error = torch.tensor(error.values)
+        self.error = torch.tensor(error.values)
+
+        self.assign_cluster()
+        self.add_scotch_embeddings_to_adata(adata)
+        return adata
+
     def make_adata_from_scotch(self, prefix=""):
         """
         Create an AnnData object from the given data.
