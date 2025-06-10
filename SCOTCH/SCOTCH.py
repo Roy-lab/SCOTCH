@@ -204,7 +204,19 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
 
         U = pd.read_csv(dir + '/U.txt', header=None, sep='\t')
         V = pd.read_csv(dir + '/V.txt', header=None, sep='\t')
-        S = pd.read_csv(dir + '/S.txt', header=None, sep='\t', usecols=range(self.k2))
+        S = pd.read_csv(dir + '/S.txt', header=None, sep='\t')
+
+        #Fix possible \t\n end line which expresses itself in NaN. C++ version output have this... (Need to fix there)
+        if U.iloc[:, -1].isna().all():
+            U = U.iloc[:, :-1]
+
+        if V.iloc[:, -1].isna().all():
+            V= V.iloc[:, :-1]
+
+        if S.iloc[:, -1].isna().all():
+            S = S.iloc[:, :-1]
+
+
         error = pd.read_csv(dir + '/err.txt', header=None, sep='\t')
 
         self.U = torch.tensor(U.values).t()
