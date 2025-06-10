@@ -399,7 +399,7 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
             prefix = prefix + '_'
 
 
-        EA = PyEnrichAnalyzer.Framework()
+        EA = PyEnrichAnalyzer.PyEnrichAnalyzer_core.Framework()
         enrichment = EA.runEnrichAnalyzer(
             adata.var.to_dict(orient='index'),
             gene_cluster_id,
