@@ -470,7 +470,7 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
 
         # Validate that 'adata.uns[enrich_object_id]' contains data
         enrich_data = adata.uns[enrich_object_id]
-        if not enrich_data or not isinstance(enrich_data, dict) or len(enrich_data) == 0:
+        if not isinstance(enrich_data, dict) or len(enrich_data) == 0:
             raise ValueError(
                 f"The 'adata.uns[{enrich_object_id}]' object is empty or invalid. Ensure it contains enrichment data.")
 
