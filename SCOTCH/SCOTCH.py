@@ -403,7 +403,7 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         enrichment = EA.runEnrichAnalyzer(
             adata.var.to_dict(orient='index'),
             gene_cluster_id,
-            adata.var_names.to_list(),
+            #adata.var_names.to_list(),
             go_regnet_file,
             fdr,
             test_type)
