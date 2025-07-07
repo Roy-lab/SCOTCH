@@ -217,9 +217,30 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
             S = S.iloc[:, :-1]
 
 
+        ### Make sure U direction is correct
+        if U.shape[1] != self.num_u and U.shape[0] != self.num_u:
+            raise ValueWarning("U embedding does not match current k1 value.")
+        elif U.shape[0] == self.num_u:
+            U = U.transpose()
+        elif U.shape[1] == self.num_u:
+            U = U
+
+        ### Make sure V direction is correct
+        if V.shape[1] != self.num_v and V.shape[0] != self.num_v:
+            raise ValueWarning("V embedding does not match current k1 value.")
+        elif V.shape[0] == self.num_v:
+            V = V
+        elif V.shape[1] == self.num_v:
+            V = V.transpose()
+
+        ### make sure S is correct
+        if S.shape[1] != self.num_v and S.shape[0] != self.num_u:
+            raise ValueWarning("S matrix does not match current k1 and k2 values.")
+
+
         error = pd.read_csv(dir + '/err.txt', header=None, sep='\t')
 
-        self.U = torch.tensor(U.values).t()
+        self.U = torch.tensor(U.values)
         self.V = torch.tensor(V.values)
         self.S = torch.tensor(S.values)
 
