@@ -1353,7 +1353,8 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
                           V_factor_id = "gene_embedding",
                           S_matrix_id = "S_matrix",
                           prefix = None,
-                          cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1):
+                          cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1,
+                          n_cells = None, n_genes = None):
         """
         This function generates a visual representation of the NMTF factors, allowing users to specify
         the colormap and interpolation method used for image display.
@@ -1376,6 +1377,12 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
             Default is 1.
         :type max_x: float, optional
 
+        :params n_cells: Number of cells to display. Default is None (all cells).
+        :type n_cells: int, optional
+
+        :params n_genes: Number of genes to display. Default is None (all genes).
+        :type n_genes: int, optional
+
         :return: U, S, V  matrix heatmaps with X and product.
         :rtype: matplotlib.figure.Figure
 
@@ -1394,6 +1401,16 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         U = torch.tensor(adata.obsm[U_factor_id])
         V = torch.tensor(adata.varm[V_factor_id]).t()
         S = torch.tensor(adata.uns[S_matrix_id])
+
+        if n_cells is not None:
+            n_cells = min(n_cells, U.shape[0])
+            cell_sample_indices = np.random.choice(U.shape[0], size = n_cells, replace=False)
+            U = U[cell_sample_indices, :]
+
+        if n_genes is not None:
+            n_genes = min(n_genes, V.shape[1])
+            gene_sample_indices = np.random.choice(V.shape[1], size = n_genes, replace=False)
+            V = V[:,gene_sample_indices]
 
         fig = plt.figure(figsize=(16, 6))
         grids = gridspec.GridSpec(2, 3, wspace=0.1, width_ratios=(0.2, 0.4, 0.4), height_ratios=(0.3, 0.7))
@@ -1430,7 +1447,17 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         # ax4.set_title("X Matrix")
         ax4.set_axis_off()
 
-        X_viz = adata.X.toarray()
+        # Ensure X_temp is a true copy, in float32
+        if not isinstance(adata.X, np.ndarray):
+            X_viz = adata.X.toarray().astype(np.float32, copy=True)
+        else:
+            X_viz = np.array(adata.X, dtype=np.float32, copy=True)
+
+        if n_cells is not None and 'cell_sample_indices' in locals():
+            X_viz = X_viz[cell_sample_indices, :]
+        if n_genes is not None and 'gene_sample_indices' in locals():
+            X_viz = X_viz[:, gene_sample_indices]
+
         X_viz = (X_viz - X_viz.min()) / (X_viz.max() - X_viz.min())
         ax5 = fig.add_subplot(grids[1, 2])
         ax5.imshow(X_viz, aspect="auto", cmap=cmap, interpolation=interp,
@@ -1444,7 +1471,8 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
                                  V_factor_id='gene_embedding',
                                  S_matrix_id="S_matrix",
                                  prefix = None,
-                                 cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1):
+                                 cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1,
+                                 n_cells = None, n_genes = None):
         """
         This function generates a visual representation of the NMTF factors, allowing users to specify
         the colormap and interpolation method used for image display.
@@ -1464,6 +1492,12 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         :param max_x: The maximum for color scale. Value between [0, 1] where 1 represents the max value in X. Default is 1.
         :type max_x: float, optional
 
+        :params n_cells: Number of cells to be used for visualization. Default is None (all cells).
+        :type n_cells: int, optional
+
+        :params n_genes: Number of genes to be used for visualization. Default is None (all genes).
+        :type n_genes: int, optional
+
         :return: U, S, V  matrix heatmaps with X and product.
         :rtype: matplotlib.figure.Figure
         """
@@ -1481,6 +1515,16 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         U = torch.tensor(adata.obsm[U_factor_id])
         V = torch.tensor(adata.varm[V_factor_id]).t()
         S = torch.tensor(adata.uns[S_matrix_id])
+
+        if n_cells is not None:
+            n_cells = min(n_cells, U.shape[0])
+            cell_sample_indices = np.random.choice(U.shape[0], size = n_cells, replace=False)
+            U = U[cell_sample_indices, :]
+
+        if n_genes is not None:
+            n_genes = min(n_genes, V.shape[1])
+            gene_sample_indices = np.random.choice(V.shape[1], size = n_genes, replace=False)
+            V = V[:,gene_sample_indices]
 
         # Generate Sorting for U
         max_U, max_U_idx = U.max(dim=1)
@@ -1526,7 +1570,18 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         ax4.set_axis_off()
 
         # ax4.set_title("X Matrix")
-        X_temp = adata.X.toarray()
+
+        # Ensure X_temp is a true copy, in float32
+        if not isinstance(adata.X, np.ndarray):
+            X_temp = adata.X.toarray().astype(np.float32, copy=True)
+        else:
+            X_temp = np.array(adata.X, dtype=np.float32, copy=True)
+
+        if n_cells is not None and 'cell_sample_indices' in locals():
+            X_temp = X_temp[cell_sample_indices, :]
+        if n_genes is not None and 'gene_sample_indices' in locals():
+            X_temp = X_temp[:, gene_sample_indices]
+
         X_temp = X_temp[sorted_U_indices, :]
         X_temp = X_temp[:, sorted_V_indices]
         X_temp = (X_temp - X_temp.min()) / (X_temp.max() - X_temp.min())
@@ -1540,8 +1595,10 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
     def visualize_adata_clusters(self, adata,
                                  U_factor_id='cell_embedding',
                                  V_factor_id='gene_embedding',
+                                 S_matrix_id="S_matrix",
                                  prefix = None,
-                           cmap='viridis', interp='nearest', max_x=1):
+                                 cmap='viridis', interp='nearest', max_x=1,
+                                 n_cells = None, n_genes = None):
         """
         Visualizes the factors from the NMTF model.
 
@@ -1562,6 +1619,12 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
 
         :return: The matplotlib figure object representing the factor visualization.
         :rtype: matplotlib.figure.Figure
+
+        :param n_cells: Number of cells to sample. Defaults to None (all cells).
+        :rtype n_cells: int, optional
+
+        :param n_genes: Number of genes to sample. Defaults to None (all genes).
+        :rtype n_genes: int, optional
         """
 
         if prefix is not None and prefix[-1] != '_':
@@ -1570,9 +1633,27 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         if prefix is not None:
             U_factor_id = prefix + U_factor_id
             V_factor_id = prefix + V_factor_id
+            S_matrix_id = prefix + S_matrix_id
+
 
         U = torch.tensor(adata.obsm[U_factor_id])
         V = torch.tensor(adata.varm[V_factor_id]).t()
+        S = torch.tensor(adata.uns[S_matrix_id])
+
+        if n_cells is not None:
+            n_cells = min(n_cells, U.shape[0])
+            cell_sample_indices = np.random.choice(U.shape[0], size = n_cells, replace=False)
+            U = U[cell_sample_indices, :]
+
+        if n_genes is not None:
+            n_genes = min(n_genes, V.shape[0])
+            gene_sample_indices = np.random.choice(V.shape[0], size = n_genes, replace=False)
+            V = V[gene_sample_indices, :]
+
+        X_est = U @ S @ V
+        X_est = (X_est - X_est.min()) / (X_est.max() - X_est.min())
+        fig = plt.figure(figsize=(16, 6))
+        grids = gridspec.GridSpec(1, 2, wspace=0.1, width_ratios=(0.2, 0.4))
 
         U_assign = torch.argmax(U, dim=1)
         V_assign = torch.argmax(V, dim=0)
@@ -1609,7 +1690,17 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         ax3.set_axis_off()
 
         ax4 = fig.add_subplot(grids[1, 1])
-        X_viz = adata.X.toarray()
+
+        if not isinstance(adata.X, np.ndarray):
+            X_viz = adata.X.toarray().astype(np.float32, copy=True)
+        else:
+            X_viz = np.array(adata.X, dtype=np.float32, copy=True)
+
+        if n_cells is not None and 'cell_sample_indices' in locals():
+            X_viz = X_viz[cell_sample_indices, :]
+        if n_genes is not None and 'gene_sample_indices' in locals():
+            X_viz = X_viz[:, gene_sample_indices]
+
         X_viz = (X_viz - X_viz.min()) / (X_viz.max() - X_viz.min())
         ax4.imshow(X_viz, norm='linear', aspect="auto", cmap=cmap, interpolation=interp,
                    vmin=0, vmax=max_x)
@@ -1620,8 +1711,10 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
     def visualize_adata_clusters_sorted(self, adata,
                                  U_factor_id='cell_embedding',
                                  V_factor_id='gene_embedding',
+                                 S_matrix_id="S_matrix",
                                  prefix = None,
-                                 cmap='viridis', interp='nearest', max_x=1):
+                                 cmap='viridis', interp='nearest', max_x=1,
+                                 n_cells = None, n_genes = None):
         """
             Visualizes the clusters by ordering elements of the matrix based on their cluster assignments.
 
@@ -1637,6 +1730,10 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
             :type max_x: int, optional
             :return: Sorted clusters heatmap representation.
             :rtype: matplotlib.figure.Figure
+            :param n_cells: Number of cells to sample. Defaults to None (all cells).
+            :rtype n_cells: int, optional
+            :param n_genes: Number of genes to sample. Defaults to None (all genes).
+            :rtype n_genes: int, optional
         """
 
         if prefix is not None and prefix[-1] != '_':
@@ -1645,9 +1742,21 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         if prefix is not None:
             U_factor_id = prefix + U_factor_id
             V_factor_id = prefix + V_factor_id
+            S_matrix_id = prefix + S_matrix_id
 
         U = torch.tensor(adata.obsm[U_factor_id])
         V = torch.tensor(adata.varm[V_factor_id]).t()
+        S = torch.tensor(adata.uns[S_matrix_id])
+
+        if n_cells is not None:
+            n_cells = min(n_cells, U.shape[0])
+            cell_sample_indices = np.random.choice(U.shape[0], size = n_cells, replace=False)
+            U = U[cell_sample_indices, :]
+
+        if n_genes is not None:
+            n_genes = min(n_genes, V.shape[0])
+            gene_sample_indices = np.random.choice(V.shape[0], size = n_genes, replace=False)
+            V = V[gene_sample_indices, :]
 
         U_assign = torch.argmax(U, dim=1)
         V_assign = torch.argmax(V, dim=0)
@@ -1685,7 +1794,17 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         ax3.set_axis_off()
         # ax3.set_title("V Matrix")
 
-        X_temp = adata.X[sorted_U_indices, :][:, sorted_V_indices].toarray()
+        if not isinstance(adata.X, np.ndarray):
+            X_temp = adata.X.toarray().astype(np.float32, copy=True)
+        else:
+            X_temp = np.array(adata.X, dtype=np.float32, copy=True)
+
+        if n_cells is not None and 'cell_sample_indices' in locals():
+            X_temp = X_temp[cell_sample_indices, :]
+        if n_genes is not None and 'gene_sample_indices' in locals():
+            X_temp = X_temp[:, gene_sample_indices]
+
+        X_temp = adata.X[sorted_U_indices, :][:, sorted_V_indices]
         X_temp = (X_temp - X_temp.min()) / (X_temp.max() - X_temp.min())
         ax5 = fig.add_subplot(grids[1, 1])
         ax5.imshow(X_temp, aspect="auto", cmap=cmap, interpolation=interp,
