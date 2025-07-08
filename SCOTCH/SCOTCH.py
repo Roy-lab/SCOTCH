@@ -218,23 +218,23 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
 
 
         ### Make sure U direction is correct
-        if U.shape[1] != self.num_u and U.shape[0] != self.num_u:
+        if U.shape[1] != self.k1 and U.shape[0] != self.k1:
             raise ValueWarning("U embedding does not match current k1 value.")
-        elif U.shape[0] == self.num_u:
+        elif U.shape[0] == self.k1:
             U = U.transpose()
-        elif U.shape[1] == self.num_u:
+        elif U.shape[1] == self.k1:
             U = U
 
         ### Make sure V direction is correct
-        if V.shape[1] != self.num_v and V.shape[0] != self.num_v:
-            raise ValueWarning("V embedding does not match current k1 value.")
-        elif V.shape[0] == self.num_v:
+        if V.shape[1] != self.k2 and V.shape[0] != self.k2:
+            raise ValueWarning("V embedding does not match current k2 value.")
+        elif V.shape[0] == self.k2:
             V = V
-        elif V.shape[1] == self.num_v:
+        elif V.shape[1] == self.k2:
             V = V.transpose()
 
         ### make sure S is correct
-        if S.shape[1] != self.num_v and S.shape[0] != self.num_u:
+        if S.shape[0] != self.k1 and S.shape[1] != self.k2:
             raise ValueWarning("S matrix does not match current k1 and k2 values.")
 
 
