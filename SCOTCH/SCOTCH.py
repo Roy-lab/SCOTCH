@@ -93,11 +93,11 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
                  max_l_u=0, max_l_v=0, max_a_u=0, max_a_v=0, var_lambda=False,
                  var_alpha=False, shape_param=10, mid_epoch_param=5,
                  init_style="random", save_clust=False, draw_intermediate_graph=False, save_intermediate=False,
-                 track_objective=False, kill_factors=False, device="cpu", out_path='.'):
+                 track_objective=False, kill_factors=False, device="cpu", store_effective = False, out_path='.'):
 
         super().__init__(verbose, max_iter, seed, term_tol, max_l_u, max_l_v, max_a_u, max_a_v, k1, k2, var_lambda,
                          var_alpha, shape_param, mid_epoch_param, init_style, save_clust, draw_intermediate_graph,
-                         save_intermediate, track_objective, kill_factors, device, out_path)
+                         save_intermediate, track_objective, kill_factors, device, out_path, store_effective=store_effective)
 
         self.DataLoader = DataLoader(verbose)
 
@@ -240,9 +240,9 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
 
         error = pd.read_csv(dir + '/err.txt', header=None, sep='\t')
 
-        self.U = torch.tensor(U.values)
-        self.V = torch.tensor(V.values)
-        self.S = torch.tensor(S.values)
+        self.U = torch.tensor(U.values, dtype = self.dtype)
+        self.V = torch.tensor(V.values, dtype = self.dtype)
+        self.S = torch.tensor(S.values, dtype = self.dtype)
 
         self.P = self.U @ self.S
         self.Q = self.S @ self.V
@@ -253,6 +253,7 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         self.assign_cluster()
         self.add_scotch_embeddings_to_adata(adata)
         return adata
+
 
     def make_adata_from_scotch(self, prefix=""):
         """

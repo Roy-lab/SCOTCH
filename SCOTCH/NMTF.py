@@ -1,3 +1,5 @@
+from bdb import effective
+
 import torch
 import time
 import pandas as pd
@@ -87,7 +89,7 @@ class NMTF:
                  max_l_u=0, max_l_v=0, max_a_u=0, max_a_v=0, k1=2, k2=2,
                  var_lambda=False, var_alpha=False, shape_param=10, mid_epoch_param=5,
                  init_style="random", save_clust=False, draw_intermediate_graph=False, save_intermediate=False,
-                 track_objective=False, kill_factors=False, device="cpu", out_path=None, legacy=False, dtype = torch.float32):
+                 track_objective=False, kill_factors=False, device="cpu", out_path=None, legacy=False, store_effective = False, dtype = torch.float32):
 
         # Initialize Parameter space
         self.verbose = verbose
@@ -141,6 +143,13 @@ class NMTF:
         self.P = torch.empty(0)
 
         self.legacy = legacy
+
+        # initialize matrices for storing effective lU and lV terms for norm case.
+        self.store_effective = store_effective
+        self.E_lU = torch.empty(0)
+        self.E_lV = torch.empty(0)
+        self.E_aU = torch.empty(0)
+        self.E_aV = torch.empty(0)
 
         # Initialize matrices for saving cluster assignments throughout training
         self.U_assign = torch.empty(0)
@@ -303,11 +312,16 @@ class NMTF:
 
                :returns: None
                """
+
+
         if self.lU > 0:
             beta = torch.sum(self.U[:, [x for x in range(self.k1) if x not in [k]]], dim=1)
-            beta = beta / torch.linalg.norm(beta)
+            beta_norm = torch.linalg.norm(beta)
+            beta = beta / beta_norm
             self.U[:, k] = self.U[:, k] - self.lU * beta
-        # apply Non-negativity
+            # apply Non-negativity
+            if self.store_effective:
+                self.E_lU[self.citer, k] = (torch.linalg.norm(self.Q[k, :]) ** 2 / beta_norm) * self.lU
         self.U[self.U[:, k] < 0, k] = 0
         self.U[:, k] = self.U[:, k] / torch.linalg.norm(self.U[:, k])
         return None
@@ -343,6 +357,8 @@ class NMTF:
 
         if self.aU > 0:
             self.U[:, k] = self.U[:, k] = self.aU * torch.ones(self.num_u, device=self.device)
+            if self.store_effective:
+                self.E_aU[self.citer, k] = (torch.linalg.norm(self.Q[k, :])** 2) * self.aU
 
         self.U[self.U[:, k] < 0, k] = 0
         self.U[:, k] = self.U[:, k] / torch.linalg.norm(self.U[:, k])
@@ -432,8 +448,12 @@ class NMTF:
 
         if self.lV > 0:
             beta = torch.sum(self.V[[x for x in range(self.k2) if x not in [k]], :], dim=0)
-            beta = beta / torch.linalg.norm(beta)
+            beta_norm = torch.linalg.norm(beta)
+            beta = beta / beta_norm
             self.V[k, :] = self.V[k, :] - self.lV * beta
+            if self.store_effective:
+                self.E_lV[self.citer, k] = (torch.linalg.norm(self.P[:, k]) ** 2/ beta_norm) * self.lV
+
         # Apply Non-negativity
         self.V[k, self.V[k, :] < 0] = 0
         # Normalize
@@ -471,6 +491,9 @@ class NMTF:
 
         if self.aV > 0:
             self.V[k, :] = self.V[k, :] - self.aV * torch.ones(self.num_v, device=self.device)
+
+            if self.store_effective:
+                self.E_aV[self.citer, k]  = torch.linalg.norm(self.P[:, k]) ** 2 * self.aV
 
         # Apply Non-negativity
         self.V[k, self.V[k, :] < 0] = 0
@@ -586,29 +609,36 @@ class NMTF:
             overlap = (torch.transpose(self.U, 0, 1) @ self.U)
             overlap = overlap - torch.diag_embed(torch.diag(overlap))
             lU_reg = self.lU / 2 * torch.norm(overlap, p=1).item()
+            self.lU_error[:, self.citer] = torch.norm(overlap, p=1).item()
         else:
             lU_reg = 0
-        self.lU_error[:, self.citer] = lU_reg
+            self.lU_error[:, self.citer] = 0
 
         # Compute lV component
         if self.lV > 0:
             overlap = self.V @ torch.transpose(self.V, 0, 1)
             overlap = overlap - torch.diag_embed(torch.diag(overlap))
             lV_reg = self.lV / 2 * torch.norm(overlap, p=1).item()
+            self.lV_error[:, self.citer] = torch.norm(overlap, p=1).item()
         else:
             lV_reg = 0
-        self.lV_error[:, self.citer] = lV_reg
+            self.lV_error[:, self.citer] = 0
+
         # Compute aU component
         if self.aU > 0:
             aU_reg = self.aU / 2 * torch.sum(self.U).item()
+            self.aU_error[:, self.citer] = torch.sum(self.U).item()
         else:
             aU_reg = 0
+            self.aU_error[:, self.citer] = 0
 
         # Compute aV component
         if self.aU > 0:
             aV_reg = self.aV / 2 * torch.sum(self.V).item()
+            self.aV_error[:, self.citer] = torch.sum(self.V).item()
         else:
             aV_reg = 0
+            self.aV_error[:, self.citer] = 0
 
         # Compute error
         self.error[:, self.citer] = error + lU_reg + lV_reg + aU_reg + aV_reg
@@ -866,6 +896,53 @@ class NMTF:
             self.aV = self.max_aV
         return None
 
+
+    def visualize_effective_lU(self):
+        iterations = torch.arange(self.E_lU.size(0))
+        plt.figure(figsize = (10, 6))
+        for factor_idx in range(self.E_lU.size(1)):
+            plt.plot(iterations.numpy(), self.E_lU[:, factor_idx].numpy(), label = f'Factor {factor_idx}')
+
+        plt.yscale('log')
+        plt.xlabel('Epoch')
+        plt.ylabel('Effective lU')
+        plt.title(f'Relation between Effective lU and lU = {self.lU}')
+
+
+    def visualize_effective_aU(self):
+        iterations = torch.arange(self.E_aU.size(0))
+        plt.figure(figsize=(10, 6))
+        for factor_idx in range(self.E_aU.size(1)):
+            plt.plot(iterations.numpy(), self.E_aU[:, factor_idx].numpy(), label=f'Factor {factor_idx}')
+
+        plt.yscale('log')
+        plt.xlabel('Epoch')
+        plt.ylabel('Effective aU')
+        plt.title(f'Relation between Effective aU and aU = {self.aU}')
+
+    def visualize_effective_lV(self):
+        iterations = torch.arange(self.E_lV.size(0))
+        plt.figure(figsize=(10, 6))
+        for factor_idx in range(self.E_lV.size(1)):
+            plt.plot(iterations.numpy(), self.E_lV[:, factor_idx].numpy(), label=f'Factor {factor_idx}')
+
+        plt.yscale('log')
+        plt.xlabel('Epoch')
+        plt.ylabel('Effective LU')
+        plt.title(f'Relation between Effective LU and LU = {self.lU}')
+
+    def visualize_effective_aV(self):
+        iterations = torch.arange(self.E_aV.size(0))
+        plt.figure(figsize=(10, 6))
+        for factor_idx in range(self.E_aV.size(1)):
+            plt.plot(iterations.numpy(), self.E_aV[:, factor_idx].numpy(), label=f'Factor {factor_idx}')
+
+        plt.yscale('log')
+        plt.xlabel('Epoch')
+        plt.ylabel('Effective LU')
+        plt.title(f'Relation between Effective LU and LU = {self.lU}')
+
+
     def fit(self):
         """
                 Fits the data using the optimization algorithm.
@@ -898,6 +975,12 @@ class NMTF:
         start_time = time.time()
         curr_time = time.time()
         stop_marker = 0
+
+        if self.store_effective:
+            self.E_lU = torch.empty(self.maxIter+1, self.k1)
+            self.E_lV = torch.empty(self.maxIter+1, self.k2)
+            self.E_aU = torch.empty(self.maxIter+1, self.k1)
+            self.E_aV = torch.empty(self.maxIter+1, self.k2)
 
         if self.verbose:
             print("Initializing NMTF factors")
@@ -932,6 +1015,120 @@ class NMTF:
                 self.update()
             else:
                 self.update_unit()
+
+            self._calculate_objective()
+
+            if self.verbose:
+                next_time = time.time()
+                print(
+                    "Iter: {0}\tIter Time: {1:.3f}\tTotal Time: {2:.3f}\tObjective: {3:.3e}\tRelative Delta Objective: {4:.3e}\tReconstruction Error: {5:.3e}".
+                    format(self.citer, next_time - curr_time, next_time - start_time,
+                           self.error[:, self.citer].item(), self.relative_error[:, self.citer].item(),
+                           self.reconstruction_error[:, self.citer].item()))
+                curr_time = next_time
+
+            # If we want intermediate values in U S and V
+            if self.save_intermediate:
+                out_path = f"{self.out_path}/ITER_{self.citer}"
+                self.print_USV(out_path)
+
+            # If we want to know about cluster convergence.
+            if self.save_clust:
+                self.U_assign[:, self.citer] = torch.argmax(self.U, dim=1)
+                self.V_assign[:, self.citer] = torch.argmax(self.V, dim=0)
+                U_target = self.U_assign[:, self.citer - 1]
+                U_predict = self.U_assign[:, self.citer]
+                V_target = self.V_assign[:, self.citer - 1]
+                V_predict = self.V_assign[:, self.citer]
+                self.U_JI[:, self.citer - 1] = U_jaccard(U_target, U_predict).item()
+                self.V_JI[:, self.citer - 1] = V_jaccard(V_target, V_predict).item()
+
+            if self.draw_intermediate_graph:
+                fig = self.visualize_factors()
+                fig.canvas.draw()
+                frame = np.array(fig.canvas.renderer.buffer_rgba())
+                self.frames.append(frame)
+                plt.close(fig)
+
+            if self.termTol > self.relative_error[:, self.citer].item() >= 0:
+                stop_marker = stop_marker + 1
+                if stop_marker >= 5:
+                    break
+            else:
+                stop_marker = 0
+        return None
+
+    def fit_U(self):
+        """
+                Fits the data using the optimization algorithm.
+
+                This method executes the necessary steps to fit the model to the data using an optimization algorithm. It begins by
+                initializing factors, normalizing, and scaling them, and then updates the S matrix. The NMTF algorithm is then started
+                and iterated upon. It tracks the objective function setup and updates the model's factors at each iteration.
+
+                Steps:
+
+                1. Initializes the factors (U, V, and S).
+                2. Normalizes and scales the U and V factors.
+                3. Updates the S matrix.
+                4. Tracks the objective function setup.
+                5. Begins the NMTF optimization algorithm.
+                6. During each iteration:
+                    - Updates U, holding V, and S using the specified constant.
+                    - Calculates the objective value.
+                    - Optionally prints detailed information about the iteration, including time, objective value, and reconstruction error.
+                    - Optionally saves intermediate values of U, S, and V.
+                    - Optionally tracks cluster convergence using the Jaccard Index for both U and V assignments.
+                    - Optionally visualizes and saves intermediate graphical representations of the factors.
+                7. Stops when the relative error falls below a specified tolerance (termTol).
+
+                Returns:
+                    None
+        """
+
+        self.citer = 0
+        start_time = time.time()
+        curr_time = time.time()
+        stop_marker = 0
+
+        if self.verbose:
+            print("Initializing NMTF factors")
+        # Initialize factors
+        self.U = torch.rand(self.num_u, self.k1, device=self.device)
+        self._normalize_and_scale_u()
+        self.P = self.U @ self.S
+        self.Q = self.S @ self.V
+        self.R = self.X - self.P @ self.V
+
+        self._track_objective_setup()
+
+        U_jaccard = MulticlassJaccardIndex(num_classes=self.k1, average='weighted')
+        V_jaccard = MulticlassJaccardIndex(num_classes=self.k2, average='weighted')
+
+        if self.verbose:
+            print("Beginning NMTF")
+
+        if self.save_clust:
+            self._track_clusters_setup()
+
+        if self.draw_intermediate_graph:
+            self.frames = []
+            fig = self.visualize_factors()
+            fig.canvas.draw_idle()
+            frame = np.array(fig.canvas.renderer.buffer_rgba())
+            self.frames.append(frame)
+            plt.close(fig)
+
+        while self.citer != self.maxIter:
+            self.citer += 1
+            self._determine_reg_state()
+            if self.legacy:
+                #
+                self.update()
+            else:
+                self.update_unit()
+                #self._updateS()
+
 
             self._calculate_objective()
 
@@ -1050,6 +1247,31 @@ class NMTF:
         lV_error_out = pd.DataFrame(lV_error_out.numpy())
         lV_error_out.to_csv(out_path + "/lV_error.txt", sep='\t', header=False, index=False)
 
+        aU_error_out = self.aU_error.cpu()
+        aU_error_out = pd.DataFrame(aU_error_out.numpy())
+        aU_error_out.to_csv(out_path + "/aU_error.txt", sep='\t', header=False, index=False)
+
+        aV_error_out = self.aV_error.cpu()
+        aV_error_out = pd.DataFrame(aV_error_out.numpy())
+        aV_error_out.to_csv(out_path + "/aV_error.txt", sep='\t', header=False, index=False)
+
+        if self.store_effective:
+            effective_lU_out = self.E_lU
+            effective_lU_out = pd.DataFrame(effective_lU_out.numpy())
+            effective_lU_out.to_csv(out_path + "/effective_lU.txt", sep='\t', header=False, index=False)
+
+            effective_lV_out = self.E_lV
+            effective_lV_out = pd.DataFrame(effective_lV_out.numpy())
+            effective_lV_out.to_csv(out_path + "/effective_lV.txt", sep='\t', header=False, index=False)
+
+            effective_aU_out = self.E_aU
+            effective_aU_out = pd.DataFrame(effective_aU_out.numpy())
+            effective_aU_out.to_csv(out_path + "/effective_aU.txt", sep='\t', header=False, index=False)
+
+            effective_aV_out = self.E_aV
+            effective_aV_out = pd.DataFrame(effective_aV_out.numpy())
+            effective_aV_out.to_csv(out_path + "/effective_aV.txt", sep='\t', header=False, index=False)
+
         if self.save_clust:
             U_test_out = self.U_assign.cpu()
             U_test_out = pd.DataFrame(U_test_out.numpy())
@@ -1091,6 +1313,8 @@ class NMTF:
         self.reconstruction_error = torch.zeros(size=[1, self.maxIter + 1])
         self.lU_error = torch.zeros(size=[1, self.maxIter + 1])
         self.lV_error = torch.zeros(size=[1, self.maxIter + 1])
+        self.aU_error = torch.zeros(size=[1, self.maxIter + 1])
+        self.aV_error = torch.zeros(size=[1, self.maxIter + 1])
         self.relative_error = torch.zeros(size=[1, self.maxIter + 1])
         self.error = torch.zeros(size=[1, self.maxIter + 1])
         self._calculate_objective()
@@ -1200,7 +1424,7 @@ class NMTF:
         """
         return 1 / (1 + np.exp(-shape * (self.citer - mid_iter)))
 
-    def visualize_factors(self, cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1):
+    def visualize_factors(self, cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1, n_cells = None, n_genes =None):
         """
         This function generates a visual representation of the NMTF factors, allowing users to specify
         the colormap and interpolation method used for image display.
@@ -1227,10 +1451,25 @@ class NMTF:
         :rtype: matplotlib.figure.Figure
 
         """
+
         fig = plt.figure(figsize=(16, 6))
         grids = GridSpec.GridSpec(2, 3, wspace=0.1, width_ratios=(0.2, 0.4, 0.4), height_ratios=(0.3, 0.7))
 
-        U_viz = self.U.detach().numpy()
+        U = self.U.clone()
+        V = self.V.clone().t()
+        S = self.S.clone()
+
+        if n_cells is not None:
+            n_cells = min(n_cells, U.shape[0])
+            cell_sample_indices = np.random.choice(U.shape[0], n_cells, replace=False)
+            U = U[cell_sample_indices, :]
+
+        if n_genes is not None:
+            n_genes = min(n_genes, V.shape[1])
+            gene_sample_indices = np.random.choice(V.shape[1], n_genes, replace=False)
+            V = V[:, gene_sample_indices]
+
+        U_viz = U.detach().numpy()
         U_viz = (U_viz - U_viz.min()) / (U_viz.max() - U_viz.min())
         ax1 = fig.add_subplot(grids[1, 0])
         ax1.imshow(U_viz, aspect="auto", cmap=cmap, interpolation=interp,
@@ -1240,12 +1479,12 @@ class NMTF:
 
         # Visualize S matrix
         ax2 = fig.add_subplot(grids[0, 0])
-        ax2.imshow(self.S.t().detach().numpy(), aspect="auto", cmap=cmap, interpolation=interp)
+        ax2.imshow(S.t().detach().numpy(), aspect="auto", cmap=cmap, interpolation=interp)
         ax2.set_axis_off()
         # ax2.set_title("S Matrix")
 
         # Visualize V matrix
-        V_viz = self.V.detach().numpy()
+        V_viz = V.detach().numpy()
         V_viz = (V_viz - V_viz.min()) / (V_viz.max() - V_viz.min())
         ax3 = fig.add_subplot(grids[0, 1])
         ax3.imshow(V_viz, aspect="auto", cmap=cmap, interpolation=interp,
@@ -1254,7 +1493,7 @@ class NMTF:
         # ax3.set_title("V Matrix")
 
         # Visualize X matrix
-        X_est_viz = (self.U @ self.S @ self.V).detach().numpy()
+        X_est_viz = (U @ S @ V).detach().numpy()
         X_est_viz = (X_est_viz - X_est_viz.min())/(X_est_viz.max() - X_est_viz.min())
         ax4 = fig.add_subplot(grids[1, 1])
         ax4.imshow(X_est_viz, aspect="auto", cmap=cmap,
@@ -1262,16 +1501,25 @@ class NMTF:
         # ax4.set_title("X Matrix")
         ax4.set_axis_off()
 
-        X_viz = self.X.detach().numpy()
-        X_viz = (X_viz - X_viz.min()) / (X_viz.max() - X_viz.min())
+        X_temp = self.X.clone()
+        # Ensure X_temp is a true copy, in float32
+        if not isinstance(X_temp, np.ndarray):
+            X_temp = np.array(X_temp, dtype=np.float32, copy=True)
+
+        if n_cells is not None and 'cell_sample_indices' in locals():
+            X_temp = X_temp[cell_sample_indices, :]
+        if n_genes is not None and 'gene_sample_indices' in locals():
+            X_temp = X_temp[:, gene_sample_indices]
+
+        X_temp = (X_temp - X_temp.min()) / (X_temp.max() - X_temp.min())
         ax5 = fig.add_subplot(grids[1, 2])
-        ax5.imshow(X_viz, aspect="auto", cmap=cmap, interpolation=interp,
+        ax5.imshow(X_temp, aspect="auto", cmap=cmap, interpolation=interp,
                    vmin=0, vmax=max_x)
         ax5.set_axis_off()
         plt.close(fig)
         return fig
 
-    def visualize_factors_sorted(self, cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1):
+    def visualize_factors_sorted(self, cmap='viridis', interp='nearest', max_u=1, max_v=1, max_x=1, n_cells = None, n_genes = None):
         """
         This function generates a visual representation of the NMTF factors, allowing users to specify
         the colormap and interpolation method used for image display.
@@ -1297,17 +1545,31 @@ class NMTF:
         fig = plt.figure(figsize=(16, 6))
         grids = GridSpec.GridSpec(2, 3, wspace=0.1, width_ratios=(0.2, 0.4, 0.4), height_ratios=(0.3, 0.7))
 
+        U = self.U.clone()
+        V = self.V.clone()
+        S = self.S.clone()
+
+        if n_cells is not None:
+            n_cells = min(n_cells, U.shape[0])
+            cell_sample_indices = np.random.choice(U.shape[0], size=n_cells, replace=False)
+            U = U[cell_sample_indices, :]
+
+        if n_genes is not None:
+            n_genes = min(n_genes, V.shape[1])
+            gene_sample_indices = np.random.choice(V.shape[1], size=n_genes, replace=False)
+            V = V[:, gene_sample_indices]
+
         # Generate Sorting for U
-        max_U, max_U_idx = self.U.max(dim=1)
+        max_U, max_U_idx = U.max(dim=1)
         sorting_criteria = torch.stack([max_U_idx, max_U], dim=1)
         sorted_U_indices = torch.argsort(sorting_criteria, dim=0, stable=True)[:, 0]
 
         # Generate Sorting for V
-        max_V, max_V_idx = self.V.max(dim=0)
+        max_V, max_V_idx = V.max(dim=0)
         sorting_criteria = torch.stack([max_V_idx, max_V], dim=1)
         sorted_V_indices = torch.argsort(sorting_criteria, dim=0, stable=True)[:, 0]
 
-        U_viz = self.U[sorted_U_indices, :].detach().numpy()
+        U_viz = U[sorted_U_indices, :].detach().numpy()
         U_viz = (U_viz - U_viz.min()) / (U_viz.max() - U_viz.min())
         ax1 = fig.add_subplot(grids[1, 0])
         ax1.imshow(U_viz, aspect="auto", cmap=cmap, interpolation=interp,
@@ -1317,12 +1579,12 @@ class NMTF:
 
         # Visualize S matrix
         ax2 = fig.add_subplot(grids[0, 0])
-        ax2.imshow(self.S.t().detach().numpy(), aspect="auto", cmap=cmap, interpolation=interp)
+        ax2.imshow(S.t().detach().numpy(), aspect="auto", cmap=cmap, interpolation=interp)
         ax2.set_axis_off()
         # ax2.set_title("S Matrix")
 
         # Visualize V matrix
-        V_viz = self.V[:, sorted_V_indices].detach().numpy()
+        V_viz = V[:, sorted_V_indices].detach().numpy()
         V_viz = (V_viz - V_viz.min())/(V_viz.max() - V_viz.min())
         ax3 = fig.add_subplot(grids[0, 1])
         ax3.imshow(V_viz, aspect="auto", cmap=cmap, interpolation=interp,
@@ -1331,7 +1593,7 @@ class NMTF:
         # ax3.set_title("V Matrix")
 
         # Visualize X matrix
-        X_est = self.U @ self.S @ self.V
+        X_est = U @ S @ V
         X_est = X_est[sorted_U_indices, :]
         X_est = X_est[:, sorted_V_indices]
         X_est = (X_est - X_est.min()) / (X_est.max() - X_est.min())
@@ -1342,6 +1604,16 @@ class NMTF:
 
         # ax4.set_title("X Matrix")
         X_temp = self.X.clone()
+
+        if not isinstance(X_temp, np.ndarray):
+            X_temp =np.array(X_temp, dtype=np.float32, copy=True)
+
+        if n_cells is not None and 'cell_sample_indices' in locals():
+            X_temp = X_temp[cell_sample_indices, :]
+        if n_genes is not None and 'gene_sample_indices' in locals():
+            X_temp = X_temp[:, gene_sample_indices]
+
+
         X_temp = X_temp[sorted_U_indices, :]
         X_temp = X_temp[:, sorted_V_indices]
         X_temp = (X_temp - X_temp.min()) / (X_temp.max() - X_temp.min())
@@ -1351,6 +1623,7 @@ class NMTF:
         ax5.set_axis_off()
         plt.close(fig)
         return fig
+
 
     def write_gif(self, filename="NMTF_fit.gif", fps=5):
         """
@@ -1439,7 +1712,7 @@ class NMTF:
             if cluster_indices.numel() > 0:
                 self.S[:, i] = self.Q[:, cluster_indices].mean(dim=1)
 
-        # refit.
+        # refit
         start_time = time.time()
         curr_time = time.time()
         self.citer = 0
@@ -1624,6 +1897,3 @@ class NMTF:
         ax5.set_axis_off()
         plt.close(fig)
         return fig
-
-
-
