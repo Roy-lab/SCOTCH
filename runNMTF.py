@@ -1,7 +1,8 @@
 import argparse
 
-import DataLoader
-import NMTF as fact
+
+from SCOTCH import DataLoader
+from SCOTCH import NMTF as fact
 import os
 
 
