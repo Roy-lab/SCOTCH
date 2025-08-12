@@ -46,14 +46,14 @@ def runNMTF(args):
                         seed=args.seed, term_tol=args.term_tol, max_l_u=args.lU,
                         max_l_v=args.lV, max_a_u=args.aU, max_a_v=args.aV, k1=args.k1,
                         k2=args.k2, save_clust=args.save_clust, track_objective=args.track_objective,
-                        kill_factors=args.kill_factors,
-                        out_path=args.out_dir, device=args.device)
+                        kill_factors=args.kill_factors, write_intermediate=args.save_intermediate,
+                        out_path=args.out_dir, store_effective=args.store_effective, device=args.device)
     else:
         mod = fact.NMTF(verbose=args.verbose, max_iter=args.max_iter,
                         seed=args.seed, term_tol=args.term_tol, max_l_u=args.lU,
                         max_l_v=args.lV, max_a_u=args.aU, max_a_v=args.aV, k1=args.k1,
                         k2=args.k2, save_clust=args.save_clust, track_objective=args.track_objective,
-                        kill_factors=args.kill_factors,
+                        kill_factors=args.kill_factors, store_effective=args.store_effective,
                         device=args.device)
 
     dl = DataLoader.DataLoader(verbose=args.verbose)
@@ -143,6 +143,10 @@ if __name__ == "__main__":
                         help="Select Device. Default is cuda:0. Options are cuda:0/cuda:1/cpu",
                         required=False,
                         default="cuda:0")
+    parser.add_argument('--store_effective',
+                        help="Save effective regularization parameters when not using legacy mode. Default is False",
+                        required=False,
+                        default=False)
     parser.add_argument('--legacy',
                         help="Use the legacy update. The new update improves selection of lU and lV.",
                         required=False,
