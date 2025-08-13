@@ -124,7 +124,7 @@ The `SCOTCH` class extends from the `NMTF` class. It has a specific `__init__` m
         elif file_extension == '.txt':
             self.X, shape = self.DataLoader.from_text(file)
         elif file_extension == '.h5ad':
-            adata = self.DataLoader.from_h5ad(file)
+            adata, shape = self.DataLoader.from_h5ad(file)
             self.add_data_from_adata(adata)
         else:
             raise ValueError("Unsupported file type. Select .pt or .txt or .h5ad")
