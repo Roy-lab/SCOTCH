@@ -1208,7 +1208,7 @@ class NMTF:
         S_out.to_csv(self.out_path + '/' + file_pre + "S.txt", sep="\t", header=False, index=False)
         return None
 
-    def print_output(self, out_path):
+    def print_output(self, file_pre):
         """
         Write output files related to the factorization and clustering results.
 
@@ -1232,66 +1232,66 @@ class NMTF:
         :return: None
         """
 
-        self.print_USV(out_path)
+        self.print_USV(file_pre)
 
         # if self.track_objective:
         reconstruction_error_out = self.reconstruction_error.cpu()
         reconstruction_error_out = pd.DataFrame(reconstruction_error_out.numpy())
-        reconstruction_error_out.to_csv(out_path + "/reconstruction_error.txt", sep="\t", header=False, index=False)
+        reconstruction_error_out.to_csv(self.out_path + '/' + file_pre + "reconstruction_error.txt", sep="\t", header=False, index=False)
 
         lU_error_out = self.lU_error.cpu()
         lU_error_out = pd.DataFrame(lU_error_out.numpy())
-        lU_error_out.to_csv(out_path + '/lU_error.txt', sep='\t', header=False, index=False)
+        lU_error_out.to_csv(self.out_path + '/' + file_pre + 'lU_error.txt', sep='\t', header=False, index=False)
 
         lV_error_out = self.lV_error.cpu()
         lV_error_out = pd.DataFrame(lV_error_out.numpy())
-        lV_error_out.to_csv(out_path + "/lV_error.txt", sep='\t', header=False, index=False)
+        lV_error_out.to_csv(self.out_path + '/' + file_pre + "lV_error.txt", sep='\t', header=False, index=False)
 
         aU_error_out = self.aU_error.cpu()
         aU_error_out = pd.DataFrame(aU_error_out.numpy())
-        aU_error_out.to_csv(out_path + "/aU_error.txt", sep='\t', header=False, index=False)
+        aU_error_out.to_csv(self.out_path + '/' + file_pre+ "aU_error.txt", sep='\t', header=False, index=False)
 
         aV_error_out = self.aV_error.cpu()
         aV_error_out = pd.DataFrame(aV_error_out.numpy())
-        aV_error_out.to_csv(out_path + "/aV_error.txt", sep='\t', header=False, index=False)
+        aV_error_out.to_csv(self.out_path + '/' + file_pre + "aV_error.txt", sep='\t', header=False, index=False)
 
         if self.store_effective:
             effective_lU_out = self.E_lU
             effective_lU_out = pd.DataFrame(effective_lU_out.numpy())
-            effective_lU_out.to_csv(out_path + "/effective_lU.txt", sep='\t', header=False, index=False)
+            effective_lU_out.to_csv(self.out_path + '/' + file_pre + "effective_lU.txt", sep='\t', header=False, index=False)
 
             effective_lV_out = self.E_lV
             effective_lV_out = pd.DataFrame(effective_lV_out.numpy())
-            effective_lV_out.to_csv(out_path + "/effective_lV.txt", sep='\t', header=False, index=False)
+            effective_lV_out.to_csv(self.out_path + '/' + file_pre + "effective_lV.txt", sep='\t', header=False, index=False)
 
             effective_aU_out = self.E_aU
             effective_aU_out = pd.DataFrame(effective_aU_out.numpy())
-            effective_aU_out.to_csv(out_path + "/effective_aU.txt", sep='\t', header=False, index=False)
+            effective_aU_out.to_csv(self.out_path + '/' + file_pre + "effective_aU.txt", sep='\t', header=False, index=False)
 
             effective_aV_out = self.E_aV
             effective_aV_out = pd.DataFrame(effective_aV_out.numpy())
-            effective_aV_out.to_csv(out_path + "/effective_aV.txt", sep='\t', header=False, index=False)
+            effective_aV_out.to_csv(self.out_path + '/' + file_pre + "effective_aV.txt", sep='\t', header=False, index=False)
 
         if self.save_clust:
             U_test_out = self.U_assign.cpu()
             U_test_out = pd.DataFrame(U_test_out.numpy())
-            U_test_out.to_csv(out_path + "/U_assign.txt", sep='\t', header=False, index=False)
+            U_test_out.to_csv(self.out_path + '/' + file_pre + "U_assign.txt", sep='\t', header=False, index=False)
 
             V_test_out = self.V_assign.cpu()
             V_test_out = pd.DataFrame(V_test_out.numpy())
-            V_test_out.to_csv(out_path + "/V_assign.txt", sep='\t', header=False, index=False)
+            V_test_out.to_csv(self.out_path + '/' + file_pre + "V_assign.txt", sep='\t', header=False, index=False)
 
             V_JI_out = self.V_JI.cpu()
             V_JI_out = pd.DataFrame(V_JI_out.numpy())
-            V_JI_out.to_csv(out_path + "/V_JI.txt", sep='\t', header=False, index=False)
+            V_JI_out.to_csv(self.out_path + '/' + file_pre + "V_JI.txt", sep='\t', header=False, index=False)
 
             U_JI_out = self.U_JI.cpu()
             U_JI_out = pd.DataFrame(U_JI_out.numpy())
-            U_JI_out.to_csv(out_path + "/U_JI.txt", sep='\t', header=False, index=False)
+            U_JI_out.to_csv(self.out_path + '/' + file_pre + "U_JI.txt", sep='\t', header=False, index=False)
 
         relative_error_out = self.relative_error.cpu()
         relative_error_out = pd.DataFrame(relative_error_out.numpy())
-        relative_error_out.to_csv(out_path + "/relative_error.txt", sep='\t', header=False, index=False)
+        relative_error_out.to_csv(self.out_path + '/' + file_pre + "relative_error.txt", sep='\t', header=False, index=False)
 
     def _track_objective_setup(self):
         """
