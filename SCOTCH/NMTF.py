@@ -977,10 +977,10 @@ class NMTF:
         stop_marker = 0
 
         if self.store_effective:
-            self.E_lU = torch.empty(self.maxIter+1, self.k1)
-            self.E_lV = torch.empty(self.maxIter+1, self.k2)
-            self.E_aU = torch.empty(self.maxIter+1, self.k1)
-            self.E_aV = torch.empty(self.maxIter+1, self.k2)
+            self.E_lU = torch.zeros(self.maxIter+1, self.k1)
+            self.E_lV = torch.zeros(self.maxIter+1, self.k2)
+            self.E_aU = torch.zeros(self.maxIter+1, self.k1)
+            self.E_aV = torch.zeros(self.maxIter+1, self.k2)
 
         if self.verbose:
             print("Initializing NMTF factors")
