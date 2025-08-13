@@ -1208,7 +1208,7 @@ class NMTF:
         S_out.to_csv(self.out_path + '/' + file_pre + "S.txt", sep="\t", header=False, index=False)
         return None
 
-    def print_output(self, file_pre):
+    def print_output(self, file_pre = ''):
         """
         Write output files related to the factorization and clustering results.
 
@@ -1226,8 +1226,8 @@ class NMTF:
             - `V_JI.txt`: The Jaccard Index for V assignments (if `save_clust` is enabled).
             - `U_JI.txt`: The Jaccard Index for U assignments (if `save_clust` is enabled).
 
-        :param out_path: The path where the output files will be saved.
-        :type out_path: str
+        :param file_pre: The path where the output files will be saved.
+        :type file_pre: str
 
         :return: None
         """
