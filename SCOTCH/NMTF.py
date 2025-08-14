@@ -356,7 +356,7 @@ class NMTF:
         """
 
         if self.aU > 0:
-            self.U[:, k] = self.U[:, k] = self.aU * torch.ones(self.num_u, device=self.device)
+            self.U[:, k] = self.U[:, k]  - self.aU * torch.ones(self.num_u, device=self.device)
             if self.store_effective:
                 self.E_aU[self.citer, k] = (torch.linalg.norm(self.Q[k, :])** 2) * self.aU
 
