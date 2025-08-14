@@ -1470,7 +1470,12 @@ class NMTF:
             V = V[:, gene_sample_indices]
 
         U_viz = U.detach().numpy()
-        U_viz = (U_viz - U_viz.min()) / (U_viz.max() - U_viz.min())
+        denom = U_viz.max() - U_viz.min()
+        if denom == 0:
+            U_viz = U_viz / U_viz.max()
+        else:
+            U_viz = U_viz - U_viz.min() /denom
+
         ax1 = fig.add_subplot(grids[1, 0])
         ax1.imshow(U_viz, aspect="auto", cmap=cmap, interpolation=interp,
                   vmin=0, vmax=max_u)
@@ -1494,7 +1499,11 @@ class NMTF:
 
         # Visualize X matrix
         X_est_viz = (U @ S @ V).detach().numpy()
-        X_est_viz = (X_est_viz - X_est_viz.min())/(X_est_viz.max() - X_est_viz.min())
+        denom = X_est_viz.max() - X_est_viz.min()
+        if denom == 0:
+            X_est_viz = X_est_viz / X_est_viz.max()
+        else:
+            X_est_viz = (X_est_viz - X_est_viz.min())/ denom
         ax4 = fig.add_subplot(grids[1, 1])
         ax4.imshow(X_est_viz, aspect="auto", cmap=cmap,
                    interpolation=interp, vmin=0, vmax=max_x)
@@ -1570,7 +1579,12 @@ class NMTF:
         sorted_V_indices = torch.argsort(sorting_criteria, dim=0, stable=True)[:, 0]
 
         U_viz = U[sorted_U_indices, :].detach().numpy()
-        U_viz = (U_viz - U_viz.min()) / (U_viz.max() - U_viz.min())
+        denom = U_viz.max() - U_viz.min()
+        if denom == 0:
+            U_viz = U_viz / U_viz.max()
+        else:
+            U_viz = (U_viz - U_viz.min()) / denom
+
         ax1 = fig.add_subplot(grids[1, 0])
         ax1.imshow(U_viz, aspect="auto", cmap=cmap, interpolation=interp,
                    vmin=0, vmax=max_u) # set color scale
@@ -1585,7 +1599,11 @@ class NMTF:
 
         # Visualize V matrix
         V_viz = V[:, sorted_V_indices].detach().numpy()
-        V_viz = (V_viz - V_viz.min())/(V_viz.max() - V_viz.min())
+        denom = V_viz.max() - V_viz.min()
+        if  denom == 0:
+            V_viz = V_viz /V_viz.max()
+        else:
+            V_viz = (V_viz - V_viz.min())/denom
         ax3 = fig.add_subplot(grids[0, 1])
         ax3.imshow(V_viz, aspect="auto", cmap=cmap, interpolation=interp,
                    vmin=0, vmax=max_v) # set color scale
@@ -1596,7 +1614,11 @@ class NMTF:
         X_est = U @ S @ V
         X_est = X_est[sorted_U_indices, :]
         X_est = X_est[:, sorted_V_indices]
-        X_est = (X_est - X_est.min()) / (X_est.max() - X_est.min())
+        denom = X_est.max() - X_est.min()
+        if denom == 0:
+            X_est = X_est / X_est.max()
+        else:
+            X_est = (X_est - X_est.min()) / denom
         ax4 = fig.add_subplot(grids[1, 1])
         ax4.imshow(X_est, aspect="auto", cmap=cmap,
                    interpolation=interp, vmin=0, vmax=max_x) # set color scale
