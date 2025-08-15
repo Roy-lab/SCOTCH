@@ -1255,41 +1255,41 @@ class NMTF:
 
         self._truncate_logs()
         # if self.track_objective:
-        reconstruction_error_out = self.reconstruction_error.cpu()
+        reconstruction_error_out = self.reconstruction_error.cpu().clone()
         reconstruction_error_out = pd.DataFrame(reconstruction_error_out.numpy()).T
         reconstruction_error_out.to_csv(self.out_path + '/' + file_pre + "reconstruction_error.txt", sep="\t", header=False, index=False)
 
-        lU_error_out = self.lU_error.cpu()
+        lU_error_out = self.lU_error.cpu().clone()
         lU_error_out = pd.DataFrame(lU_error_out.numpy()).T
         lU_error_out.to_csv(self.out_path + '/' + file_pre + 'lU_error.txt', sep='\t', header=False, index=False)
 
-        lV_error_out = self.lV_error.cpu()
+        lV_error_out = self.lV_error.cpu().clone()
         lV_error_out = pd.DataFrame(lV_error_out.numpy()).T
         lV_error_out.to_csv(self.out_path + '/' + file_pre + "lV_error.txt", sep='\t', header=False, index=False)
 
-        aU_error_out = self.aU_error.cpu()
+        aU_error_out = self.aU_error.cpu().clone()
         aU_error_out = pd.DataFrame(aU_error_out.numpy()).T
         aU_error_out.to_csv(self.out_path + '/' + file_pre+ "aU_error.txt", sep='\t', header=False, index=False)
 
-        aV_error_out = self.aV_error.cpu()
+        aV_error_out = self.aV_error.cpu().clone()
         aV_error_out = pd.DataFrame(aV_error_out.numpy()).T
         aV_error_out.to_csv(self.out_path + '/' + file_pre + "aV_error.txt", sep='\t', header=False, index=False)
 
         if self.store_effective:
-            effective_lU_out = self.E_lU.cpu()
-            effective_lU_out = pd.DataFrame(effective_lU_out.numpy()).T
+            effective_lU_out = self.E_lU.cpu().clone()
+            effective_lU_out = pd.DataFrame(effective_lU_out.numpy())
             effective_lU_out.to_csv(self.out_path + '/' + file_pre + "effective_lU.txt", sep='\t', header=False, index=False)
 
-            effective_lV_out = self.E_lV.cpu()
-            effective_lV_out = pd.DataFrame(effective_lV_out.numpy()).T
+            effective_lV_out = self.E_lV.cpu().clone()
+            effective_lV_out = pd.DataFrame(effective_lV_out.numpy())
             effective_lV_out.to_csv(self.out_path + '/' + file_pre + "effective_lV.txt", sep='\t', header=False, index=False)
 
-            effective_aU_out = self.E_aU.cpu()
-            effective_aU_out = pd.DataFrame(effective_aU_out.numpy()).T
+            effective_aU_out = self.E_aU.cpu().clone()
+            effective_aU_out = pd.DataFrame(effective_aU_out.numpy())
             effective_aU_out.to_csv(self.out_path + '/' + file_pre + "effective_aU.txt", sep='\t', header=False, index=False)
 
-            effective_aV_out = self.E_aV.cpu()
-            effective_aV_out = pd.DataFrame(effective_aV_out.numpy()).T
+            effective_aV_out = self.E_aV.cpu().clone()
+            effective_aV_out = pd.DataFrame(effective_aV_out.numpy())
             effective_aV_out.to_csv(self.out_path + '/' + file_pre + "effective_aV.txt", sep='\t', header=False, index=False)
 
         if self.save_clust:
@@ -1346,8 +1346,8 @@ class NMTF:
         """
         self.U_assign_hist = torch.zeros(size=[self.num_u, self.maxIter + 1])
         self.V_assign_hist = torch.zeros(size=[self.num_v, self.maxIter + 1])
-        self.U_JI = torch.zeros(size=[self.num_u, self.maxIter + 1])
-        self.V_JI = torch.zeros(size=[self.num_v, self.maxIter + 1])
+        self.U_JI = torch.zeros(size=[1, self.maxIter + 1])
+        self.V_JI = torch.zeros(size=[1, self.maxIter + 1])
         self.U_JI[:, 0] = float('inf')
         self.V_JI[:, 0] = float('inf')
 
