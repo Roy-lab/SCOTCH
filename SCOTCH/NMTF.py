@@ -1033,12 +1033,12 @@ class NMTF:
 
             # If we want to know about cluster convergence.
             if self.save_clust:
-                self.U_assign[:, self.citer] = torch.argmax(self.U, dim=1)
-                self.V_assign[:, self.citer] = torch.argmax(self.V, dim=0)
-                U_target = self.U_assign[:, self.citer - 1]
-                U_predict = self.U_assign[:, self.citer]
-                V_target = self.V_assign[:, self.citer - 1]
-                V_predict = self.V_assign[:, self.citer]
+                self.U_assign_hist[:, self.citer] = torch.argmax(self.U, dim=1)
+                self.V_assign_hist[:, self.citer] = torch.argmax(self.V, dim=0)
+                U_target = self.U_assign_hist[:, self.citer - 1]
+                U_predict = self.U_assign_hist[:, self.citer]
+                V_target = self.V_assign_hist[:, self.citer - 1]
+                V_predict = self.V_assign_hist[:, self.citer]
                 self.U_JI[:, self.citer ] = U_jaccard(U_target, U_predict).item()
                 self.V_JI[:, self.citer ] = V_jaccard(V_target, V_predict).item()
 
@@ -1147,12 +1147,12 @@ class NMTF:
 
             # If we want to know about cluster convergence.
             if self.save_clust:
-                self.U_assign[:, self.citer] = torch.argmax(self.U, dim=1)
-                self.V_assign[:, self.citer] = torch.argmax(self.V, dim=0)
-                U_target = self.U_assign[:, self.citer - 1]
-                U_predict = self.U_assign[:, self.citer]
-                V_target = self.V_assign[:, self.citer - 1]
-                V_predict = self.V_assign[:, self.citer]
+                self.U_assign_hist[:, self.citer] = torch.argmax(self.U, dim=1)
+                self.V_assign_hist[:, self.citer] = torch.argmax(self.V, dim=0)
+                U_target = self.U_assign_hist[:, self.citer - 1]
+                U_predict = self.U_assign_hist[:, self.citer]
+                V_target = self.V_assign_hist[:, self.citer - 1]
+                V_predict = self.V_assign_hist[:, self.citer]
                 self.U_JI[:, self.citer - 1] = U_jaccard(U_target, U_predict).item()
                 self.V_JI[:, self.citer - 1] = V_jaccard(V_target, V_predict).item()
 
@@ -1222,8 +1222,8 @@ class NMTF:
             self.E_aV = self.E_aV[:, 0:self.citer]
 
         if self.save_clust:
-            self.U_assign = self.U_assign[:, 0:self.citer]
-            self.V_assign = self.V_assign[:, 0:self.citer]
+            self.U_assign_hist = self.U_assign_hist[:, 0:self.citer]
+            self.V_assign_hist = self.V_assign_hist[:, 0:self.citer]
             self.U_JI = self.U_JI[:, 0:self.citer]
             self.V_JI = self.V_JI[:, 0:self.citer]
 
@@ -1293,13 +1293,13 @@ class NMTF:
             effective_aV_out.to_csv(self.out_path + '/' + file_pre + "effective_aV.txt", sep='\t', header=False, index=False)
 
         if self.save_clust:
-            U_test_out = self.U_assign.cpu()
+            U_test_out = self.U_assign_hist.cpu()
             U_test_out = pd.DataFrame(U_test_out.numpy()).T
-            U_test_out.to_csv(self.out_path + '/' + file_pre + "U_assign.txt", sep='\t', header=False, index=False)
+            U_test_out.to_csv(self.out_path + '/' + file_pre + "U_assign_hist.txt", sep='\t', header=False, index=False)
 
-            V_test_out = self.V_assign.cpu()
+            V_test_out = self.V_assign_hist.cpu()
             V_test_out = pd.DataFrame(V_test_out.numpy()).T
-            V_test_out.to_csv(self.out_path + '/' + file_pre + "V_assign.txt", sep='\t', header=False, index=False)
+            V_test_out.to_csv(self.out_path + '/' + file_pre + "V_assign_hist.txt", sep='\t', header=False, index=False)
 
             V_JI_out = self.V_JI.cpu()
             V_JI_out = pd.DataFrame(V_JI_out.numpy()).T
@@ -1344,8 +1344,8 @@ class NMTF:
         Initialize the necessary tensors for tracking clusters setup including U_assign, V_assign, U_JI, V_JI.
         Set the initial values for U_JI and V_JI as infinity.
         """
-        self.U_assign = torch.zeros(size=[self.num_u, self.maxIter + 1])
-        self.V_assign = torch.zeros(size=[self.num_v, self.maxIter + 1])
+        self.U_assign_hist = torch.zeros(size=[self.num_u, self.maxIter + 1])
+        self.V_assign_hist = torch.zeros(size=[self.num_v, self.maxIter + 1])
         self.U_JI = torch.zeros(size=[self.num_u, self.maxIter + 1])
         self.V_JI = torch.zeros(size=[self.num_v, self.maxIter + 1])
         self.U_JI[:, 0] = float('inf')
@@ -1800,12 +1800,12 @@ class NMTF:
 
             # If we want to know about cluster convergence.
             if self.save_clust:
-                self.U_assign[:, self.citer] = torch.argmax(self.U, dim=1)
-                self.V_assign[:, self.citer] = torch.argmax(self.V, dim=0)
-                U_target = self.U_assign[:, self.citer - 1]
-                U_predict = self.U_assign[:, self.citer]
-                V_target = self.V_assign[:, self.citer - 1]
-                V_predict = self.V_assign[:, self.citer]
+                self.U_assign_hist[:, self.citer] = torch.argmax(self.U, dim=1)
+                self.V_assign_hist[:, self.citer] = torch.argmax(self.V, dim=0)
+                U_target = self.U_assign_hist[:, self.citer - 1]
+                U_predict = self.U_assign_hist[:, self.citer]
+                V_target = self.V_assign_hist[:, self.citer - 1]
+                V_predict = self.V_assign_hist[:, self.citer]
                 self.U_JI[:, self.citer - 1] = U_jaccard(U_target, U_predict).item()
                 self.V_JI[:, self.citer - 1] = V_jaccard(V_target, V_predict).item()
 
