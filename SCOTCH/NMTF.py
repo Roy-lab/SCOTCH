@@ -605,43 +605,42 @@ class NMTF:
         self.reconstruction_error[:, self.citer] = error
 
         # Compute lU component
+
+        overlap = (torch.transpose(self.U, 0, 1) @ self.U)
+        overlap = overlap - torch.diag_embed(torch.diag(overlap))
+        self.lU_error[:, self.citer] = torch.norm(overlap, p=1).item()
+
         if self.lU > 0:
-            overlap = (torch.transpose(self.U, 0, 1) @ self.U)
-            overlap = overlap - torch.diag_embed(torch.diag(overlap))
             lU_reg = self.lU / 2 * torch.norm(overlap, p=1).item()
-            self.lU_error[:, self.citer] = torch.norm(overlap, p=1).item()
         else:
             lU_reg = 0
-            self.lU_error[:, self.citer] = 0
 
         # Compute lV component
+
+        overlap = self.V @ torch.transpose(self.V, 0, 1)
+        overlap = overlap - torch.diag_embed(torch.diag(overlap))
+        self.lV_error[:, self.citer] = torch.norm(overlap, p=1).item()
+
         if self.lV > 0:
-            overlap = self.V @ torch.transpose(self.V, 0, 1)
-            overlap = overlap - torch.diag_embed(torch.diag(overlap))
             lV_reg = self.lV / 2 * torch.norm(overlap, p=1).item()
-            self.lV_error[:, self.citer] = torch.norm(overlap, p=1).item()
         else:
             lV_reg = 0
-            self.lV_error[:, self.citer] = 0
 
         # Compute aU component
+        self.aU_error[:, self.citer] = torch.sum(self.U).item()
         if self.aU > 0:
             aU_reg = self.aU / 2 * torch.sum(self.U).item()
-            self.aU_error[:, self.citer] = torch.sum(self.U).item()
         else:
             aU_reg = 0
-            self.aU_error[:, self.citer] = 0
-
         # Compute aV component
+        self.aV_error[:, self.citer] = torch.sum(self.V).item()
         if self.aU > 0:
             aV_reg = self.aV / 2 * torch.sum(self.V).item()
-            self.aV_error[:, self.citer] = torch.sum(self.V).item()
         else:
             aV_reg = 0
-            self.aV_error[:, self.citer] = 0
 
         # Compute error
-        self.error[:, self.citer] = error + lU_reg + lV_reg + aU_reg + aV_reg
+        self.error[:, self.citer] = error + lU_reg + lV_reg + aU_reg + aV_reg #The reg terms are not computed correctly in non-legacy case because of they are not trackable....
         if self.citer > 0:
             cur_error = self.error[:, self.citer]
             prev_error = self.error[:, self.citer - 1]
@@ -1040,8 +1039,8 @@ class NMTF:
                 U_predict = self.U_assign[:, self.citer]
                 V_target = self.V_assign[:, self.citer - 1]
                 V_predict = self.V_assign[:, self.citer]
-                self.U_JI[:, self.citer - 1] = U_jaccard(U_target, U_predict).item()
-                self.V_JI[:, self.citer - 1] = V_jaccard(V_target, V_predict).item()
+                self.U_JI[:, self.citer ] = U_jaccard(U_target, U_predict).item()
+                self.V_JI[:, self.citer ] = V_jaccard(V_target, V_predict).item()
 
             if self.draw_intermediate_graph:
                 fig = self.visualize_factors()
@@ -1208,6 +1207,27 @@ class NMTF:
         S_out.to_csv(self.out_path + '/' + file_pre + "S.txt", sep="\t", header=False, index=False)
         return None
 
+
+    def _truncate_logs(self):
+        # if self.track_objective:
+        self.reconstruction_error = self.reconstruction_error[:, 0:self.citer]
+        self.lU_error = self.lU_error[:, 0:self.citer]
+        self.lV_error = self.lV_error[:, 0:self.citer]
+        self.aU_error = self.aU_error[:, 0:self.citer]
+        self.aV_error = self.aV_error[:, 0:self.citer]
+        if self.store_effective:
+            self.E_lU = self.E_lU[:, 0:self.citer]
+            self.E_lV = self.E_lV[:, 0:self.citer]
+            self.E_aU = self.E_aU[:, 0:self.citer]
+            self.E_aV = self.E_aV[:, 0:self.citer]
+
+        if self.save_clust:
+            self.U_assign = self.U_assign[:, 0:self.citer]
+            self.V_assign = self.V_assign[:, 0:self.citer]
+            self.U_JI = self.U_JI[:, 0:self.citer]
+            self.V_JI = self.V_JI[:, 0:self.citer]
+
+
     def print_output(self, file_pre = ''):
         """
         Write output files related to the factorization and clustering results.
@@ -1231,66 +1251,66 @@ class NMTF:
 
         :return: None
         """
-
         self.print_USV(file_pre)
 
+        self._truncate_logs()
         # if self.track_objective:
         reconstruction_error_out = self.reconstruction_error.cpu()
-        reconstruction_error_out = pd.DataFrame(reconstruction_error_out.numpy())
+        reconstruction_error_out = pd.DataFrame(reconstruction_error_out.numpy()).T
         reconstruction_error_out.to_csv(self.out_path + '/' + file_pre + "reconstruction_error.txt", sep="\t", header=False, index=False)
 
         lU_error_out = self.lU_error.cpu()
-        lU_error_out = pd.DataFrame(lU_error_out.numpy())
+        lU_error_out = pd.DataFrame(lU_error_out.numpy()).T
         lU_error_out.to_csv(self.out_path + '/' + file_pre + 'lU_error.txt', sep='\t', header=False, index=False)
 
         lV_error_out = self.lV_error.cpu()
-        lV_error_out = pd.DataFrame(lV_error_out.numpy())
+        lV_error_out = pd.DataFrame(lV_error_out.numpy()).T
         lV_error_out.to_csv(self.out_path + '/' + file_pre + "lV_error.txt", sep='\t', header=False, index=False)
 
         aU_error_out = self.aU_error.cpu()
-        aU_error_out = pd.DataFrame(aU_error_out.numpy())
+        aU_error_out = pd.DataFrame(aU_error_out.numpy()).T
         aU_error_out.to_csv(self.out_path + '/' + file_pre+ "aU_error.txt", sep='\t', header=False, index=False)
 
         aV_error_out = self.aV_error.cpu()
-        aV_error_out = pd.DataFrame(aV_error_out.numpy())
+        aV_error_out = pd.DataFrame(aV_error_out.numpy()).T
         aV_error_out.to_csv(self.out_path + '/' + file_pre + "aV_error.txt", sep='\t', header=False, index=False)
 
         if self.store_effective:
-            effective_lU_out = self.E_lU
-            effective_lU_out = pd.DataFrame(effective_lU_out.numpy())
+            effective_lU_out = self.E_lU.cpu()
+            effective_lU_out = pd.DataFrame(effective_lU_out.numpy()).T
             effective_lU_out.to_csv(self.out_path + '/' + file_pre + "effective_lU.txt", sep='\t', header=False, index=False)
 
-            effective_lV_out = self.E_lV
-            effective_lV_out = pd.DataFrame(effective_lV_out.numpy())
+            effective_lV_out = self.E_lV.cpu()
+            effective_lV_out = pd.DataFrame(effective_lV_out.numpy()).T
             effective_lV_out.to_csv(self.out_path + '/' + file_pre + "effective_lV.txt", sep='\t', header=False, index=False)
 
-            effective_aU_out = self.E_aU
-            effective_aU_out = pd.DataFrame(effective_aU_out.numpy())
+            effective_aU_out = self.E_aU.cpu()
+            effective_aU_out = pd.DataFrame(effective_aU_out.numpy()).T
             effective_aU_out.to_csv(self.out_path + '/' + file_pre + "effective_aU.txt", sep='\t', header=False, index=False)
 
-            effective_aV_out = self.E_aV
-            effective_aV_out = pd.DataFrame(effective_aV_out.numpy())
+            effective_aV_out = self.E_aV.cpu()
+            effective_aV_out = pd.DataFrame(effective_aV_out.numpy()).T
             effective_aV_out.to_csv(self.out_path + '/' + file_pre + "effective_aV.txt", sep='\t', header=False, index=False)
 
         if self.save_clust:
             U_test_out = self.U_assign.cpu()
-            U_test_out = pd.DataFrame(U_test_out.numpy())
+            U_test_out = pd.DataFrame(U_test_out.numpy()).T
             U_test_out.to_csv(self.out_path + '/' + file_pre + "U_assign.txt", sep='\t', header=False, index=False)
 
             V_test_out = self.V_assign.cpu()
-            V_test_out = pd.DataFrame(V_test_out.numpy())
+            V_test_out = pd.DataFrame(V_test_out.numpy()).T
             V_test_out.to_csv(self.out_path + '/' + file_pre + "V_assign.txt", sep='\t', header=False, index=False)
 
             V_JI_out = self.V_JI.cpu()
-            V_JI_out = pd.DataFrame(V_JI_out.numpy())
+            V_JI_out = pd.DataFrame(V_JI_out.numpy()).T
             V_JI_out.to_csv(self.out_path + '/' + file_pre + "V_JI.txt", sep='\t', header=False, index=False)
 
             U_JI_out = self.U_JI.cpu()
-            U_JI_out = pd.DataFrame(U_JI_out.numpy())
+            U_JI_out = pd.DataFrame(U_JI_out.numpy()).T
             U_JI_out.to_csv(self.out_path + '/' + file_pre + "U_JI.txt", sep='\t', header=False, index=False)
 
         relative_error_out = self.relative_error.cpu()
-        relative_error_out = pd.DataFrame(relative_error_out.numpy())
+        relative_error_out = pd.DataFrame(relative_error_out.numpy()).T
         relative_error_out.to_csv(self.out_path + '/' + file_pre + "relative_error.txt", sep='\t', header=False, index=False)
 
     def _track_objective_setup(self):
