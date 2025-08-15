@@ -1294,11 +1294,11 @@ class NMTF:
 
         if self.save_clust:
             U_test_out = self.U_assign_hist.cpu()
-            U_test_out = pd.DataFrame(U_test_out.numpy()).T
+            U_test_out = pd.DataFrame(U_test_out.numpy().astype(int)).T
             U_test_out.to_csv(self.out_path + '/' + file_pre + "U_assign_hist.txt", sep='\t', header=False, index=False)
 
             V_test_out = self.V_assign_hist.cpu()
-            V_test_out = pd.DataFrame(V_test_out.numpy()).T
+            V_test_out = pd.DataFrame(V_test_out.numpy().astype(int)).T
             V_test_out.to_csv(self.out_path + '/' + file_pre + "V_assign_hist.txt", sep='\t', header=False, index=False)
 
             V_JI_out = self.V_JI.cpu()
